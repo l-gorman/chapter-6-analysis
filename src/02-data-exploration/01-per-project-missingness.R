@@ -2,8 +2,11 @@ library(magrittr)
 library(readr)
 library(tibble)
 library(dplyr)
-
-
+library(tidyr)
+library(ggplot2)
+library(magrittr)
+library(ggExtra)
+library(cowplot)
 rhomis_data <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
 
 
@@ -110,7 +113,7 @@ result <- result[!grepl("id_form...",colnames(result))]
 result <- result[!grepl("id_form[[:digit:]]",colnames(result))]
 
 
-number_of_hhs <- indicator_sheet %>% 
+number_of_hhs <- rhomis_data %>% 
   group_by(id_form) %>% summarise(number_of_surveys = n())
 
 final_result <- merge(number_of_hhs, result, by="id_form")
@@ -118,5 +121,93 @@ final_result <- final_result[order(final_result$number_of_surveys,decreasing = T
 
 
 
-dir.create("data_quality_check")
-readr::write_csv(final_result, "merged/data_quality_check/med_na_24_02_2023.csv")
+dir.create("outputs")
+dir.create("outputs/01-data-quality-check")
+
+readr::write_csv(final_result, "outputs/01-data-quality-check/indicator_quality_check_all.csv")
+
+
+
+
+prop_na_cols <- grep("prop_nas",colnames(final_result),value=T)
+plotting_df <- final_result[c("id_form","number_of_surveys",prop_na_cols)] %>% gather(key = "variable", value = "prop_na",-id_form, -number_of_surveys)
+plotting_df$variable  <- gsub("_prop_nas","",plotting_df$variable)
+
+
+
+plot <- ggplot(plotting_df, aes(y=variable, x=id_form, fill = prop_na, size = prop_na)) +
+  geom_point(shape = 21, stroke = 0) +
+  geom_hline(yintercept = seq(.5, length(unique(plotting_df$variable))-0.5, 1), size = .2)+
+  geom_vline(xintercept = seq(.5, length(unique(plotting_df$id_form))-0.5, 1), size = .2)+
+  
+  theme_minimal()+
+  scale_radius(range = c(0, 2))+
+  scale_x_discrete(position = "top") +
+  
+  scale_fill_gradient(low = "green", high = "red", breaks = c(0, .5, 1), labels = c("Great", "OK", "Bad"), limits = c(0, 1)) +
+  theme(axis.text.x = element_text(hjust=1,angle=270,vjust=-1),
+    legend.position = "bottom", 
+        panel.grid.major = element_blank(),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 8)) +
+  guides(size = guide_legend(override.aes = list(fill = NA, color = "black", stroke = .25), 
+                             label.position = "bottom",
+                             title.position = "right", 
+                             order = 1),
+         fill = guide_colorbar(ticks.colour = NA, title.position = "top", order = 2)) 
+ggsave("outputs/01-data-quality-check/missing_indicators.png",plot,width = 4000,height=2000,units = "px",limitsize = FALSE)
+
+
+plotting_df$id_form <- factor(plotting_df$id_form, levels = sort(unique(plotting_df$id_form)), ordered = T)
+plotting_df$numeric_id <- as.numeric(plotting_df$id_form)
+
+plot <- ggplot(plotting_df, aes(y=variable, x=id_form, fill = prop_na, size = prop_na)) +
+  # Initial Point plot
+  geom_point(shape = 21, stroke = 0) +
+  # Grid lines
+  geom_hline(yintercept = seq(.5, length(unique(plotting_df$variable))-0.5, 1), size = .2)+
+  geom_vline(xintercept = seq(.5, length(unique(plotting_df$id_form))-0.5, 1), size = .2)+
+  
+  # Highlighting projects
+  geom_vline(xintercept = 4, size = 1, color="green",alpha=0.5)+
+  
+  theme_minimal()+
+  
+  # Setting the range of point sizes
+  scale_radius(range = c(0, 1.5))+
+  # Putting axis ticks at bottom
+  scale_x_discrete(position = "bottom") +
+  
+  # Setting Scale Colours for 
+  scale_fill_gradient(low = "green", high = "red", breaks = c(0, .5, 1), labels = c("Low\nProp", "Med\nProp", "High\nProp"), limits = c(0, 1)) +
+  theme(axis.text.x = element_text(hjust=1,angle=90,vjust=0.5),
+        legend.position = "bottom", 
+        panel.grid.major = element_blank(),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 8)) +
+  guides(size = guide_legend(override.aes = list(fill = NA, color = "black", stroke = .25), 
+                             label.position = "bottom",
+                             title.position = "right", 
+                             order = 1),
+         fill = guide_colorbar(ticks.colour = NA, title.position = "top", order = 2)) 
+
+
+xhist <- 
+  axis_canvas(plot, axis = "x") + 
+  geom_bar(data = plotting_df, aes(x=numeric_id,y=number_of_surveys), stat = "identity")
+
+
+# ggplot(data = plotting_df, aes(x=numberic_id,y = number_of_surveys))+
+#   geom_bar(stat = "identity")
+
+
+plot %>%
+  insert_xaxis_grob(xhist, grid::unit(1,"in"), position = "top") %>%
+  ggdraw()
+  # ggMarginal(data=plotting_df,x="number_of_surveys",y=0)
+
+
+ 
+
+
+
