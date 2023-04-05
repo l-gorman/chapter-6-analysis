@@ -268,14 +268,11 @@ per_country_summary <- per_country_summary[order(per_country_summary$Region),]
 
 
 
-per_country_ft <- flextable::flextable(per_country_summary)
-# per_country_ft <- theme_vanilla(per_country_ft)
-# per_country_ft <- width(per_country_ft, width = 1.5)
 
 std_border <- flextable::fp_border_default(color="grey")
 
 
-per_country_ft <- per_country_summary %>% 
+per_country_summary <- per_country_summary %>% 
   select(Region,
          name,
          projects,
@@ -288,7 +285,13 @@ per_country_ft <- per_country_summary %>%
   rename("Villages"="villages") %>% 
   rename("Households"="households") %>% 
   
-  as_grouped_data("Region") %>% 
+  as_grouped_data("Region") 
+
+
+
+
+
+per_country_ft <- per_country_summary %>% 
   as_flextable(hide_grouplabel=T) %>% 
   bold( bold = TRUE, part="header") %>% 
   # align(i = ~ !is.na(Region), align = "center") %>% 
