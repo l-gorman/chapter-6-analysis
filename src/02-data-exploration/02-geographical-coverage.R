@@ -228,12 +228,13 @@ dir.create("./outputs/02-data-exploration/data-coverage/geographical_counts",sho
 #-------------------------------------------------------------------------
 per_country_summary <- indicator_data %>% 
   group_by(iso_country_code) %>% summarise(
+    projects = n_distinct(id_form),
     subnational_areas = n_distinct(gdlcode),
     villages = n_distinct(village),
     households = n()
   )  
 
-new_row <- colSums(per_country_summary[c("subnational_areas","villages","households")]) %>% as.list()
+new_row <- colSums(per_country_summary[c("projects","subnational_areas","villages","households")]) %>% as.list()
 new_row$iso_country_code <- "Total"
 new_row <- tibble::as_tibble(new_row)
 per_country_summary <- per_country_summary %>% bind_rows(new_row)
@@ -244,8 +245,8 @@ readr::write_csv(per_country_summary,"./outputs/02-data-exploration/data-coverag
 per_country_summary <- per_country_summary %>% merge(country_conversions, by.x="iso_country_code", by.y="alpha-2", all.x=T, all.y=F)
 per_country_summary$Region <- per_country_summary$`sub-region`
 per_country_summary$Region[!is.na(per_country_summary$`intermediate-region`)] <- per_country_summary$`intermediate-region`[!is.na(per_country_summary$`intermediate-region`)]
-per_country_summary$Region[per_country_summary$iso_country_code=="Total"] <- "Total"
-per_country_summary$iso_country_code[per_country_summary$iso_country_code=="Total"] <- NA
+per_country_summary$Region[per_country_summary$iso_country_code=="Total"] <- ""
+per_country_summary$name[per_country_summary$iso_country_code=="Total"] <- "Total"
 
 per_country_summary$Region <- factor(per_country_summary$Region, levels=c(
   "Western Africa",
@@ -257,7 +258,7 @@ per_country_summary$Region <- factor(per_country_summary$Region, levels=c(
   "South-eastern Asia",
   "Southern Asia",
   "South America",
-  "Total"
+  ""
   
 ), ordered = T)
 
@@ -266,31 +267,35 @@ per_country_summary <- per_country_summary[order(per_country_summary$Region),]
  
 
 
-flextable(per_country_summary)
 
-colnames(per_country_summary) <- c("Region","Country", "Subnational Areas", "Villages", "Households")
 per_country_ft <- flextable::flextable(per_country_summary)
 # per_country_ft <- theme_vanilla(per_country_ft)
 # per_country_ft <- width(per_country_ft, width = 1.5)
 
-per_country_summary <- per_country_summary %>% 
+std_border <- flextable::fp_border_default(color="grey")
+
+
+per_country_ft <- per_country_summary %>% 
   select(Region,
          name,
+         projects,
          subnational_areas,
          villages,
          households) %>% 
+  rename("Projects"='projects') %>% 
   rename("Country"="name") %>% 
   rename("Subnational Areas"="subnational_areas") %>% 
   rename("Villages"="villages") %>% 
   rename("Households"="households") %>% 
   
-  as_grouped_data(groups = "Region") %>% 
+  as_grouped_data("Region") %>% 
   as_flextable(hide_grouplabel=T) %>% 
   bold( bold = TRUE, part="header") %>% 
-  align(i = ~ !is.na(Region), align = "center") %>% 
+  # align(i = ~ !is.na(Region), align = "center") %>% 
 
   bold(i = ~ !is.na(Region)) %>%  
-  hline(i = ~ !is.na(Region))%>%  
+  bold(i = ~ Country=="Total") %>% 
+  hline(i = ~ !is.na(Region), border = std_border)%>%  
 
   autofit()
 
