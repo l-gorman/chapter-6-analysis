@@ -158,7 +158,7 @@ subset_cols <- !grepl("gdl", colnames(gdl_info),ignore.case = T)
 colnames(gdl_info)[subset_cols] <- paste0("gdl_",colnames(gdl_info)[subset_cols])
 joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info, by.x=c("gdlcode","year.x"), by.y=c("GDLCODE","gdl_year"),all.x=T,all.y=F)
 
-joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_country_code","year.x"), by.y=c("alpha-2","gdl_country_year"),all.x=T,all.y=F)
+joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_country_code.x","year.x"), by.y=c("alpha-2","gdl_country_year"),all.x=T,all.y=F)
 
 
 #--------------------------------------------------------------------------
@@ -234,11 +234,11 @@ rasValue_rhomis <- convert_aez_classes(rasValue_rhomis,
                                        aez_33_class_conversions)
 
 
-joined_df_rhomis %>% group_by(gdlcode,village) %>% 
-  summarise(number_per_village=n()) %>% ungroup() %>% 
-  group_by(gdlcode) %>% 
-  summarise(number_of_villages=n())
-
+# joined_df_rhomis %>% group_by(gdlcode,village) %>% 
+#   summarise(number_per_village=n()) %>% ungroup() %>% 
+#   group_by(gdlcode) %>% 
+#   summarise(number_of_villages=n())
+# 
 
 
 joined_df_rhomis <- cbind(joined_df_rhomis,rasValue_rhomis)

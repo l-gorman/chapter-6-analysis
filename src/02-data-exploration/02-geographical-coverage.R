@@ -288,7 +288,8 @@ per_country_summary <- per_country_summary %>%
   as_grouped_data("Region") 
 
 
-
+above_row_selectors <- which(!is.na(per_country_summary$Region))-1
+above_row_selectors <- above_row_selectors[above_row_selectors!=0]
 
 
 per_country_ft <- per_country_summary %>% 
@@ -298,7 +299,7 @@ per_country_ft <- per_country_summary %>%
 
   bold(i = ~ !is.na(Region)) %>%  
   bold(i = ~ Country=="Total") %>% 
-  hline(i = ~ !is.na(Region), border = std_border)%>%  
+  hline(i =above_row_selectors)%>%  
 
   autofit()
 
