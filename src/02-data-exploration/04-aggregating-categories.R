@@ -57,10 +57,8 @@ education_conversion <- tribble(
 )
 
 indicator_data <- indicator_data %>% base::merge(education_conversion,by="education_level",all.x=T,all.y=F) %>% as_tibble()
-
 indicator_data$education_level <- factor(indicator_data$education_level, levels=education_conversion$education_level, 
                                          ordered = T)
-
 indicator_data$education_cleaned <- factor(indicator_data$education_cleaned, levels=unique(education_conversion$education_cleaned), 
                                            ordered = T)
 
@@ -91,7 +89,7 @@ dir.create("./outputs/02-data-exploration/category_merging")
 save_as_image(cleaned_aggregation, "./outputs/02-data-exploration/category_merging/education_merging.png")
 
 
-grep("")
+
 
 
 # gini diversity ----------------------------------------------------------
@@ -190,17 +188,48 @@ diversity <- function(indicator_data){
                             honey_value,
                             off_farm_value)
   
-  weighted_income_diversity <- apply(value_matrix,1,diversity_index)
-  
-  return(weighted_income_diversity)
+  indicator_data$weighted_income_diversity <- apply(value_matrix,1,diversity_index)
+ 
+  return( indicator_data)
 }
 
 
 # Livestock Orientation, Market Orientation ----------------------------------------
 
-indicator_data$total_value
-indicator_data$livestock_orientation <- indicator_data$value
-indicator_data$livestock_orientation
+subset_columns <- c("total_income_lcu_per_year","value_farm_products_consumed_lcu_per_hh_per_year")
+na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
+indicator_data$tva_per_hh_per_year <- rowSums(indicator_data[subset_columns], na.rm=T)
+indicator_data$tva_per_hh_per_year[na.rows] <- NA
+
+subset_columns <- c("livestock_income_lcu_per_year","value_livestock_products_consumed_lcu_per_hh_per_year")
+na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
+indicator_data$livestock_value_per_hh_per_year <- rowSums(indicator_data[subset_columns], na.rm=T)
+indicator_data$livestock_value_per_hh_per_year[na.rows] <- NA
+
+subset_columns <- c("crop_income_lcu_per_year","livestock_income_lcu_per_year")
+na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
+indicator_data$value_farm_products_sold_per_hh_per_year <- rowSums(indicator_data[subset_columns], na.rm=T)
+indicator_data$value_farm_products_sold_per_hh_per_year[na.rows] <- NA
+
+
+unit_conv_tibble <- rhomis::proportion_conversions
+unit_conv_tibble$id_rhomis_dataset <- "x"
+id_vector <- rep("x", nrow(indicator_data))
+off_farm_prop <- indicator_data["offfarm_income_proportion"]
+off_farm_incomes_any <- indicator_data["offfarm_incomes_any"]
+off_farm_prop <- switch_units(off_farm_prop, unit_tibble = unit_conv_tibble, id_vector = id_vector)
+off_farm_prop[off_farm_incomes_any=="n"] <- 0
+indicator_data$offfarm_income_proportion <- off_farm_prop
+
+
+subset_columns <- c("livestock_value_per_hh_per_year","tva_per_hh_per_year")
+indicator_data$livestock_orientation <- indicator_data[["livestock_value_per_hh_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
+
+
+subset_columns <- c("value_farm_products_sold_per_hh_per_year","tva_per_hh_per_year")
+indicator_data$market_orientation <- indicator_data[["value_farm_products_sold_per_hh_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
+
+
 
 
 
