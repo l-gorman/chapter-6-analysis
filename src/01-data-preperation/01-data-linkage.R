@@ -143,7 +143,7 @@ gdl_info_country <- gdl_info_country %>% merge(country_codes,
                                                               by.y="alpha-3")
 
 
-three_letter_codes <- country_codes[country_codes[["alpha-2"]]%in%rhomis_data$iso_country_code,][["alpha-3"]]
+three_letter_codes <- country_codes[country_codes[["alpha-2"]]%in%rhomis_data$iso_country_code.x,][["alpha-3"]]
 
 gdl_shp <- gdl_shp[gdl_shp$iso_code %in%three_letter_codes,]
 gdl_code <- gdl_code[gdl_code$ISO_Code %in%three_letter_codes,]
@@ -156,9 +156,9 @@ joined_df_rhomis <- st_join(x=rhomis_data,
 rhomis_data <- NULL
 subset_cols <- !grepl("gdl", colnames(gdl_info),ignore.case = T)
 colnames(gdl_info)[subset_cols] <- paste0("gdl_",colnames(gdl_info)[subset_cols])
-joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info, by.x=c("gdlcode","year.x"), by.y=c("GDLCODE","gdl_year"),all.x=T,all.y=F)
+joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info, by.x=c("gdlcode","year"), by.y=c("GDLCODE","gdl_year"),all.x=T,all.y=F)
 
-joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_country_code.x","year.x"), by.y=c("alpha-2","gdl_country_year"),all.x=T,all.y=F)
+joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_country_code.x","year"), by.y=c("alpha-2","gdl_country_year"),all.x=T,all.y=F)
 
 
 #--------------------------------------------------------------------------
