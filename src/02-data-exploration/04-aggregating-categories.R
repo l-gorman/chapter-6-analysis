@@ -7,7 +7,6 @@ library(flextable)
 library(rhomis)
 library(XML)
 
-
 indicator_data <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
 indicator_data <- indicator_data[!is.na(indicator_data$x_gps_latitude) & !is.na(indicator_data$x_gps_longitude),]
 indicator_data <- indicator_data[!is.na(indicator_data$village),]
@@ -19,7 +18,7 @@ indicator_data <- indicator_data[indicator_data$iso_country_code%in%c(
   # "KH",
   # "PE",
   # "VN"
-  )==F,]
+)==F,]
 
 
 
@@ -221,9 +220,12 @@ save_as_image(cleaned_aggregation, "./outputs/02-data-exploration/category_mergi
 travel_time_cols <- grep("travel_time", colnames(indicator_data), value=T)
 min_travel_time <-  apply( indicator_data[travel_time_cols], 1, min)
 indicator_data$min_travel_time <- min_travel_time
-indicator_data <- indicator_data[indicator_data$min_travel_time!=0,]
-indicator_data$log_min_travel_time <- log(indicator_data$min_travel_time)
+# indicator_data <- indicator_data[indicator_data$min_travel_time!=0,]
+# indicator_data$log_min_travel_time <- log(indicator_data$min_travel_time)
 
+# HHsize
+
+# indicator_data$log_hh_size <- log(indicator_data$hh_size_mae)
 
 # food security -----------------------------------------------------------
 
@@ -345,7 +347,7 @@ diversity <- function(indicator_data){
                             off_farm_value)
   
   indicator_data$weighted_income_diversity <- apply(value_matrix,1,diversity_index)
- 
+  
   return( indicator_data)
 }
 
@@ -359,13 +361,29 @@ indicator_data$tva_per_hh_per_year <- rowSums(indicator_data[subset_columns], na
 indicator_data$tva_per_hh_per_year[na.rows] <- NA
 
 # Removing any households with zero value
-indicator_data <- indicator_data[!is.na(indicator_data$tva_per_hh_per_year) & indicator_data$tva_per_hh_per_year>0,]
+# indicator_data <- indicator_data[!is.na(indicator_data$tva_per_hh_per_year) & indicator_data$tva_per_hh_per_year>0,]
 
 
 subset_columns <- c("tva_per_hh_per_year","hh_size_mae","currency_conversion_lcu_to_ppp")
 na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
 indicator_data$tva_per_mae_per_day_ppp <- indicator_data$tva_per_hh_per_year/indicator_data$hh_size_mae/365/indicator_data$currency_conversion_lcu_to_ppp
 indicator_data$tva_per_mae_per_day_ppp[na.rows] <- NA
+
+subset_columns <- c("total_income_lcu_per_year","hh_size_mae","currency_conversion_lcu_to_ppp")
+na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
+indicator_data$income_per_mae_per_day_ppp <- indicator_data$total_income_lcu_per_year/indicator_data$hh_size_mae/365/indicator_data$currency_conversion_lcu_to_ppp
+indicator_data$income_per_mae_per_day_ppp[na.rows] <- NA
+
+
+subset_columns <- c("crop_income_lcu_per_year","hh_size_mae","currency_conversion_lcu_to_ppp")
+na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
+indicator_data$crop_income_per_mae_per_day_ppp <- indicator_data$crop_income_lcu_per_year/indicator_data$hh_size_mae/365/indicator_data$currency_conversion_lcu_to_ppp
+indicator_data$crop_income_per_mae_per_day_ppp[na.rows] <- NA
+
+subset_columns <- c("crop_income_lcu_per_year","value_crop_consumed_lcu_per_hh_per_year")
+na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
+indicator_data$crop_value_per_hh_per_year <- rowSums(indicator_data[subset_columns], na.rm=T)
+indicator_data$crop_value_per_hh_per_year[na.rows] <- NA
 
 subset_columns <- c("livestock_income_lcu_per_year","value_livestock_products_consumed_lcu_per_hh_per_year")
 na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
@@ -378,25 +396,19 @@ indicator_data$value_farm_products_sold_per_hh_per_year <- rowSums(indicator_dat
 indicator_data$value_farm_products_sold_per_hh_per_year[na.rows] <- NA
 
 
-unit_conv_tibble <- rhomis::proportion_conversions
-unit_conv_tibble$id_rhomis_dataset <- "x"
-id_vector <- rep("x", nrow(indicator_data))
-off_farm_prop <- indicator_data["offfarm_income_proportion"]
-off_farm_incomes_any <- indicator_data["offfarm_incomes_any"]
-off_farm_prop <- switch_units(off_farm_prop, unit_tibble = unit_conv_tibble, id_vector = id_vector)
-off_farm_prop[off_farm_incomes_any=="n"] <- 0
-indicator_data$offfarm_income_proportion <- off_farm_prop[[1]]
-
-
 subset_columns <- c("livestock_value_per_hh_per_year","tva_per_hh_per_year")
 indicator_data$livestock_orientation <- indicator_data[["livestock_value_per_hh_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
+
+subset_columns <- c("crop_value_per_hh_per_year","tva_per_hh_per_year")
+indicator_data$crop_orientation <- indicator_data[["crop_value_per_hh_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
+
+subset_columns <- c("off_farm_income_lcu_per_year","tva_per_hh_per_year")
+indicator_data$off_farm_orientation <- indicator_data[["off_farm_income_lcu_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
 
 
 subset_columns <- c("value_farm_products_sold_per_hh_per_year","tva_per_hh_per_year")
 indicator_data$market_orientation <- indicator_data[["value_farm_products_sold_per_hh_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
 
-
-#Recoding Food Security Status
 
 
 
@@ -408,27 +420,337 @@ vars <- c(
   "gdlcode",
   "iso_country_code",
   "village",
+  
   "hh_size_mae",
-  "livestock_orientation",
-  "market_orientation",
-  "offfarm_income_proportion",
+  "education_cleaned",
+  "livestock_tlu", # centered transform
+  "land_cultivated_ha",
   
-  "weighted_income_diversity",
+  "livestock_orientation", #logit transform
+  "crop_orientation", #logit transform
+  "off_farm_orientation", #logit transform
+  "market_orientation", # logit transform
   
-  "livestock_tlu",
-  "tva_per_mae_per_day_ppp",
-  "adjusted_length_growing_period",
-  "log_min_travel_time",
+  "weighted_income_diversity", # centred transform
   
+  "tva_per_mae_per_day_ppp", # centered transform
+  "combined_fs_score",
+  
+  # Village Level Variables
+  "adjusted_length_growing_period", # centered transform
+  "min_travel_time", # centered transform
   "aez_class_cleaned",
   
+  # Country Level Variables
   "gdl_lifexp",
-  "gdl_shdi",
+  "gdl_shdi"
+
   
+)
+modelling_data_set <- indicator_data[vars]
+
+# Thresholds and transformations
+# normalise <- function(x){
+#   return(x-mean(x)/sd(x))
+# }
+
+
+
+# tva_summary <- modelling_data_set %>% 
+#   group_by(id_form) %>% 
+#   summarise(
+#     mean_tva=mean(tva_per_mae_per_day_ppp,na.rm=T),
+#     median_tva=median(tva_per_mae_per_day_ppp,na.rm=T)
+#     
+#   )
+
+
+
+
+variable_summary <- function(
+    df,
+    variable,
+    description,
+    level,
+    criteria,
+    criteria_description,
+    actions,
+    justification
+    
+){
+  df[[variable]][is.infinite(df[[variable]])] <- NA
+
+  summary <- list(
+    Variable=variable,
+    Min=min(df[[variable]],na.rm=T),
+    Max=max(df[[variable]],na.rm=T),
+    Mean=mean(df[[variable]],na.rm=T),
+    SD=sd(df[[variable]],na.rm=T),
+    Q.01=quantile(df[[variable]],probs=c(0.01),na.rm=T),
+    Q.05=quantile(df[[variable]],probs=c(0.05),na.rm=T),
+    Q.95=quantile(df[[variable]],probs=c(0.95),na.rm=T),
+    Q.99=quantile(df[[variable]],probs=c(0.99),na.rm=T)
+  ) %>% as_tibble()
   
-  "combined_fs_score"
  
+  
+  if(length(criteria)>1){
+    summary_addition <- list(
+      Variable=rep(NA,length(criteria)-1),
+      Min=rep(NA,length(criteria)-1),
+      Max=rep(NA,length(criteria)-1),
+      Mean=rep(NA,length(criteria)-1),
+      SD=rep(NA,length(criteria)-1),
+      Q.01=rep(NA,length(criteria)-1),
+      Q.05=rep(NA,length(criteria)-1),
+      Q.95=rep(NA,length(criteria)-1),
+      Q.99=rep(NA,length(criteria)-1)
+    )%>% as_tibble()
+    
+    summary <- bind_rows(summary,summary_addition)
+  }
+  
+  exclusion_list <- list()
+  
+  for (i in 1:length(criteria)){
+    temp_function <- criteria[[i]]
+    result <- temp_function(df[[variable]])
+    number_of_values <- table(result)["TRUE"]
+    if (is.na(number_of_values)){
+      number_of_values <- 0
+    }
+    
+    exclusion_list[[i]] <-list(
+      Criteria=criteria_description[[i]],
+      Action=actions[[i]],
+      Justification=justification[[i]],
+      Count=as.numeric(number_of_values)
+    )
+  }
+  
+  exclusion_list <- bind_rows(exclusion_list)
+  
+  summary <- bind_cols(summary,exclusion_list)
+  
+  return(summary)
+  
+  
+}
+
+hh_size_summary <-variable_summary(
+  df=modelling_data_set,
+  variable="hh_size_mae",
+  description="Number of Household Members in MAE",
+  level="Household Level",
+  criteria=list(
+    function(x){is.na(x)},
+    function(x){x==0},
+    function(x){x>30}),
+  
+  criteria_description=c("Null Value", "Zero Value","Above 30 MAE"),
+  actions=c("Exclude", "Exclude", "Exclude"),
+  justification=c(
+    "Houeshold must have a size to be considered a household",
+    "Household cannot be considered if it has no members",
+    
+    "Less than 1% of households above this amount. Likely that household of this size due to error"
   )
+)
+
+
+tlu_summary <-variable_summary(
+  df=modelling_data_set,
+  variable="livestock_tlu",
+  description="",
+  level="Household Level",
+  criteria=list(
+    function(x){is.na(x)},
+    function(x){x>30}),
+
+  criteria_description=c("Null Value", "Below 30 TLU"),
+  actions=c("NAs will be converted to 0","Excluded"),
+  justification=c(
+    "",
+    "Less than 1% of households above this amount. Likely that household of this size due to error"
+  )
+)
+
+
+tva_summary <-variable_summary(
+  df=modelling_data_set,
+  variable="tva_per_mae_per_day_ppp",
+  description="",
+  level="Household Level",
+  criteria=list(
+    function(x){is.na(x)},
+    function(x){x==0},
+    function(x){x>10000}),
+  
+  criteria_description=c("Null Value", "Zero Value","Reported than 10,000 (PPP$/MAE/Day)"),
+  actions=c("Excluded","Excluded","Excluded"),
+  
+  justification=c(
+    "Value a key performance indicator",
+    "Household has to have at least some farm produce",
+    "Less than 1% of households above this amount. Likely that farming household not earning this much per person per day"
+  )
+)
+
+
+growing_period_summary <-variable_summary(
+  df=modelling_data_set,
+  variable="adjusted_length_growing_period",
+  description="",
+  level="Village Level",
+  criteria=list(
+    function(x){is.na(x)},
+    function(x){x>365}),
+  
+  criteria_description=c("Null Value", "Growing period of more than 365 days"),
+  actions=c("Exclude", "Exclude"),
+  
+  justification=c(
+    "Cannot have no growing period",
+    "Cannot have growing period of more than 365 days"
+  )
+)
+
+travel_time_summary <-variable_summary(
+  df=modelling_data_set,
+  variable="min_travel_time",
+  description="",
+  level="Village Level",
+  criteria=list(
+    function(x){is.na(x)},
+    function(x){x>2880}),
+  
+  criteria_description=c("Null Value", "Travel time more than 48 hours"),
+  actions=c("Exclude","Exclude"),
+  
+  justification=c(
+    "NAs will removed",
+    "Unlikely more than 48 hours travel time to closest town"
+  )
+)
+
+hdi_summary <-variable_summary(
+  df=modelling_data_set,
+  variable="gdl_shdi",
+  description="",
+  level="Village Level",
+  criteria=list(
+    function(x){is.na(x)},
+    function(x){x>1}),
+  
+  criteria_description=c("Null Value", "More than 1"),
+  actions=c("Exclude", "Exclude"),
+  
+  justification=c(
+    "Only 1 household",
+    "Proportional measure, cannot be greater than 1"
+  )
+)
+
+
+life_expect_summary <-variable_summary(
+  df=modelling_data_set,
+  variable="gdl_lifexp",
+  description="",
+  level="Village Level",
+  criteria=list(
+    function(x){is.na(x)},
+    function(x){x>100}),
+  
+  criteria_description=c("Null Value", "Below 30 TLU"),
+  actions=c("Exclude", "Exclude"),
+  justification=c(
+    "NAs will removed",
+    "Life expectancy greater than"
+  )
+)
+
+
+
+
+modelling_data_set[is.na(modelling_data_set$livestock_tlu)] <- 0
+modelling_data_set[is.na(modelling_data_set$livestock_tlu)] <- 0
+
+indicator_data <- indicator_data[
+  
+,]
+  
+  
+
+
+# variable_summary --------------------------------------------------------
+
+variable_summary <- tribble(
+  ~Category,~Variable, ~`Data Type`, ~Level, ~Description,~`Reason for Inclusion`,
+  "Grouping Variables","id_form","categorical","Household-Level","","",
+  "Grouping Variables","gdlcode","categorical","Household-Level","","",
+  "Grouping Variables","iso_country_code","categorical","Household-Level","","",
+  "Grouping Variables","village","categorical","Household-Level","","",
+  
+  "Demographics","hh_size_mae","continuous","Household-Level","","",
+  "Demographics","education_cleaned","continuous","Household-Level","","",
+  "Resource Endowment","livestock_tlu","continuous","Household-Level","","", # centered transform
+  "Resource Endowment","land_cultivated_ha","continuous","Household-Level","","",
+  
+  "Production Orientation","livestock_orientation","proportion","Household-Level","","", #logit transform
+  "Production Orientation","crop_orientation","proportion","Household-Level","","", #logit transform
+  "Production Orientation","off_farm_orientation","proportion","Household-Level","","", #logit transform
+  "Production Orientation","market_orientation","proportion","Household-Level","","", # logit transform
+  "Production Orientation","weighted_income_diversity","continuous","Household-Level","","", # centred transform
+  
+  
+  
+  # Village Level Variables
+  "Village Variables","adjusted_length_growing_period","continuous","Village Level","","", # centered transform
+  "Village Variables","min_travel_time","continuous","Village Level","","", # centered transform
+  "Village Variables","aez_class_cleaned","categorical","Village Level","","",
+  
+  # Country Level Variables
+  "County Descriptors","gdl_lifexp","continuous","County","","",
+  "County Descriptors","gdl_shdi","proportion","County","","",
+  
+  "Performance Indicators","tva_per_mae_per_day_ppp","continuous","Household Level","","", # centered transform
+  "Performance Indicators","combined_fs_score","ordinal","Household Level","",""
+  
+)
+
+readr::write_csv(variable_summary,"./outputs/02-data-exploration/variable_summary.csv")
+
+# Transformation ----------------------------------------------------------
+
+
+log_add_half_min <- function(x){
+  replacement <- min(x[x>0 & !is.na(x)])/2
+  x[x==0] <- replacement
+  
+  return(log(x))
+}
+
+logit <- function(x){
+  min_replacement <- min(x[x>0 & x<1 & !is.na(x)])/2
+  max_replacement <- max(x[x>0 & x<1 & !is.na(x)])/2
+
+  x[x==0] <- min_replacement
+  x[x==1] <- max_replacement
+  
+  return(log(x/(1 - x)))
+}
+
+normalisation <- function(x){
+  return((x - mean(x)) / sd(x))
+}
+
+
+temp <- modelling_data_set[["livestock_tlu"]]
+temp[is.na(temp)] <- 0
+temp <- log_add_half_min(temp)
+temp <-normalisation(temp)
+ggplot(as.data.frame(temp),aes(x=temp))+
+  geom_histogram()
 
 
 modelling_data_set <- indicator_data[vars]
@@ -436,7 +758,12 @@ modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$tva_per_mae_p
 modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$gdlcode),]
 modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$weighted_income_diversity),]
 modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$market_orientation),]
+modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$livestock_orientation),]
+
 modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$livestock_tlu),]
+
+
+
 
 
 
