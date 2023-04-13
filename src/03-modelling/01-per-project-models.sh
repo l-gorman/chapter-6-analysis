@@ -29,8 +29,8 @@ module add languages/r/4.1.0
 
 out_directory="/user/work/lg14410/chapter-6/outputs/"
 data_directory="/user/work/lg14410/chapter-6/data/"
-iterations=4000
-warmup=2000
+iterations=20
+warmup=10
 cores=4
 
 
