@@ -3,3 +3,4 @@ outputs/
 *.DS_Store
 .Rproj.user/
 outputs/
+copy-data-to.sh  

@@ -6,6 +6,7 @@ library(ggplot2)
 library(flextable)
 library(rhomis)
 library(XML)
+library(GGally)
 
 indicator_data <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
 indicator_data <- indicator_data[!is.na(indicator_data$x_gps_latitude) & !is.na(indicator_data$x_gps_longitude),]
@@ -444,7 +445,7 @@ vars <- c(
   # Country Level Variables
   "gdl_lifexp",
   "gdl_shdi"
-
+  
   
 )
 modelling_data_set <- indicator_data[vars]
@@ -479,7 +480,7 @@ variable_summary <- function(
     
 ){
   df[[variable]][is.infinite(df[[variable]])] <- NA
-
+  
   summary <- list(
     Variable=variable,
     Min=min(df[[variable]],na.rm=T),
@@ -492,7 +493,7 @@ variable_summary <- function(
     Q.99=quantile(df[[variable]],probs=c(0.99),na.rm=T)
   ) %>% as_tibble()
   
- 
+  
   
   if(length(criteria)>1){
     summary_addition <- list(
@@ -566,7 +567,7 @@ tlu_summary <-variable_summary(
   criteria=list(
     function(x){is.na(x)},
     function(x){x>30}),
-
+  
   criteria_description=c("Null Value", "Below 30 TLU"),
   actions=c("NAs will be converted to 0","Excluded"),
   justification=c(
@@ -679,10 +680,10 @@ exclusion_summary <- bind_rows(
   travel_time_summary,
   hdi_summary,
   life_expect_summary,
-                     )
-  
+)
+
 readr::write_csv(exclusion_summary,"./outputs/02-data-exploration/numeric_variable_exclusion_summary.csv")
-  
+
 above_row_selectors <- which(!is.na(exclusion_summary$Variable))-1
 above_row_selectors <- above_row_selectors[above_row_selectors!=0]
 # bold_row_selectors <- which(!is.na(cleaned_aggregation$`Cleaned Value`))
@@ -696,7 +697,10 @@ cleaned_aggregation <- exclusion_summary %>% flextable::flextable() %>%
 save_as_image(cleaned_aggregation, "./outputs/02-data-exploration/numeric_variable_exclusion_summary.png")
 
 
- variable_summary --------------------------------------------------------
+#-------------------------------------------------------------------------
+# variable_summary -------------------------------------------------------
+#-------------------------------------------------------------------------
+
 
 variable_summary <- tribble(
   ~Category,~Variable, ~`Data Type`, ~Level, ~Description,~`Reason for Inclusion`,
@@ -745,11 +749,11 @@ log_add_half_min <- function(x){
 }
 
 logit <- function(x){
-  min_replacement <- min(x[x>0 & x<1 & !is.na(x)])/2
-  max_replacement <- max(x[x>0 & x<1 & !is.na(x)])/2
-
-  x[x==0] <- min_replacement
-  x[x==1] <- max_replacement
+  min_replacement <- min(x[x>0.000001 & x<0.999999 & !is.na(x)])/2
+  max_replacement <- (1-max(x[x>0.000001 & x<0.999999 & !is.na(x)]))/2
+  
+  x[x<0.001] <- min_replacement
+  x[x>0.999] <- 1-max_replacement
   
   return(log(x/(1 - x)))
 }
@@ -759,30 +763,145 @@ normalisation <- function(x){
 }
 
 
-temp <- modelling_data_set[["livestock_tlu"]]
-temp[is.na(temp)] <- 0
-temp <- log_add_half_min(temp)
-temp <-normalisation(temp)
-ggplot(as.data.frame(temp),aes(x=temp))+
-  geom_histogram()
+modelling_data_set$livestock_tlu[ is.na(modelling_data_set$livestock_tlu)] <- 0
+
+modelling_data_set <- modelling_data_set[modelling_data_set$hh_size_mae>0 & !is.na(modelling_data_set$hh_size_mae),]
+
+modelling_data_set <- modelling_data_set[modelling_data_set$tva_per_mae_per_day_ppp>0 & !is.na(modelling_data_set$tva_per_mae_per_day_ppp),]
+
+modelling_data_set <- modelling_data_set[complete.cases(modelling_data_set),]
 
 
-modelling_data_set <- indicator_data[vars]
-modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$tva_per_mae_per_day_ppp),]
-modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$gdlcode),]
-modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$weighted_income_diversity),]
-modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$market_orientation),]
-modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$livestock_orientation),]
-
-modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$livestock_tlu),]
-
-
+modelling_data_set <- modelling_data_set[
+  modelling_data_set$hh_size_mae<30&
+    modelling_data_set$livestock_tlu<30&
+    modelling_data_set$tva_per_mae_per_day_ppp<10000&
+    modelling_data_set$min_travel_time<2880
+  
+  ,]
 
 
 
 
 
-readr::write_csv(modelling_data_set,"data/02-prepared-data/modelling_df.csv")
+# HHsize Standardisation (Log)
+modelling_data_set$log_hh_size <- log_add_half_min(modelling_data_set$hh_size_mae)
+modelling_data_set$log_hh_size <- normalisation(modelling_data_set$log_hh_size)
+
+# Livestock TLU (Log)
+modelling_data_set$log_livestock_tlu <- log_add_half_min(modelling_data_set$livestock_tlu)
+modelling_data_set$log_livestock_tlu <- normalisation(modelling_data_set$log_livestock_tlu)
+
+# Land Cultivated (Log)
+modelling_data_set$log_land_cultivated <- log_add_half_min(modelling_data_set$land_cultivated_ha)
+modelling_data_set$log_land_cultivated <- normalisation(modelling_data_set$log_land_cultivated)
+
+
+# Livestock Orientation (Logit)
+modelling_data_set$logit_livestock_orientation <- logit(modelling_data_set$livestock_orientation)
+modelling_data_set$logit_livestock_orientation <- normalise(modelling_data_set$logit_livestock_orientation)
+
+# Crop Orientation (Logit)
+modelling_data_set$logit_crop_orientation <- logit(modelling_data_set$crop_orientation)
+modelling_data_set$logit_crop_orientation <- normalise(modelling_data_set$logit_crop_orientation)
+
+# Off Farm Orientation (Logit)
+modelling_data_set$logit_off_farm_orientation <- logit(modelling_data_set$off_farm_orientation)
+modelling_data_set$logit_off_farm_orientation <- normalise(modelling_data_set$logit_off_farm_orientation)
+
+# Market Orientation (Logit)
+modelling_data_set$logit_market_orientation <- logit(modelling_data_set$market_orientation)
+modelling_data_set$logit_market_orientation <- normalise(modelling_data_set$logit_market_orientation)
+
+# Income diversity (Log)
+modelling_data_set$log_income_diversity <- log_add_half_min(modelling_data_set$weighted_income_diversity)
+modelling_data_set$log_income_diversity <- normalisation(modelling_data_set$log_income_diversity)
+
+
+# TVA (Log)
+modelling_data_set$log_tva <- log_add_half_min(modelling_data_set$tva_per_mae_per_day_ppp)
+modelling_data_set$log_tva <- normalisation(modelling_data_set$log_tva)
+
+# Length Growing Period (Norm)
+modelling_data_set$norm_growing_period <- normalisation(modelling_data_set$adjusted_length_growing_period)
+
+
+# Minimum travel time (Log)
+modelling_data_set$log_min_travel_time <- log_add_half_min(modelling_data_set$min_travel_time)
+modelling_data_set$log_min_travel_time <- normalisation(modelling_data_set$log_min_travel_time)
+
+
+# GDL live-exp (Log)
+modelling_data_set$norm_gdl_lifexp <- normalisation(modelling_data_set$gdl_lifexp)
+
+# GDL HDI (Logit)
+modelling_data_set$logit_gdl_hdi <- logit(modelling_data_set$gdl_shdi)
+modelling_data_set$logit_gdl_hdi <- normalisation(modelling_data_set$logit_gdl_hdi)
+
+
+
+
+vars <- c(
+  "id_form",
+  "id_unique",
+  "gdlcode",
+  "iso_country_code",
+  "village",
+  
+  "log_hh_size",
+  "education_cleaned",
+  "log_livestock_tlu", 
+  "log_land_cultivated",
+  
+  "logit_livestock_orientation", #logit transform
+  "logit_crop_orientation", #logit transform
+  "logit_off_farm_orientation", #logit transform
+  "logit_market_orientation", # logit transform
+  
+  "log_income_diversity", # centred transform
+  
+  "log_tva", # centered transform
+  "combined_fs_score",
+  
+  # Village Level Variables
+  "norm_growing_period", # centered transform
+  "log_min_travel_time", # centered transform
+  "aez_class_cleaned",
+  
+  # Country Level Variables
+  "norm_gdl_lifexp",
+  "logit_gdl_hdi"
+  
+  
+)
+
+modelling_data_set <-modelling_data_set[vars]
+
+write_csv(modelling_data_set,"./data/02-prepared-data/modelling_df.csv")
+
+
+
+
+
+
+pair_plot <- modelling_data_set %>% 
+  select_if( is.numeric) %>% 
+  mutate_all(as.numeric) %>% 
+  ggpairs(
+    upper = list(continuous = "cor", combo = "box_no_facet"),
+    lower = list(continuous = "density", combo = "dot_no_facet"),
+    diag = list(continuous = "barDiag", combo = "box_no_facet")
+  )
+
+ggsave("./outputs/02-data-exploration/var_pairplot.png",plot = pair_plot,width = 4000,height=4000,units = "px")
+
+
+
+
+
+
+
+
 
 
 

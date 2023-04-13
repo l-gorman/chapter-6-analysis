@@ -1,4 +1,4 @@
-# sbatch src/bc-run-scripts/run_brms_anova_location_per_country.sh  -i 5000 -w 2000 -n 4 -o brms_anova_21_03_2023
+# sbatch src/bc-run-scripts/run_brms_anova_location_per_country.sh  
 library(brms)
 # library(ggplot2)
 # library(ggridges)
@@ -57,34 +57,167 @@ project_id <- unique(indicator_data$id_form)[as.numeric(opt$proj)]
 
 subset_df <- indicator_data[indicator_data$id_form==project_id,]
 
-
-levels <- c("iso_country_code",
-            "gdlcode",
-            "village")
-
-
-forumula <-
-
-
-
-country_codes <- unique(indicator_data$iso_country_code)
-for (country in country_codes){
-  temp_data <-indicator_data[indicator_data$iso_country_code==country,]
-  dir.create(paste0(opt$output,"/continental_gaussian_location/per_country/",country,"/"))
-  result <- run_model(temp_data,levels =  c("gdlcode","village"), sigma=F, iter=opt$iter, warmup=opt$warmup,ncores=opt$ncores)
-  save(result,file=paste0(opt$output,"/continental_gaussian_location/per_country/",country,"/",paste0( c("ADM2_CODE","village"), collapse="_"),".rda"))
-}
+subset_df$combined_fs_score <- factor(subset_df$combined_fs_score,
+                                      levels=c("severely_fi","moderately_fi","mildly_fi","not_fi"),
+                                      ordered = T)
 
 
 
 
-# loadRData <- function(fileName){
-#   #loads an RData file, and returns it
-#   load(fileName)
-#   get(ls()[ls() != "fileName"])
-# }
-# d <- loadRData("outputs/brm_anov_31_01_2023/continental_gaussian_location/ADM0_NAME.rda")
-# 
+
+
+
+
+dir.create(paste0(opt$output,"/",project_id))
+
+horseshoe_food_sec <- brm(
+  formula=combined_fs_score ~ 1 +  
+    education_cleaned +
+    log_livestock_tlu + 
+    log_land_cultivated + 
+    logit_livestock_orientation +
+    logit_crop_orientation + 
+    logit_off_farm_orientation +
+    logit_market_orientation +
+    log_income_diversity +
+    norm_growing_period +
+    log_min_travel_time +
+    aez_class_cleaned +
+    norm_gdl_lifexp +
+    logit_gdl_hdi + 
+    (1 | iso_country_code) + 
+    (1 | iso_country_code:gdlcode) + 
+    (1 | iso_country_code:gdlcode:village),
+  data = subset_df,
+  prior = c(
+    set_prior("horseshoe(1)", class="b"),# HorseShoe
+    set_prior('normal(0, 1)', class = 'sd'),
+    # set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'Intercept')
+  ),
+  cores = 4,
+  backend = "cmdstanr",
+  iter = opt$iter,
+  warmup = opt$warmup,
+  
+  
+  family=cumulative("logit") 
+)
+
+save(horseshoe_food_sec,file=paste0(opt$output,"/",project_id,"/horseshoe_food_sec.rda"))
+
+horseshoe_tva <- brm(
+  formula=log_tva ~ 1 +  
+    education_cleaned +
+    log_livestock_tlu + 
+    log_land_cultivated + 
+    logit_livestock_orientation +
+    logit_crop_orientation + 
+    logit_off_farm_orientation +
+    logit_market_orientation +
+    log_income_diversity +
+    norm_growing_period +
+    log_min_travel_time +
+    aez_class_cleaned +
+    norm_gdl_lifexp +
+    logit_gdl_hdi + 
+    (1 | iso_country_code) + 
+    (1 | iso_country_code:gdlcode) + 
+    (1 | iso_country_code:gdlcode:village),
+  data = subset_df,
+  prior = c(
+    set_prior("horseshoe(1)", class="b"),# HorseShoe
+    set_prior('normal(0, 1)', class = 'sd'),
+    set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'Intercept')
+  ),
+  cores = 4,
+  backend = "cmdstanr",
+  iter = opt$iter,
+  warmup = opt$warmup,
+  
+  family=gaussian()
+)
+
+
+save(horseshoe_tva,file=paste0(opt$output,"/",project_id,"/horseshoe_tva.rda"))
+
+
+weak_prior_food_sec <- brm(
+  formula=combined_fs_score ~ 1 +  
+    education_cleaned +
+    log_livestock_tlu + 
+    log_land_cultivated + 
+    logit_livestock_orientation +
+    logit_crop_orientation + 
+    logit_off_farm_orientation +
+    logit_market_orientation +
+    log_income_diversity +
+    norm_growing_period +
+    log_min_travel_time +
+    aez_class_cleaned +
+    norm_gdl_lifexp +
+    logit_gdl_hdi + 
+    (1 | iso_country_code) + 
+    (1 | iso_country_code:gdlcode) + 
+    (1 | iso_country_code:gdlcode:village),
+  data = subset_df,
+  prior = c(
+    set_prior("normal(0, 1)", class = "b"),
+    set_prior('normal(0, 1)', class = 'sd'),
+    # set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'Intercept')
+  ),
+  cores = 4,
+  backend = "cmdstanr",
+  iter = opt$iter,
+  warmup = opt$warmup,
+  
+  
+  family=cumulative("logit") 
+)
+
+save(weak_prior_food_sec,file=paste0(opt$output,"/",project_id,"/weak_prior_food_sec.rda"))
+
+weak_prior_tva <- brm(
+  formula=log_tva ~ 1 +  
+    education_cleaned +
+    log_livestock_tlu + 
+    log_land_cultivated + 
+    logit_livestock_orientation +
+    logit_crop_orientation + 
+    logit_off_farm_orientation +
+    logit_market_orientation +
+    log_income_diversity +
+    norm_growing_period +
+    log_min_travel_time +
+    aez_class_cleaned +
+    norm_gdl_lifexp +
+    logit_gdl_hdi + 
+    (1 | iso_country_code) + 
+    (1 | iso_country_code:gdlcode) + 
+    (1 | iso_country_code:gdlcode:village),
+  data = subset_df,
+  prior = c(
+    set_prior("normal(0, 1)", class = "b"),
+    set_prior('normal(0, 1)', class = 'sd'),
+    set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'Intercept')
+  ),
+  cores = 4,
+  backend = "cmdstanr",
+  iter = opt$iter,
+  warmup = opt$warmup,
+  
+  family=gaussian()
+)
+
+
+save(weak_prior_tva,file=paste0(opt$output,"/",project_id,"/weak_prior_tva.rda"))
+
+
+
+
 
 
 
