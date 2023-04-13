@@ -54,12 +54,12 @@ writeLines("test_file_output",paste0(opt$output,"/test_file.txt"))
 indicator_data <- readr::read_csv(paste0(opt$data,"/02-prepared-data/modelling_df.csv"))
 
 
-summary_per_proj <- indicator_data %>% 
- group_by(id_form) %>% 
-  summarise(gdlcode=n_distinct(gdlcode),
-            village=n_distinct(village),
-            aez_class_cleaned=n_distinct(aez_class_cleaned),
-            education_cleaned=n_distinct(education_cleaned))
+# summary_per_proj <- indicator_data %>% 
+#  group_by(id_form) %>% 
+#   summarise(gdlcode=n_distinct(gdlcode),
+#             village=n_distinct(village),
+#             aez_class_cleaned=n_distinct(aez_class_cleaned),
+#             education_cleaned=n_distinct(education_cleaned))
 
 
 
