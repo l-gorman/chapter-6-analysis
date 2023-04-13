@@ -36,7 +36,7 @@ cores=4
 
 
 
-Rscript "./src/03-modelling/01-per-project-models.R" -i $iterations -w $warmup -d $data_directory -o $output_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
+Rscript "./src/03-modelling/01-per-project-models.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
 
 unset out_directory
 unset data_directory
