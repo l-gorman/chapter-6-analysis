@@ -1,4 +1,4 @@
-# sbatch src/bc-run-scripts/run_brms_anova_location_per_country.sh  
+# sbatch src/03-modelling/01-per-project-models.sh 
 library(brms)
 # library(ggplot2)
 # library(ggridges)
