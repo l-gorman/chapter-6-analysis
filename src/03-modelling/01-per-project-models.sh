@@ -5,12 +5,11 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=0-00:10:00
+#SBATCH --time=0-4:00:00
 #SBATCH --mem=5G
 #SBATCH --account=sscm012844
-#SBATCH --array=1-2
+#SBATCH --array=1-66
 
-#1-66
 
 cd "${SLURM_SUBMIT_DIR}"
 
@@ -29,8 +28,8 @@ module add languages/r/4.1.0
 
 out_directory="/user/work/lg14410/chapter-6/outputs/"
 data_directory="/user/work/lg14410/chapter-6/data/"
-iterations=20
-warmup=10
+iterations=4000
+warmup=2000
 cores=4
 
 
