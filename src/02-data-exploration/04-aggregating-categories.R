@@ -633,6 +633,7 @@ travel_time_summary <-variable_summary(
   )
 )
 
+
 hdi_summary <-variable_summary(
   df=modelling_data_set,
   variable="gdl_shdi",
@@ -652,6 +653,7 @@ hdi_summary <-variable_summary(
 )
 
 
+
 life_expect_summary <-variable_summary(
   df=modelling_data_set,
   variable="gdl_lifexp",
@@ -661,28 +663,40 @@ life_expect_summary <-variable_summary(
     function(x){is.na(x)},
     function(x){x>100}),
   
-  criteria_description=c("Null Value", "Below 30 TLU"),
+  criteria_description=c("Null Value", "Value more than 100 unrealistic"),
   actions=c("Exclude", "Exclude"),
   justification=c(
-    "NAs will removed",
+    "Only 1 household",
     "Life expectancy greater than"
   )
 )
 
-
-
-
-modelling_data_set[is.na(modelling_data_set$livestock_tlu)] <- 0
-modelling_data_set[is.na(modelling_data_set$livestock_tlu)] <- 0
-
-indicator_data <- indicator_data[
+exclusion_summary <- bind_rows(
+  hh_size_summary,
+  tlu_summary,
+  tva_summary,
+  growing_period_summary,
+  travel_time_summary,
+  hdi_summary,
+  life_expect_summary,
+                     )
   
-,]
+readr::write_csv(exclusion_summary,"./outputs/02-data-exploration/numeric_variable_exclusion_summary.csv")
   
-  
+above_row_selectors <- which(!is.na(exclusion_summary$Variable))-1
+above_row_selectors <- above_row_selectors[above_row_selectors!=0]
+# bold_row_selectors <- which(!is.na(cleaned_aggregation$`Cleaned Value`))
+
+cleaned_aggregation <- exclusion_summary %>% flextable::flextable() %>% 
+  bold( bold = TRUE, part="header") %>% 
+  hline(i = above_row_selectors)  %>% 
+  bold(j = c("Variable", "Count"))  
 
 
-# variable_summary --------------------------------------------------------
+save_as_image(cleaned_aggregation, "./outputs/02-data-exploration/numeric_variable_exclusion_summary.png")
+
+
+ variable_summary --------------------------------------------------------
 
 variable_summary <- tribble(
   ~Category,~Variable, ~`Data Type`, ~Level, ~Description,~`Reason for Inclusion`,
