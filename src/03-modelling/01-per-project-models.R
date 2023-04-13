@@ -53,6 +53,16 @@ dir.create(opt$output)
 writeLines("test_file_output",paste0(opt$output,"/test_file.txt"))
 indicator_data <- readr::read_csv(paste0(opt$data,"/02-prepared-data/modelling_df.csv"))
 
+
+summary_per_proj <- indicator_data %>% 
+ group_by(id_form) %>% 
+  summarise(gdlcode=n_distinct(gdlcode),
+            village=n_distinct(village),
+            aez_class_cleaned=n_distinct(aez_class_cleaned),
+            education_cleaned=n_distinct(education_cleaned))
+
+
+
 project_id <- unique(indicator_data$id_form)[as.numeric(opt$proj)]
 
 subset_df <- indicator_data[indicator_data$id_form==project_id,]
@@ -82,12 +92,13 @@ horseshoe_food_sec <- brm(
     log_income_diversity +
     norm_growing_period +
     log_min_travel_time +
-    aez_class_cleaned +
+    # aez_class_cleaned +
     norm_gdl_lifexp +
     logit_gdl_hdi + 
-    (1 | iso_country_code) + 
-    (1 | iso_country_code:gdlcode) + 
-    (1 | iso_country_code:gdlcode:village),
+    # (1 | iso_country_code) + 
+    # (1 | iso_country_code:gdlcode) + 
+    # (1 | iso_country_code:gdlcode:village),
+    (1 | village),
   data = subset_df,
   prior = c(
     set_prior("horseshoe(1)", class="b"),# HorseShoe
@@ -118,12 +129,13 @@ horseshoe_tva <- brm(
     log_income_diversity +
     norm_growing_period +
     log_min_travel_time +
-    aez_class_cleaned +
+    # aez_class_cleaned +
     norm_gdl_lifexp +
     logit_gdl_hdi + 
-    (1 | iso_country_code) + 
-    (1 | iso_country_code:gdlcode) + 
-    (1 | iso_country_code:gdlcode:village),
+    # (1 | iso_country_code) + 
+    # (1 | iso_country_code:gdlcode) + 
+    # (1 | iso_country_code:gdlcode:village),
+    (1 | village),
   data = subset_df,
   prior = c(
     set_prior("horseshoe(1)", class="b"),# HorseShoe
@@ -155,12 +167,13 @@ weak_prior_food_sec <- brm(
     log_income_diversity +
     norm_growing_period +
     log_min_travel_time +
-    aez_class_cleaned +
+    # aez_class_cleaned +
     norm_gdl_lifexp +
     logit_gdl_hdi + 
-    (1 | iso_country_code) + 
-    (1 | iso_country_code:gdlcode) + 
-    (1 | iso_country_code:gdlcode:village),
+    # (1 | iso_country_code) + 
+    # (1 | iso_country_code:gdlcode) + 
+    # (1 | iso_country_code:gdlcode:village),
+    (1 | village),
   data = subset_df,
   prior = c(
     set_prior("normal(0, 1)", class = "b"),
@@ -191,12 +204,13 @@ weak_prior_tva <- brm(
     log_income_diversity +
     norm_growing_period +
     log_min_travel_time +
-    aez_class_cleaned +
+    # aez_class_cleaned +
     norm_gdl_lifexp +
     logit_gdl_hdi + 
-    (1 | iso_country_code) + 
-    (1 | iso_country_code:gdlcode) + 
-    (1 | iso_country_code:gdlcode:village),
+    # (1 | iso_country_code) + 
+    # (1 | iso_country_code:gdlcode) + 
+    # (1 | iso_country_code:gdlcode:village),
+    (1 | village),
   data = subset_df,
   prior = c(
     set_prior("normal(0, 1)", class = "b"),
