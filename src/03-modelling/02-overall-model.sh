@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=overall_models
-#SBATCH -o ./Report/output.%a.out
+#SBATCH -o ./Report/output.overall.%a.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
@@ -35,7 +35,7 @@ cores=4
 
 
 
-Rscript "./src/03-modelling/02-overall_model.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
+Rscript "./src/03-modelling/02-overall-model.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
 
 unset out_directory
 unset data_directory

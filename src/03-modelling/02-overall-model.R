@@ -1,4 +1,4 @@
-# sbatch src/03-modelling/01-per-project-models.sh 
+# sbatch src/03-modelling/02-overall-model.sh 
 library(brms)
 # library(ggplot2)
 # library(ggridges)
