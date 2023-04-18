@@ -90,3 +90,9 @@ vpcs %>%
 
 
 
+# Random Effects -------------------------------------------------------
+
+horseshoe_food_sec_random <- loadRData("./outputs/test_overall_model_proj/overall_models/horseshoe_food_sec_random.rda")
+
+get_variables(horseshoe_food_sec_random)
+
