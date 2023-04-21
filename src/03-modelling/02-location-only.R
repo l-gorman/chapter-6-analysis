@@ -53,7 +53,7 @@ indicator_data <- readr::read_csv(paste0(opt$data,"/02-prepared-data/modelling_d
 
 dir.create(paste0(opt$output,"/overall_models/"))
 dir.create(paste0(opt$output,"/overall_models/location_only"))
-
+i
 country_only <- brm(
   formula=log_tva ~ 1 +  
     (1 | iso_country_code),
@@ -121,7 +121,7 @@ county_country_village <- brm(
   family=gaussian() 
 )
 
-save(county_country_village,file=paste0(opt$output,"/overall_models/county_country_village.rda"))
+save(county_country_village,file=paste0(opt$output,"/overall_models/location_only/county_country_village.rda"))
 
 
 county_country_village_kg <- brm(
@@ -147,7 +147,7 @@ county_country_village_kg <- brm(
   family=gaussian() 
 )
 
-save(county_country_village_kg,file=paste0(opt$output,"/overall_models/county_country_village_kg.rda"))
+save(county_country_village_kg,file=paste0(opt$output,"/overall_models/location_only/county_country_village_kg.rda"))
 
 
 county_country_village_kg_form <- brm(
@@ -174,7 +174,7 @@ county_country_village_kg_form <- brm(
   family=gaussian() 
 )
 
-save(county_country_village_kg_form,file=paste0(opt$output,"/overall_models/county_country_village_kg_form.rda"))
+save(county_country_village_kg_form,file=paste0(opt$output,"/overall_models/location_only/county_country_village_kg_form.rda"))
 
 country_only <- add_criterion(country_only, "loo")
 country_county <- add_criterion(country_county, "loo")
@@ -188,6 +188,6 @@ loo_results <- loo_compare(country_only,
   county_country_village_kg,
   county_country_village_kg_form, criterion = c("loo"))
 
-save(loo_results,file=paste0(opt$output,"/overall_models/loo_comparison.rda"))
+save(loo_results,file=paste0(opt$output,"/overall_models/location_only/loo_comparison.rda"))
 
 
