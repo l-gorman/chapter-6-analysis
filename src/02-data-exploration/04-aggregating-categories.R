@@ -785,6 +785,7 @@ modelling_data_set <- modelling_data_set[
 
 
 # HHsize Standardisation (Log)
+
 modelling_data_set$log_hh_size <- log_add_half_min(modelling_data_set$hh_size_mae)
 modelling_data_set$log_hh_size <- normalisation(modelling_data_set$log_hh_size)
 
@@ -799,19 +800,22 @@ modelling_data_set$log_land_cultivated <- normalisation(modelling_data_set$log_l
 
 # Livestock Orientation (Logit)
 modelling_data_set$logit_livestock_orientation <- logit(modelling_data_set$livestock_orientation)
-modelling_data_set$logit_livestock_orientation <- normalise(modelling_data_set$logit_livestock_orientation)
+modelling_data_set$logit_livestock_orientation <- normalisation(modelling_data_set$logit_livestock_orientation)
+
+
+livestock_binary <- modelling_data_set$livestock_orientation > 0.2
 
 # Crop Orientation (Logit)
 modelling_data_set$logit_crop_orientation <- logit(modelling_data_set$crop_orientation)
-modelling_data_set$logit_crop_orientation <- normalise(modelling_data_set$logit_crop_orientation)
+modelling_data_set$logit_crop_orientation <- normalisation(modelling_data_set$logit_crop_orientation)
 
 # Off Farm Orientation (Logit)
 modelling_data_set$logit_off_farm_orientation <- logit(modelling_data_set$off_farm_orientation)
-modelling_data_set$logit_off_farm_orientation <- normalise(modelling_data_set$logit_off_farm_orientation)
+modelling_data_set$logit_off_farm_orientation <- normalisation(modelling_data_set$logit_off_farm_orientation)
 
 # Market Orientation (Logit)
 modelling_data_set$logit_market_orientation <- logit(modelling_data_set$market_orientation)
-modelling_data_set$logit_market_orientation <- normalise(modelling_data_set$logit_market_orientation)
+modelling_data_set$logit_market_orientation <- normalisation(modelling_data_set$logit_market_orientation)
 
 # Income diversity (Log)
 modelling_data_set$log_income_diversity <- log_add_half_min(modelling_data_set$weighted_income_diversity)

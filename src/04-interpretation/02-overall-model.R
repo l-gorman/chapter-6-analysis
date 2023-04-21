@@ -319,22 +319,42 @@ ggsave(filename = "outputs/overall_model_results/horseshoe_tva/mcmc_scatter_para
        plot = mcmc_scatter,width = 10000,height=7000,units = "px")
 
 
-
-# Random Effects TVA ------------------------------------------------------
+#  ------------------------------------------------------------------------
+# Weak Prior TVA ------------------------------------------------------
 
 weak_prior_tva_random <- loadRData("./outputs/14_04_2023/outputs/overall_models/weak_prior_tva_random.rda")
 # plot(weak_prior_tva_random)
 #
 
 
+
+
 dir.create("outputs/overall_model_results/tva_random_effects/")
+
+
+
+
+params_list <- list(
+  "Project"="sd_id_form__Intercept",
+  "Country"="sd_iso_country_code__Intercept",
+  "County"="sd_iso_country_code:gdlcode__Intercept",
+  "Village"="sd_iso_country_code:gdlcode:village__Intercept",
+  "Unexplained"="sigma"
+)
+#MCMC Pair plots
+draws <- as_draws_array(weak_prior_tva_random)
+mcmc_scatter <- mcmc_pairs(draws,pars = as.character(params_list),off_diag_fun = "hex")
+ggsave(filename = "outputs/overall_model_results/tva_random_effects/mcmc_scatter.png",
+       plot = mcmc_scatter,width = 5000,height=3500,units = "px")
+
 
 params_list <- get_variables(weak_prior_tva_random)
 params_list <- setNames(params_list,params_list)
 draws_df <- as_draws_df(weak_prior_tva_random)
-full_summary <- summarise_estimates(draws_df,params_list)
-full_summary <- full_summary[!is.na(full_summary$key),]
 
+full_summary <- summarise_estimates(draws_df,params_list)
+
+full_summary <- full_summary[!is.na(full_summary$key),]
 full_summary <- full_summary[full_summary$key %in% c("lp__","lprior","lp__","lprior")==F,]
 
 
@@ -364,7 +384,7 @@ full_summary$type[full_summary$key %in% c("sd_id_form__Intercept",
                   "sd_iso_country_code__Intercept",
                   "sd_iso_country_code:gdlcode__Intercept",
                   "sd_iso_country_code:gdlcode:village__Intercept",
-                  "sigma")] <- "Sources of Variance"
+                  "sigma")] <- "Group Effects"
 
 
 # Variation in effects 
@@ -374,8 +394,8 @@ variable <- full_summary$key[subset] %>%
   # gsub("r_iso_country_code\\[","",.) %>% 
   gsub(".*__","",.)
 
-full_summary$type[subset] <- "Variation in Effects"
-full_summary$type[subset] <- variable
+full_summary$type[subset] <- "Variation in Random Effects"
+full_summary$variable[subset] <- variable
 
 
 # Country Effects
@@ -384,7 +404,7 @@ countries <- full_summary$key[subset] %>%
   gsub("r_iso_country_code\\[","",.) %>% 
   gsub(",.*","",.)
 
-full_summary$type[subset] <- "Country Effect"
+full_summary$type[subset] <- "Country Intercepts"
 full_summary$country[subset] <- countries
 
 # County Effects
@@ -397,7 +417,7 @@ country_counties <- full_summary$key[subset] %>%
 countries <- country_counties %>%    gsub("_.*","",.)
 counties <- country_counties %>%    gsub(".*_","",.)
 
-full_summary$type[subset] <- "County Effect"
+full_summary$type[subset] <- "County Intercepts"
 full_summary$country[subset] <- countries
 full_summary$county[subset] <- counties
 
@@ -410,7 +430,7 @@ form_ids <- full_summary$key[subset]%>%
 countries <- form_ids%>% 
   gsub("_.*","",.) %>% toupper()
 
-full_summary$type[subset] <- "Project Effect"
+full_summary$type[subset] <- "Project Intercepts"
 full_summary$country[subset] <- countries
 full_summary$project[subset] <- form_ids
 
@@ -517,7 +537,7 @@ location_only_tva_estimates$model <- "Location Only"
 
 draws_df <- as_draws_df(weak_prior_tva)[as.character(params_list)]
 weak_prior_tva_estimates <- summarise_estimates(draws_df,params_list)
-weak_prior_tva_estimates$model <- "Weak Prior"
+weak_prior_tva_estimates$model <- "Fixed Effects"
 
 
 
@@ -527,7 +547,7 @@ weak_prior_tva_estimates$model <- "Weak Prior"
 
 draws_df <- as_draws_df(weak_prior_tva_random)[as.character(params_list)]
 random_tva_weak_estimates <- summarise_estimates(draws_df,params_list)
-random_tva_weak_estimates$model <- "Horseshoe"
+random_tva_weak_estimates$model <- "Project Random Effects"
 
 estimates_to_compare <- rbind(
   location_only_tva_estimates,
