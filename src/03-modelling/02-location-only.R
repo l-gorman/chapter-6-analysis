@@ -53,7 +53,7 @@ indicator_data <- readr::read_csv(paste0(opt$data,"/02-prepared-data/modelling_d
 
 dir.create(paste0(opt$output,"/overall_models/"))
 dir.create(paste0(opt$output,"/overall_models/location_only"))
-i
+
 country_only <- brm(
   formula=log_tva ~ 1 +  
     (1 | iso_country_code),
@@ -79,7 +79,7 @@ save(country_only,file=paste0(opt$output,"/overall_models/location_only/country_
 country_county <- brm(
   formula=log_tva ~ 1 +  
     (1 | iso_country_code) +
-    (1 | iso_country_code:gdlcode) ,
+    (1 | iso_country_code:gdlcode),
   
   # (1 | village),
   data = indicator_data,
@@ -182,7 +182,8 @@ county_country_village <- add_criterion(county_country_village, "loo")
 county_country_village_kg <- add_criterion(county_country_village_kg, "loo")
 county_country_village_kg_form <- add_criterion(county_country_village_kg_form, "loo")
 
-loo_results <- loo_compare(country_only,
+loo_results <- loo_compare(
+  country_only,
   country_county,
   county_country_village,
   county_country_village_kg,

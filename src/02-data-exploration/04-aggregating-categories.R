@@ -273,6 +273,10 @@ subset_columns <- c("value_farm_products_sold_per_hh_per_year","tva_per_hh_per_y
 indicator_data$market_orientation <- indicator_data[["value_farm_products_sold_per_hh_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
 
 
+indicator_data$proportion_female_control <- indicator_data$proportion_of_value_controlled_female_youth+
+  indicator_data$proportion_of_value_controlled_female_adult
+
+
 
 vars <- c(
   "id_form",
@@ -285,6 +289,7 @@ vars <- c(
   "education_cleaned",
   "livestock_tlu", # centered transform
   "land_cultivated_ha",
+  "proportion_female_control",
   
   "livestock_orientation", #logit transform
   "crop_orientation", #logit transform
@@ -294,8 +299,7 @@ vars <- c(
   "weighted_income_diversity", # centred transform
   
   "tva_per_mae_per_day_ppp", # centered transform
-  "combined_fs_score",
-  
+
   # Village Level Variables
   "adjusted_length_growing_period", # centered transform
   "min_travel_time", # centered transform
@@ -564,6 +568,8 @@ variable_summary <- tribble(
   "Production Orientation","market_orientation","proportion","Household-Level","","", # logit transform
   "Production Orientation","weighted_income_diversity","continuous","Household-Level","","", # centred transform
   
+  "Gender","proportion_female_control","proportion","Household-Level","","", # centred transform
+  
   
   
   # Village Level Variables
@@ -665,6 +671,10 @@ modelling_data_set$logit_market_orientation <- normalisation(modelling_data_set$
 modelling_data_set$log_income_diversity <- log_add_half_min(modelling_data_set$weighted_income_diversity)
 modelling_data_set$log_income_diversity <- normalisation(modelling_data_set$log_income_diversity)
 
+# Gender Control
+modelling_data_set$logit_proportion_female_control <- logit(modelling_data_set$proportion_female_control)
+modelling_data_set$logit_proportion_female_control <- normalisation(modelling_data_set$logit_proportion_female_control)
+
 
 # TVA (Log)
 modelling_data_set$log_tva <- log_add_half_min(modelling_data_set$tva_per_mae_per_day_ppp)
@@ -700,6 +710,8 @@ vars <- c(
   "education_cleaned",
   "log_livestock_tlu", 
   "log_land_cultivated",
+  
+  "logit_proportion_female_control",
   
   # "logit_livestock_orientation", #logit transform
   # "logit_crop_orientation", #logit transform
