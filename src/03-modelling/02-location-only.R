@@ -1,4 +1,4 @@
-# sbatch src/03-modelling/02-overall-model.sh 
+# sbatch src/03-modelling/02-location-only.sh 
 library(brms)
 # library(ggplot2)
 # library(ggridges)
@@ -85,7 +85,7 @@ country_county <- brm(
   data = indicator_data,
   prior = c(
     set_prior('normal(0, 1)', class = 'sd'),
-    # set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'sigma'),
     set_prior('normal(0, 1)', class = 'Intercept')
   ),
   cores = 4,
@@ -109,7 +109,7 @@ county_country_village <- brm(
   data = indicator_data,
   prior = c(
     set_prior('normal(0, 1)', class = 'sd'),
-    # set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'sigma'),
     set_prior('normal(0, 1)', class = 'Intercept')
   ),
   cores = 4,
@@ -135,7 +135,7 @@ county_country_village_kg <- brm(
   data = indicator_data,
   prior = c(
     set_prior('normal(0, 1)', class = 'sd'),
-    # set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'sigma'),
     set_prior('normal(0, 1)', class = 'Intercept')
   ),
   cores = 4,
@@ -162,7 +162,7 @@ county_country_village_kg_form <- brm(
   data = indicator_data,
   prior = c(
     set_prior('normal(0, 1)', class = 'sd'),
-    # set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'sigma'),
     set_prior('normal(0, 1)', class = 'Intercept')
   ),
   cores = 4,
