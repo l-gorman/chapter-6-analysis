@@ -165,73 +165,111 @@ joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_cou
 # Joining Raset information -----------------------------------------------
 #--------------------------------------------------------------------------
 
-
-# Agro-Eco Zone Data (GAEZ)
-aez_33_classes <- raster::raster(x = "data/01-raw-data/external-data/gaez/33_classes.tif")
-rasterToPoints(aez_33_classes)
-
-xml_33_list <-  xmlParse('data/01-raw-data/external-data/aez/LR/aez/aez_v9v2red_5m_ENSEMBLE_rcp2p6_2020s.tif.aux.xml')
-xml_33_list <- xmlToList(xml_33_list)
-xml_33_list <- xml_33_list$PAMRasterBand$GDALRasterAttributeTable
-xml_33_list <- xml_33_list[names(xml_33_list)=="Row"]
-
-
-aez_33_class_conversions <- lapply(c(1:length(xml_33_list)), function(index){
-  row <- xml_33_list[index]$Row
-  names_of_row <- names(row)
-  features <- unlist(as.list(as.character(row[names(row)=="F"])))
-  features <- c(features,row$.attrs[["index"]])
-  feature_names <- paste0("feature_",c(1:length(features)))
-  
-  
-  row_df <- tibble::as_tibble(list(
-    var=feature_names,
-    value=features
-  )) %>% pivot_wider(names_from = "var")
-  
-  result <- row_df[c("feature_2", "feature_8")]
-  colnames(result) <- c("band", "name")
-  
-  return(result)
-})  %>% dplyr::bind_rows()
+koppen_geiger_classification <- raster::raster(x = "data/01-raw-data/external-data/Beck_KG_V1/Beck_KG_V1_present_0p083.tif")
+conversions <- tibble::tribble(
+  ~kg_class_number,~kg_class_code,~kg_class_name,
+  1,"Af","Tropical, rainforest",
+  2,"Am","Tropical, monsoon",
+  3,"Aw","Tropical, savannah",
+  4,"BWh","Arid, desert, hot",
+  5,"BWk","Arid, desert, cold",
+  6,"BSh","Arid, steppe, hot",
+  7,"BSk","Arid, steppe, cold",
+  8,"Csa","Temperate, dry summer, hot summer",
+  9,"Csb","Temperate, dry summer, warm summer",
+  10,"Csc","Temperate, dry summer, cold summer",
+  11,"Cwa","Temperate, dry winter, hot summer",
+  12,"Cwb","Temperate, dry winter, warm summer",
+  13,"Cwc","Temperate, dry winter, cold summer",
+  14,"Cfa","Temperate, no dry season, hot summer",
+  15,"Cfb","Temperate, no dry season, warm summer",
+  16,"Cfc","Temperate, no dry season, cold summer",
+  17,"Dsa","Cold, dry summer, hot summer",
+  18,"Dsb","Cold, dry summer, warm summer",
+  19,"Dsc","Cold, dry summer, cold summer",
+  20,"Dsd","Cold, dry summer, very cold winter",
+  21,"Dwa","Cold, dry winter, hot summer",
+  22,"Dwb","Cold, dry winter, warm summer",
+  23,"Dwc","Cold, dry winter, cold summer",
+  24,"Dwd","Cold, dry winter, very cold winter",
+  25,"Dfa","Cold, no dry season, hot summer",
+  26,"Dfb","Cold, no dry season, warm summer",
+  27,"Dfc","Cold, no dry season, cold summer",
+  28,"Dfd","Cold, no dry season, very cold winter",
+  29,"ET","Polar, tundra",
+  30,"EF","Polar, frost"
+)
 
 
 adjusted_length_growing_period  <- raster("data/01-raw-data/external-data/aez/gaez_v4_57_class/adjusted_length_growing_period.tif")
-adjusted_length_growing_period <- projectRaster(adjusted_length_growing_period,aez_33_classes)
+adjusted_length_growing_period <- projectRaster(adjusted_length_growing_period,koppen_geiger_classification)
 
 
-travel_time_5k_to_10k <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_9.tif")
-travel_time_5k_to_10k <- projectRaster(travel_time_5k_to_10k,aez_33_classes)
-
-travel_time_10k_to_20k <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_8.tif")
-travel_time_10k_to_20k <- projectRaster(travel_time_10k_to_20k,aez_33_classes)
+# travel_time_5k_to_10k <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_9.tif")
+# travel_time_5k_to_10k <- projectRaster(travel_time_5k_to_10k,koppen_geiger_classification)
+# 
+# travel_time_10k_to_20k <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_8.tif")
+# travel_time_10k_to_20k <- projectRaster(travel_time_10k_to_20k,koppen_geiger_classification)
 
 travel_time_20k_to_50k <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_7.tif")
-travel_time_20k_to_50k <- projectRaster(travel_time_20k_to_50k,aez_33_classes)
+travel_time_20k_to_50k <- projectRaster(travel_time_20k_to_50k,koppen_geiger_classification)
 
 travel_time_50k_to_100k <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_6.tif")
-travel_time_50k_to_100k <- projectRaster(travel_time_50k_to_100k,aez_33_classes)
+travel_time_50k_to_100k <- projectRaster(travel_time_50k_to_100k,koppen_geiger_classification)
+
+travel_time_100k_to_200k <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_5.tif")
+travel_time_100k_to_200k <- projectRaster(travel_time_100k_to_200k,koppen_geiger_classification)
+
+travel_time_200k_to_500k <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_4.tif")
+travel_time_200k_to_500k <- projectRaster(travel_time_200k_to_500k,koppen_geiger_classification)
+
+travel_time_500k_to_1M <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_3.tif")
+travel_time_500k_to_1M <- projectRaster(travel_time_500k_to_1M,koppen_geiger_classification)
+
+travel_time_1M_to_5M <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_2.tif")
+travel_time_1M_to_5M <- projectRaster(travel_time_1M_to_5M,koppen_geiger_classification)
+
+travel_time_5M_to_50M <- raster("data/01-raw-data/external-data/travel-time/travel_time_to_cities_1.tif")
+travel_time_5M_to_50M <- projectRaster(travel_time_5M_to_50M,koppen_geiger_classification)
 
 
-r_stack <- raster::stack(aez_33_classes,
+
+
+r_stack <- raster::stack(koppen_geiger_classification,
                          adjusted_length_growing_period,
-                         travel_time_5k_to_10k,
-                         travel_time_10k_to_20k,
+                         
                          travel_time_20k_to_50k,
-                         travel_time_50k_to_100k)
-names(r_stack) <- c("X33_classes",
+                         travel_time_50k_to_100k,
+                         travel_time_100k_to_200k,
+                         travel_time_200k_to_500k,
+                         travel_time_500k_to_1M,
+                         travel_time_1M_to_5M,
+                         travel_time_5M_to_50M)
+
+
+names(r_stack) <- c("koppen_geiger_classification",
                     "adjusted_length_growing_period",
-                    "travel_time_5k_to_10k",
-                    "travel_time_10k_to_20k",
+                    
                     "travel_time_20k_to_50k",
-                    "travel_time_50k_to_100k")     
+                    "travel_time_50k_to_100k",
+                    "travel_time_100k_to_200k",
+                    "travel_time_200k_to_500k",
+                    "travel_time_500k_to_1M",
+                    "travel_time_1M_to_5M",
+                    "travel_time_5M_to_50M")     
 
 rasValue_rhomis=raster::extract(r_stack, joined_df_rhomis[c("x_gps_longitude","x_gps_latitude")]) %>% tibble::as_tibble()
-colnames(rasValue_rhomis) <- gsub("X33_classes", "AEZ_Classes_33", colnames(rasValue_rhomis))
-rasValue_rhomis$AEZ_Classes_33 <- as.integer(rasValue_rhomis$AEZ_Classes_33)
-rasValue_rhomis <- convert_aez_classes(rasValue_rhomis,
-                                       "AEZ_Classes_33",
-                                       aez_33_class_conversions)
+
+rasValue_rhomis$koppen_geiger_classification <- as.integer(rasValue_rhomis$koppen_geiger_classification)
+rasValue_rhomis$index <- c(1:nrow(rasValue_rhomis))
+rasValue_rhomis <- rasValue_rhomis %>% merge(conversions,by.x="koppen_geiger_classification",by.y="kg_class_number",all.x=T,all.y=F)
+rasValue_rhomis <- rasValue_rhomis[order(rasValue_rhomis$index),]
+
+# colnames(rasValue_rhomis) <- gsub("X33_classes", "AEZ_Classes_33", colnames(rasValue_rhomis))
+# rasValue_rhomis$AEZ_Classes_33 <- as.integer(rasValue_rhomis$AEZ_Classes_33)
+# rasValue_rhomis <- convert_aez_classes(rasValue_rhomis,
+#                                        "AEZ_Classes_33",
+#                                        aez_33_class_conversions)
 
 
 # joined_df_rhomis %>% group_by(gdlcode,village) %>% 
