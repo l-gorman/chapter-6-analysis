@@ -54,14 +54,30 @@ loo_country_only <- loo(country_only)
 country_county <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county.rda"))
 loo_country_county <- loo(country_county)
 
-county_country_village <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village.rda"))
+country_county_village <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village.rda"))
 loo_county_country_village <- loo(county_country_village)
 
-county_country_village_kg <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_kg.rda"))
+country_county_village_kg <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_kg.rda"))
 loo_county_country_village_kg <- loo(county_country_village_kg)
 
-county_country_village_kg_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_kg_form.rda"))
+country_county_village_kg_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_kg_form.rda"))
 loo_county_country_village_kg_form <- loo(county_country_village_kg_form)
+
+country_county_village_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_form.rda"))
+country_county_village_form <- loo(country_county_village_form)
+
+country_county_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_form.rda"))
+country_county_form <- loo(country_county_form)
+
+country_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_form.rda"))
+country_form <- loo(country_form)
+
+
+country_village_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_village_form.rda"))
+country_village_form <- loo(country_village_form)
+
+
+
 
 # country_only <- add_criterion(country_only, "loo")
 # country_county <- add_criterion(country_county, "loo")
@@ -74,7 +90,11 @@ loo_results <- loo_compare(
   loo_country_county,
   loo_county_country_village,
   loo_county_country_village_kg,
-  loo_county_country_village_kg_form, criterion = c("loo"))
+  loo_county_country_village_kg_form,
+  country_county_village_form,
+  country_county_form,
+  country_form,
+  country_village_form, criterion = c("loo"))
 
 save(loo_results,file=paste0(opt$output,"/overall_models/location_only/loo_comparison.rda"))
 
