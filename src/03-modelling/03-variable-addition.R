@@ -70,24 +70,25 @@ dir.create(paste0(opt$output,"/overall_models/variable_addition"))
 if(as.numeric(opt$index)==1){
   fixed_effects_weak_prior <- brm(
     formula=log_tva ~ 1 +  
-      # Vars
-      education_cleaned +
+      #Household Level
+      education_cleaned + 
       log_livestock_tlu + 
       log_land_cultivated + 
       logit_off_farm_orientation +
       logit_market_orientation +
       logit_proportion_female_control+
       log_income_diversity +
+      
+      # Village Level
       norm_growing_period +
       log_min_travel_time +
+      #County Level
       norm_gdl_lifexp +
       # Levels
       (1 | iso_country_code) +
       (1 | iso_country_code:gdlcode) +
       (1 | iso_country_code:gdlcode:village)+
-      (1 | id_form)+
-      (1 | kg_class_name),
-    
+      (1 | id_form)
     # (1 | village),
     data = indicator_data,
     prior = c(
@@ -125,8 +126,7 @@ if(as.numeric(opt$index)==2){
       (1 | iso_country_code) +
       (1 | iso_country_code:gdlcode) +
       (1 | iso_country_code:gdlcode:village)+
-      (1 | id_form)+
-      (1 | kg_class_name),
+      (1 | id_form),
     
     # (1 | village),
     data = indicator_data,
@@ -170,8 +170,7 @@ if(as.numeric(opt$index)==3){
          log_income_diversity  | iso_country_code) +
       (1 | iso_country_code:gdlcode) +
       (1 | iso_country_code:gdlcode:village)+
-      (1 | id_form)+
-      (1 | kg_class_name),
+      (1 | id_form),
     
     # (1 | village),
     data = indicator_data,

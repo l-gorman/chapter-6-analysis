@@ -78,7 +78,14 @@ if (as.numeric(opt$index)==1)
     
     family=gaussian() 
   )
+  
   save(country_only,file=paste0(opt$output,"/overall_models/location_only/country_only.rda"))
+  
+  loo_country_only <- loo(country_only)
+  save(loo_country_only,file=paste0(opt$output,"/overall_models/location_only/loo_country_only.rda"))
+  
+  r2_country_only <- bayes_R2(country_only)
+  save(r2_country_only,file=paste0(opt$output,"/overall_models/location_only/r2_country_only.rda"))
 }
 
 
@@ -104,8 +111,15 @@ if (as.numeric(opt$index)==2)
     
     family=gaussian() 
   )
-  
   save(country_county,file=paste0(opt$output,"/overall_models/location_only/country_county.rda"))
+  
+  loo_country_county <- loo(country_county)
+  save(loo_country_county,file=paste0(opt$output,"/overall_models/location_only/loo_country_county.rda"))
+  
+  r2_country_county <- bayes_R2(country_county)
+  save(r2_country_county,file=paste0(opt$output,"/overall_models/location_only/r2_country_county.rda"))
+  
+  
 }
 
 if (as.numeric(opt$index)==3)
@@ -131,9 +145,15 @@ if (as.numeric(opt$index)==3)
     
     family=gaussian() 
   )
-  
   save(country_county_village,file=paste0(opt$output,"/overall_models/location_only/country_county_village.rda"))
-}
+  
+  loo_country_county_village <- loo(country_county_village)
+  save(loo_country_county_village,file=paste0(opt$output,"/overall_models/location_only/loo_country_county_village.rda"))
+  
+  r2_country_county_village <- bayes_R2(country_county_village)
+  save(r2_country_county_village,file=paste0(opt$output,"/overall_models/location_only/r2_country_county_village.rda"))
+  
+  }
 
 
 
@@ -163,6 +183,13 @@ if (as.numeric(opt$index)==4)
   )
   
   save(country_county_village_kg,file=paste0(opt$output,"/overall_models/location_only/country_county_village_kg.rda"))
+  
+  loo_country_county_village_kg <- loo(country_county_village_kg)
+  save(loo_country_county_village_kg,file=paste0(opt$output,"/overall_models/location_only/loo_country_county_village_kg.rda"))
+  
+  r2_country_county_village_kg <- bayes_R2(country_county_village_kg)
+  save(r2_country_county_village_kg,file=paste0(opt$output,"/overall_models/location_only/r2_country_county_village_kg.rda"))
+  
 }
 
 
@@ -193,6 +220,15 @@ if (as.numeric(opt$index)==5)
   )
   
   save(country_county_village_kg_form,file=paste0(opt$output,"/overall_models/location_only/country_county_village_kg_form.rda"))
+  
+  loo_country_county_village_kg_form <- loo(country_county_village_kg_form)
+  save(loo_country_county_village_kg_form,file=paste0(opt$output,"/overall_models/location_only/loo_country_county_village_kg_form.rda"))
+  
+  r2_country_county_village_kg_form <- bayes_R2(country_county_village_kg_form)
+  save(r2_country_county_village_kg_form,file=paste0(opt$output,"/overall_models/location_only/r2_country_county_village_kg_form.rda"))
+  
+  
+  
 }
 
 
@@ -222,6 +258,13 @@ if (as.numeric(opt$index)==6)
   )
   
   save(country_county_village_form,file=paste0(opt$output,"/overall_models/location_only/country_county_village_form.rda"))
+  
+  loo_country_county_village_form <- loo(country_county_village_form)
+  save(loo_country_county_village_form,file=paste0(opt$output,"/overall_models/location_only/loo_country_county_village_form.rda"))
+  
+  r2_country_county_village_form <- bayes_R2(country_county_village_form)
+  save(r2_country_county_village_form,file=paste0(opt$output,"/overall_models/location_only/r2_country_county_village_form.rda"))
+  
 }
 
 
@@ -250,7 +293,15 @@ if (as.numeric(opt$index)==7)
   )
   
   save(country_county_form,file=paste0(opt$output,"/overall_models/location_only/country_county_form.rda"))
-}
+  
+  loo_country_county_form <- loo(country_county_form)
+  save(loo_country_county_form,file=paste0(opt$output,"/overall_models/location_only/loo_country_county_form.rda"))
+  
+  r2_country_county_form <- bayes_R2(country_county_form)
+  save(r2_country_county_form,file=paste0(opt$output,"/overall_models/location_only/r2_country_county_form.rda"))
+  
+  
+  }
 
 
 if (as.numeric(opt$index)==8)
@@ -277,6 +328,14 @@ if (as.numeric(opt$index)==8)
   )
   
   save(country_form,file=paste0(opt$output,"/overall_models/location_only/country_form.rda"))
+  
+  loo_country_form <- loo(country_form)
+  save(loo_country_form,file=paste0(opt$output,"/overall_models/location_only/loo_country_form.rda"))
+  
+  r2_country_form <- bayes_R2(country_form)
+  save(r2_country_form,file=paste0(opt$output,"/overall_models/location_only/r2_country_form.rda"))
+  
+  
 }
 
 
@@ -305,6 +364,13 @@ if (as.numeric(opt$index)==9)
   )
   
   save(country_village_form,file=paste0(opt$output,"/overall_models/location_only/country_village_form.rda"))
+  
+  loo_country_village_form <- loo(country_village_form)
+  save(loo_country_village_form,file=paste0(opt$output,"/overall_models/location_only/loo_country_village_form.rda"))
+  
+  r2_country_village_form <- bayes_R2(country_village_form)
+  save(r2_country_village_form,file=paste0(opt$output,"/overall_models/location_only/r2_country_village_form.rda"))
+  
 }
 
 

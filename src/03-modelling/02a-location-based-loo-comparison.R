@@ -49,24 +49,31 @@ dir.create(opt$output)
 
 
 country_only <- loadRData(paste0(opt$output,"/overall_models/location_only/country_only.rda"))
+bayes_2_country_only <- bayes_R2(country_only)
 loo_country_only <- loo(country_only)
 
 country_county <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county.rda"))
+bayes_2_country_county <- bayes_R2(country_county)
 loo_country_county <- loo(country_county)
 
 country_county_village <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village.rda"))
+bayes_2_country_county_village <- bayes_R2(country_county_village)
 loo_county_country_village <- loo(county_country_village)
 
 country_county_village_kg <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_kg.rda"))
+bayes_2_country_county_village_kg <- bayes_R2(country_county_village_kg)
 loo_county_country_village_kg <- loo(county_country_village_kg)
 
 country_county_village_kg_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_kg_form.rda"))
+bayes_2_country_county_village_kg_form <- bayes_R2(country_county_village_kg_form)
 loo_county_country_village_kg_form <- loo(county_country_village_kg_form)
 
 country_county_village_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_form.rda"))
+bayes_2_country_county_village_form <- bayes_R2(country_county_village_form)
 country_county_village_form <- loo(country_county_village_form)
 
 country_county_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_form.rda"))
+bayes_2_country_county_village_form <- bayes_R2(country_county_village_form)
 country_county_form <- loo(country_county_form)
 
 country_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_form.rda"))
@@ -97,5 +104,6 @@ loo_results <- loo_compare(
   country_village_form, criterion = c("loo"))
 
 save(loo_results,file=paste0(opt$output,"/overall_models/location_only/loo_comparison.rda"))
+
 
 
