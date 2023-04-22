@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #SBATCH --job-name=overall_models
-#SBATCH -o ./Report/output_location_only
+#SBATCH -o ./Report/output.location_only.%a.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
 #SBATCH --time=01-0:00:00
-#SBATCH --mem=12G
+#SBATCH --mem=24G
 #SBATCH --account=sscm012844
 #SBATCH --array=1-9
 
