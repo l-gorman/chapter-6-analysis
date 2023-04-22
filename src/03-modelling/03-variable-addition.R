@@ -66,7 +66,7 @@ dir.create(paste0(opt$output,"/overall_models/variable_addition"))
 
 
 
-
+# Fixed effects Weak Prior
 if(as.numeric(opt$index)==1){
   fixed_effects_weak_prior <- brm(
     formula=log_tva ~ 1 +  
@@ -76,6 +76,7 @@ if(as.numeric(opt$index)==1){
       log_land_cultivated + 
       logit_off_farm_orientation +
       logit_market_orientation +
+      logit_proportion_female_control+
       log_income_diversity +
       norm_growing_period +
       log_min_travel_time +
