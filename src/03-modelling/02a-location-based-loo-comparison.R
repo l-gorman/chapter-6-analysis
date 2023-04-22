@@ -1,4 +1,4 @@
-# sbatch src/03-modelling/02-location-only.sh 
+# sbatch src/03-modelling/02a-location-based-loo-comparison.sh 
 library(brms)
 # library(ggplot2)
 # library(ggridges)
@@ -54,13 +54,13 @@ loo_country_only <- loo(country_only)
 country_county <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county.rda"))
 loo_country_county <- loo(country_county)
 
-county_country_village <- loadRData(paste0(opt$output,"/overall_models/location_only/county_country_village.rda"))
+county_country_village <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village.rda"))
 loo_county_country_village <- loo(county_country_village)
 
-county_country_village_kg <- loadRData(paste0(opt$output,"/overall_models/location_only/county_country_village_kg.rda"))
+county_country_village_kg <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_kg.rda"))
 loo_county_country_village_kg <- loo(county_country_village_kg)
 
-county_country_village_kg_form <- loadRData(paste0(opt$output,"/overall_models/location_only/county_country_village_kg_form.rda"))
+county_country_village_kg_form <- loadRData(paste0(opt$output,"/overall_models/location_only/country_county_village_kg_form.rda"))
 loo_county_country_village_kg_form <- loo(county_country_village_kg_form)
 
 # country_only <- add_criterion(country_only, "loo")

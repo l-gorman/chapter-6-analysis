@@ -5,9 +5,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=0-12:00:00
+#SBATCH --time=0-4:00:00
 #SBATCH --mem=8G
 #SBATCH --account=sscm012844
+#SBATCH --array=1-9
 
 cd "${SLURM_SUBMIT_DIR}"
 
@@ -30,7 +31,7 @@ iterations=4000
 warmup=2000
 cores=4
 
-Rscript "./src/03-modelling/02-location-only.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores
+Rscript "./src/03-modelling/02-location-only.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
 
 unset out_directory
 unset data_directory

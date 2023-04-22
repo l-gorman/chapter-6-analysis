@@ -22,7 +22,9 @@ option_list = list(
   make_option(c("-o", "--output"), type='character',
               help="The directory where results will be written"),
   make_option(c("-c", "--ncores"), type='character',
-              help="The number of chains/cores")
+              help="The number of chains/cores"),
+  make_option(c("-j", "--index"), type='character',
+              help="Array Index")
   
 )
 
@@ -35,7 +37,8 @@ opt = parse_args(opt_parser);
 #   warmup=10,
 #   data="./data/",
 #   output="./outputs/test_overall_model_proj",
-#   ncores=4
+#   ncores=4,
+#   index=1
 # )
 
 
@@ -54,141 +57,257 @@ indicator_data <- readr::read_csv(paste0(opt$data,"/02-prepared-data/modelling_d
 dir.create(paste0(opt$output,"/overall_models/"))
 dir.create(paste0(opt$output,"/overall_models/location_only"))
 
-country_only <- brm(
-  formula=log_tva ~ 1 +  
-    (1 | iso_country_code),
-  
-  # (1 | village),
-  data = indicator_data,
-  prior = c(
-    set_prior('normal(0, 1)', class = 'sd'),
-    # set_prior('normal(0, 1)', class = 'sigma'),
-    set_prior('normal(0, 1)', class = 'Intercept')
-  ),
-  cores = 4,
-  backend = "cmdstanr",
-  iter = opt$iter,
-  warmup = opt$warmup,
-  
-  
-  family=gaussian() 
-)
-
-save(country_only,file=paste0(opt$output,"/overall_models/location_only/country_only.rda"))
-
-country_county <- brm(
-  formula=log_tva ~ 1 +  
-    (1 | iso_country_code) +
-    (1 | iso_country_code:gdlcode),
-  
-  # (1 | village),
-  data = indicator_data,
-  prior = c(
-    set_prior('normal(0, 1)', class = 'sd'),
-    set_prior('normal(0, 1)', class = 'sigma'),
-    set_prior('normal(0, 1)', class = 'Intercept')
-  ),
-  cores = 4,
-  backend = "cmdstanr",
-  iter = opt$iter,
-  warmup = opt$warmup,
-  
-  
-  family=gaussian() 
-)
-
-save(country_county,file=paste0(opt$output,"/overall_models/location_only/country_county.rda"))
-
-county_country_village <- brm(
-  formula=log_tva ~ 1 +  
-    (1 | iso_country_code) +
-    (1 | iso_country_code:gdlcode) +
-    (1 | iso_country_code:gdlcode:village),
-  
-  # (1 | village),
-  data = indicator_data,
-  prior = c(
-    set_prior('normal(0, 1)', class = 'sd'),
-    set_prior('normal(0, 1)', class = 'sigma'),
-    set_prior('normal(0, 1)', class = 'Intercept')
-  ),
-  cores = 4,
-  backend = "cmdstanr",
-  iter = opt$iter,
-  warmup = opt$warmup,
-  
-  
-  family=gaussian() 
-)
-
-save(county_country_village,file=paste0(opt$output,"/overall_models/location_only/county_country_village.rda"))
+if (as.numeric(opt$index)==1)
+{
+  country_only <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      # set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
+  save(country_only,file=paste0(opt$output,"/overall_models/location_only/country_only.rda"))
+}
 
 
-county_country_village_kg <- brm(
-  formula=log_tva ~ 1 +  
-    (1 | iso_country_code) +
-    (1 | iso_country_code:gdlcode) +
-    (1 | iso_country_code:gdlcode:village)+
-    (1 | kg_class_name),
+if (as.numeric(opt$index)==2)
+{
+  country_county <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code) +
+      (1 | iso_country_code:gdlcode),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
   
-  # (1 | village),
-  data = indicator_data,
-  prior = c(
-    set_prior('normal(0, 1)', class = 'sd'),
-    set_prior('normal(0, 1)', class = 'sigma'),
-    set_prior('normal(0, 1)', class = 'Intercept')
-  ),
-  cores = 4,
-  backend = "cmdstanr",
-  iter = opt$iter,
-  warmup = opt$warmup,
+  save(country_county,file=paste0(opt$output,"/overall_models/location_only/country_county.rda"))
+}
+
+if (as.numeric(opt$index)==3)
+{
+  country_county_village <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code) +
+      (1 | iso_country_code:gdlcode) +
+      (1 | iso_country_code:gdlcode:village),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
   
+  save(country_county_village,file=paste0(opt$output,"/overall_models/location_only/country_county_village.rda"))
+}
+
+
+
+if (as.numeric(opt$index)==4)
+{
+  country_county_village_kg <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code) +
+      (1 | iso_country_code:gdlcode) +
+      (1 | iso_country_code:gdlcode:village)+
+      (1 | kg_class_name),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
   
-  family=gaussian() 
-)
-
-save(county_country_village_kg,file=paste0(opt$output,"/overall_models/location_only/county_country_village_kg.rda"))
+  save(country_county_village_kg,file=paste0(opt$output,"/overall_models/location_only/country_county_village_kg.rda"))
+}
 
 
-county_country_village_kg_form <- brm(
-  formula=log_tva ~ 1 +  
-    (1 | iso_country_code) +
-    (1 | iso_country_code:gdlcode) +
-    (1 | iso_country_code:gdlcode:village)+
-    (1 | kg_class_name)+
-    (1 | id_form),
+if (as.numeric(opt$index)==5)
+{
+  country_county_village_kg_form <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code) +
+      (1 | iso_country_code:gdlcode) +
+      (1 | iso_country_code:gdlcode:village)+
+      (1 | kg_class_name)+
+      (1 | id_form),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
   
-  # (1 | village),
-  data = indicator_data,
-  prior = c(
-    set_prior('normal(0, 1)', class = 'sd'),
-    set_prior('normal(0, 1)', class = 'sigma'),
-    set_prior('normal(0, 1)', class = 'Intercept')
-  ),
-  cores = 4,
-  backend = "cmdstanr",
-  iter = opt$iter,
-  warmup = opt$warmup,
+  save(country_county_village_kg_form,file=paste0(opt$output,"/overall_models/location_only/country_county_village_kg_form.rda"))
+}
+
+
+if (as.numeric(opt$index)==6)
+{
+  country_county_village_form <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code) +
+      (1 | iso_country_code:gdlcode) +
+      (1 | iso_country_code:gdlcode:village)+
+      (1 | id_form),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
   
+  save(country_county_village_form,file=paste0(opt$output,"/overall_models/location_only/country_county_village_form.rda"))
+}
+
+
+if (as.numeric(opt$index)==7)
+{
+  country_county_form <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code) +
+      (1 | iso_country_code:gdlcode) +
+      (1 | id_form),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
   
-  family=gaussian() 
-)
+  save(country_county_form,file=paste0(opt$output,"/overall_models/location_only/country_county_form.rda"))
+}
 
-save(county_country_village_kg_form,file=paste0(opt$output,"/overall_models/location_only/county_country_village_kg_form.rda"))
 
-country_only <- add_criterion(country_only, "loo")
-country_county <- add_criterion(country_county, "loo")
-county_country_village <- add_criterion(county_country_village, "loo")
-county_country_village_kg <- add_criterion(county_country_village_kg, "loo")
-county_country_village_kg_form <- add_criterion(county_country_village_kg_form, "loo")
+if (as.numeric(opt$index)==8)
+{
+  country_form <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code) +
+      (1 | id_form),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
+  
+  save(country_form,file=paste0(opt$output,"/overall_models/location_only/country_form.rda"))
+}
 
-loo_results <- loo_compare(
-  country_only,
-  country_county,
-  county_country_village,
-  county_country_village_kg,
-  county_country_village_kg_form, criterion = c("loo"))
 
-save(loo_results,file=paste0(opt$output,"/overall_models/location_only/loo_comparison.rda"))
+if (as.numeric(opt$index)==9)
+{
+  country_village_form <- brm(
+    formula=log_tva ~ 1 +  
+      (1 | iso_country_code) +
+      (1 | iso_country_code:gdlcode:village)+
+      (1 | id_form),
+    
+    # (1 | village),
+    data = indicator_data,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = 4,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
+  
+  save(country_village_form,file=paste0(opt$output,"/overall_models/location_only/country_village_form.rda"))
+}
+
+
+
 
 
