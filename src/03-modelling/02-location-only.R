@@ -194,6 +194,7 @@ models <-  list(
 )
 
 
+opt$index <- as.numeric(opt$index)
 
 # Running Model
 model <- brm(

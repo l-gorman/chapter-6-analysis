@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=overall_models
-#SBATCH -o ./Report/output.overall.%a.out
+#SBATCH -o ./Report/output.mixed_effects.%a.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
