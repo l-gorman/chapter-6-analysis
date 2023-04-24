@@ -32,7 +32,7 @@ iterations=8000
 warmup=4000
 cores=4
 
-Rscript "./src/03-modelling/02-overall-model.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
+Rscript "./src/03-modelling/03-variable-addition.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
 
 unset out_directory
 unset data_directory
