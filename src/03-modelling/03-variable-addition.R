@@ -64,6 +64,25 @@ indicator_data <- readr::read_csv(paste0(opt$data,"/02-prepared-data/modelling_d
 dir.create(paste0(opt$output,"/overall_models/"))
 dir.create(paste0(opt$output,"/overall_models/variable_addition"))
 
+
+# if(models[[opt$index]][["prior"]]=="weak"){
+#   prior_to_use <- c(
+#     set_prior('normal(0, 1)', class = 'sd'),
+#     set_prior('normal(0, 1)', class = 'sigma'),
+#     set_prior('normal(0, 1)', class = 'Intercept')
+#   )
+# }
+# 
+# if(models[[opt$index]][["prior"]]=="horseshoe"){
+#   prior_to_use <- c(
+#     set_prior('normal(0, 1)', class = 'sd'),
+#     set_prior('normal(0, 1)', class = 'sigma'),
+#     set_prior('normal(0, 1)', class = 'Intercept')
+#   )
+# }
+
+
+
 # -------------------------------------------------------------------------
 # -------------------------------------------------------------------------
 # Weak Prior Model --------------------------------------------------------
