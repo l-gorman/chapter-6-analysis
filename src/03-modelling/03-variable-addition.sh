@@ -5,10 +5,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=2-00:00:00
-#SBATCH --mem=12G
+#SBATCH --time=3-00:00:00
+#SBATCH --mem=36G
 #SBATCH --account=sscm012844
-#SBATCH --array=1-10
+#SBATCH --array=1-8
 
 
 cd "${SLURM_SUBMIT_DIR}"

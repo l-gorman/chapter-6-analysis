@@ -5,7 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=01-0:00:00
+#SBATCH --time=0-6:00:00
 #SBATCH --mem=24G
 #SBATCH --account=sscm012844
 #SBATCH --array=1-9

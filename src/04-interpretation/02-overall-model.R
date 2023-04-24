@@ -8,6 +8,8 @@ library(brms)
 library(ggplot2)
 library(bayesplot)
 library(hexbin)
+library(flextable)
+
 loadRData <- function(fileName){
   #loads an RData file, and returns it
   load(fileName)
@@ -68,7 +70,7 @@ estimates_plot <- function(draws_df,
                            title,
                            sort=F
 ){
-
+  
   draw_summary <-summarise_estimates(draws_df,
                                      params_list)
   
@@ -122,9 +124,9 @@ get_random_effects <- function(model,
   
   
   plot <- estimates_plot(draws_df,
-  params_list,
-  title,
-  sort=sort)
+                         params_list,
+                         title,
+                         sort=sort)
   
   
   return(plot)
@@ -140,7 +142,11 @@ all_plots <- function(model,
                       param_list){
   draws <- as_draws_array(model)
   mcmc_scatter <- mcmc_pairs(draws,pars = as.character(params_list),off_diag_fun = "hex")
-  ggsave(filename = paste0("outputs/overall_model_results/",model_name,"/mcmc_scatter.png"),
+  
+  mcmc_scatter <- mcmc_pairs(draws,pars = as.character(params_list))
+  # mcmc_scatter <- mcmc_scatter + stat_density_2d(color = "black", size = .5)
+  
+  ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/mcmc_scatter.png"),
          plot = mcmc_scatter,width = 5000,height=3500,units = "px")
   
   # Variable Estimate
@@ -148,7 +154,7 @@ all_plots <- function(model,
   estimate_plot <- estimates_plot(draws_df = draws_df,params_list = params_list,
                                   title=paste0("Estimates for ",model_name," TVA Model")
   )
-  ggsave(filename = paste0("outputs/overall_model_results/",model_name,"/location_estimates.png"),
+  ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/location_estimates.png"),
          plot = estimate_plot,width = 1800,height=1200,units = "px")
   
   
@@ -157,7 +163,7 @@ all_plots <- function(model,
   vpc_estimates <- estimates_plot(draws_df = vpcs,params_list = params_list,
                                   title=paste0("VPCs for ",model_name," TVA Model")
   )
-  ggsave(filename = paste0("outputs/overall_model_results/",model_name,"/location_vpcs.png"),
+  ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/location_vpcs.png"),
          plot = vpc_estimates,width = 1800,height=1200,units = "px")
   
 }
@@ -174,6 +180,8 @@ params_list <- list(
 
 country_only <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_only.rda")
 
+all_plots(country_only,"country_only",params_list)
+
 # Country County -------------------------------------------------------
 dir.create("outputs/overall_model_results/location_only_tva/country_county")
 
@@ -184,6 +192,7 @@ params_list <- list(
 )
 
 country_county <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county.rda")
+all_plots(country_county,"country_county",params_list)
 
 # Country County Village -------------------------------------------------------
 dir.create("outputs/overall_model_results/location_only_tva/country_county_village")
@@ -195,7 +204,8 @@ params_list <- list(
   "Unexplained"="sigma"
 )
 
-county_country_village <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/county_country_village.rda")
+country_county_village <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_village.rda")
+all_plots(country_county_village,"country_county_village",params_list)
 
 # Country County Village KG Class -------------------------------------------------------
 dir.create("outputs/overall_model_results/location_only_tva/country_county_village_kg")
@@ -204,37 +214,184 @@ params_list <- list(
   "Country"="sd_iso_country_code__Intercept",
   "County"="sd_iso_country_code:gdlcode__Intercept",
   "Village"="sd_iso_country_code:gdlcode:village__Intercept",
-  "KG Class"="kg_class_name",
+  "KG Class"="sd_kg_class_name__Intercept",
   "Unexplained"="sigma"
 )
 
-county_country_village_kg <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/county_country_village_kg.rda")
+country_county_village_kg <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_village_kg.rda")
+all_plots(country_county_village_kg,"country_county_village_kg",params_list)
 
 
 # Country County Village KG Class Form -------------------------------------------------------
+dir.create("outputs/overall_model_results/location_only_tva/country_county_village_kg_form")
+
+params_list <- list(
+  "Country"="sd_iso_country_code__Intercept",
+  "County"="sd_iso_country_code:gdlcode__Intercept",
+  "Village"="sd_iso_country_code:gdlcode:village__Intercept",
+  "KG Class"="sd_kg_class_name__Intercept",
+  "Project"="sd_id_form__Intercept",
+  "Unexplained"="sigma"
+)
+
+country_county_village_kg_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_village_kg_form.rda")
+all_plots(country_county_village_kg_form,"country_county_village_kg_form",params_list)
+
+# Country County Form -------------------------------------------------------
+dir.create("outputs/overall_model_results/location_only_tva/country_county_form")
+
+params_list <- list(
+  "Country"="sd_iso_country_code__Intercept",
+  "County"="sd_iso_country_code:gdlcode__Intercept",
+  "Project"="sd_id_form__Intercept",
+  "Unexplained"="sigma"
+)
+
+country_county_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_form.rda")
+all_plots(country_county_form,"country_county_form",params_list)
+
+
+# Country County Form -------------------------------------------------------
+dir.create("outputs/overall_model_results/location_only_tva/country_county_form")
+
+params_list <- list(
+  "Country"="sd_iso_country_code__Intercept",
+  "County"="sd_iso_country_code:gdlcode__Intercept",
+  "Project"="sd_id_form__Intercept",
+  "Unexplained"="sigma"
+)
+
+country_county_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_form.rda")
+all_plots(country_county_form,"country_county_form",params_list)
+
+
+# Country County Form -------------------------------------------------------
 dir.create("outputs/overall_model_results/location_only_tva/country_county_village_form")
 
 params_list <- list(
   "Country"="sd_iso_country_code__Intercept",
   "County"="sd_iso_country_code:gdlcode__Intercept",
   "Village"="sd_iso_country_code:gdlcode:village__Intercept",
-  "KG Class"="kg_class_name",
   "Project"="sd_id_form__Intercept",
   "Unexplained"="sigma"
 )
 
-county_country_village_kg_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/county_country_village_kg_form.rda")
+country_county_village_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_village_form.rda")
+all_plots(country_county_village_form,"country_county_village_form",params_list)
+
+
+# Country Form -------------------------------------------------------
+dir.create("outputs/overall_model_results/location_only_tva/country_form")
+
+params_list <- list(
+  "Country"="sd_iso_country_code__Intercept",
+  "Project"="sd_id_form__Intercept",
+  "Unexplained"="sigma"
+)
+
+country_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_form.rda")
+all_plots(country_form,"country_form",params_list)
+
+
+# Country Form -------------------------------------------------------
+dir.create("outputs/overall_model_results/location_only_tva/country_village_form")
+
+params_list <- list(
+  "Country"="sd_iso_country_code__Intercept",
+  "Village"="sd_iso_country_code:gdlcode:village__Intercept",
+  "Project"="sd_id_form__Intercept",
+  "Unexplained"="sigma"
+)
+
+
+country_village_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_village_form.rda")
+# model <- country_village_form
+# model_name <- "country_village_form"
+# params_list <- params_list
+all_plots(country_village_form,"country_village_form",params_list)
+
+
+# Loo Comparison
+
+r2_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") %>% grep("^r2",x=., value=T)
+
+
+r2_all <- sapply(r2_files, function(x){
+  r2_temp <- loadRData(paste0(
+    "outputs/14_04_2023/outputs/overall_models/location_only/",
+    x
+    
+  ))
+  
+  model_name <- gsub("r2_", "",x)
+  model_name <- gsub(".rda", "",model_name,fixed=T)
+  r2_temp <- as_tibble(r2_temp)
+  r2_temp$model_type <- model_name
+  return(r2_temp)
+  
+},simplify=F)
+
+
+r2_all <- r2_all %>% bind_rows()
+
+r2_all <- r2_all[order(r2_all$Estimate),]
+
+r2_all$model_type <- factor(r2_all$model_type, 
+                            levels=r2_all$model_type,
+                            ordered=T)
+
+r_2_comparison <- ggplot(r2_all)+
+  geom_point(aes(x=model_type, y=Estimate))+
+  geom_path(aes(x=model_type, y=Estimate,),group=1, color="blue") +
+  geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
+  
+  geom_hline(yintercept = max(r2_all$Estimate),linetype="dashed")+
+  
+  # ylim(c(0.25,1))+
+  
+  labs(title = bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'),
+       x="Levels Included", 
+       y=bquote('Bayesian '~R^2))+
+  theme(
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle=45,hjust=1))
+  
+ggsave("outputs/overall_model_results/location_only_tva/r2_summary.png",r_2_comparison, width=1500,height=1500,units="px")
+  
+  
+# loo Comparison
+
+
+loo_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") %>% grep("^loo",x=., value=T)
+
+
+loo_all <- sapply(loo_files, function(x){
+  loo_temp <- loadRData(paste0(
+    "outputs/14_04_2023/outputs/overall_models/location_only/",
+    x
+    
+  ))
+  
+  loo_temp
+  
+},simplify=F)
+
+loo_compare <- loo_compare(loo_all) %>% as_data_frame()
+loo_compare$model <- row.names(loo_compare(loo_all))
+loo_compare$model <- gsub(".rda","",loo_compare$model,fixed=T)
+loo_compare$model <- gsub("loo_","",loo_compare$model,fixed=T)
+loo_compare <- loo_compare[c("model","elpd_diff","se_diff")]
+
+loo_compare$elpd_diff <- round(loo_compare$elpd_diff,1)
+loo_compare$se_diff <- round(loo_compare$se_diff,1)
+
+readr::write_csv(loo_compare,"outputs/overall_model_results/location_only_tva/loo_comparison.csv")
+
+loo_compare_flextable <- loo_compare %>% flextable::flextable()
+
+save_as_image(loo_compare_flextable, "outputs/overall_model_results/location_only_tva/loo_comparison.png")
 
 
 
-
-
-
-
-
-
-#MCMC Pair plots
-
-
-
-
+  
+  
