@@ -222,7 +222,7 @@ loo_model <- loo(model)
 save(loo_model,file=paste0(opt$output,"/overall_models/location_only/loo_",models[[opt$index]][["tag"]],".rda"))
 loo_model <- NULL
 
-r2_model <- bayes_R2(loo_model)
+r2_model <- bayes_R2(model)
 save(r2_model,file=paste0(opt$output,"/overall_models/location_only/r2_",models[[opt$index]][["tag"]],".rda"))
 
 
