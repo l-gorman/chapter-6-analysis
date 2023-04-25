@@ -65,505 +65,336 @@ dir.create(paste0(opt$output,"/overall_models/"))
 dir.create(paste0(opt$output,"/overall_models/variable_addition"))
 
 
-# if(models[[opt$index]][["prior"]]=="weak"){
-#   prior_to_use <- c(
-#     set_prior('normal(0, 1)', class = 'sd'),
-#     set_prior('normal(0, 1)', class = 'sigma'),
-#     set_prior('normal(0, 1)', class = 'Intercept')
-#   )
-# }
-# 
-# if(models[[opt$index]][["prior"]]=="horseshoe"){
-#   prior_to_use <- c(
-#     set_prior('normal(0, 1)', class = 'sd'),
-#     set_prior('normal(0, 1)', class = 'sigma'),
-#     set_prior('normal(0, 1)', class = 'Intercept')
-#   )
-# }
 
-
-
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-# Weak Prior Model --------------------------------------------------------
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-
-# Fixed effects 
-if(as.numeric(opt$index)==1){
+models <-  list(
   
-  model_name <- "weak_prior_fixed"
-  model <- brm(
-    formula=log_tva ~ 1 +  
-      #Household Level
-      education_cleaned + 
-      log_livestock_tlu + 
-      log_land_cultivated + 
-      logit_off_farm_orientation +
-      logit_market_orientation +
-      logit_proportion_female_control+
-      log_income_diversity +
-      
-      # Village Level
-      norm_growing_period +
-      log_min_travel_time +
-      #County Level
-      norm_gdl_lifexp +
-      # Levels
-      (1 | iso_country_code) +
-      (1 | iso_country_code:village)+
-      (1 | id_form),
-    data = indicator_data,
-    prior = c(
-      set_prior("normal(0, 1)", class = "b"),
-      set_prior('normal(0, 1)', class = 'sd'),
-      set_prior('normal(0, 1)', class = 'sigma'),
-      set_prior('normal(0, 1)', class = 'Intercept')
-    ),
-    cores = 4,
-    backend = "cmdstanr",
-    iter = opt$iter,
-    warmup = opt$warmup,
-    
-    
-    family=gaussian() 
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # Weak Prior Model --------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # 1
+  list(
+    tag="weak_prior_fixed",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +  
+                 #Household Level
+                 education_cleaned + 
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 logit_off_farm_orientation +
+                 logit_market_orientation +
+                 logit_proportion_female_control+
+                 log_income_diversity +
+                 
+                 # Village Level
+                 norm_growing_period +
+                 log_min_travel_time +
+                 #County Level
+                 norm_gdl_lifexp +
+                 # Levels
+                 (1 | iso_country_code) +
+                 (1 | iso_country_code:village)+
+                 (1 | id_form)),
+    prior="weak"
+  ),
+  
+  # 2
+  list(
+    tag="weak_prior_mixed_country",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +  
+                 #Household Level
+                 education_cleaned + 
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 logit_off_farm_orientation +
+                 logit_market_orientation +
+                 logit_proportion_female_control+
+                 log_income_diversity +
+                 
+                 # Village Level
+                 norm_growing_period +
+                 log_min_travel_time +
+                 #County Level
+                 norm_gdl_lifexp +
+                 # Levels
+                 (1 +  
+                    #Household Level
+                    education_cleaned + 
+                    log_livestock_tlu + 
+                    log_land_cultivated + 
+                    logit_off_farm_orientation +
+                    logit_market_orientation +
+                    logit_proportion_female_control+
+                    log_income_diversity +
+                    
+                    # Village Level
+                    norm_growing_period +
+                    log_min_travel_time +
+                    #County Level
+                    norm_gdl_lifexp | iso_country_code) +
+                 (1 | iso_country_code:village)+
+                 (1 | id_form)),
+    prior="weak"),
+  
+  # 3
+  list(
+    tag="weak_prior_mixed_village",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +  
+                 #Household Level
+                 education_cleaned + 
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 logit_off_farm_orientation +
+                 logit_market_orientation +
+                 logit_proportion_female_control+
+                 log_income_diversity +
+                 
+                 # Village Level
+                 norm_growing_period +
+                 log_min_travel_time +
+                 #County Level
+                 norm_gdl_lifexp +
+                 # Levels
+                 (1 | iso_country_code) +
+                 (1 +  
+                    #Household Level
+                    education_cleaned + 
+                    log_livestock_tlu + 
+                    log_land_cultivated + 
+                    logit_off_farm_orientation +
+                    logit_market_orientation +
+                    logit_proportion_female_control+
+                    log_income_diversity | iso_country_code:village)+
+                 (1 | id_form)),
+    prior="weak"),
+  
+  # 4
+  
+  list(
+    tag="weak_prior_mixed_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +  
+                 #Household Level
+                 education_cleaned + 
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 logit_off_farm_orientation +
+                 logit_market_orientation +
+                 logit_proportion_female_control+
+                 log_income_diversity +
+                 
+                 # Village Level
+                 norm_growing_period +
+                 log_min_travel_time +
+                 #County Level
+                 norm_gdl_lifexp +
+                 # Levels
+                 (1 | iso_country_code) +
+                 (1 | iso_country_code:village)+
+                 (1  +  
+                    #Household Level
+                    education_cleaned + 
+                    log_livestock_tlu + 
+                    log_land_cultivated + 
+                    logit_off_farm_orientation +
+                    logit_market_orientation +
+                    logit_proportion_female_control+
+                    log_income_diversity | id_form)),
+    prior="weak"),
+  
+  
+  
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # Horse Shoe Model --------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  
+  # 5
+  list(
+    tag="horseshoe_fixed",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +  
+                 #Household Level
+                 education_cleaned + 
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 logit_off_farm_orientation +
+                 logit_market_orientation +
+                 logit_proportion_female_control+
+                 log_income_diversity +
+                 
+                 # Village Level
+                 norm_growing_period +
+                 log_min_travel_time +
+                 #County Level
+                 norm_gdl_lifexp +
+                 # Levels
+                 (1 | iso_country_code) +
+                 (1 | iso_country_code:village)+
+                 (1 | id_form)),
+    prior="weak"
+  ),
+  
+  # 6
+  
+  list(
+    tag="horseshoe_mixed_country",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +  
+                 #Household Level
+                 education_cleaned + 
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 logit_off_farm_orientation +
+                 logit_market_orientation +
+                 logit_proportion_female_control+
+                 log_income_diversity +
+                 
+                 # Village Level
+                 norm_growing_period +
+                 log_min_travel_time +
+                 #County Level
+                 norm_gdl_lifexp +
+                 # Levels
+                 (1 +  
+                    #Household Level
+                    education_cleaned + 
+                    log_livestock_tlu + 
+                    log_land_cultivated + 
+                    logit_off_farm_orientation +
+                    logit_market_orientation +
+                    logit_proportion_female_control+
+                    log_income_diversity +
+                    
+                    # Village Level
+                    norm_growing_period +
+                    log_min_travel_time +
+                    #County Level
+                    norm_gdl_lifexp | iso_country_code) +
+                 (1 | iso_country_code:village)+
+                 (1 | id_form)),
+    prior="horseshoe"),
+  
+  # 7
+  list(
+    tag="horseshoe_mixed_village",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +  
+                 #Household Level
+                 education_cleaned + 
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 logit_off_farm_orientation +
+                 logit_market_orientation +
+                 logit_proportion_female_control+
+                 log_income_diversity +
+                 
+                 # Village Level
+                 norm_growing_period +
+                 log_min_travel_time +
+                 #County Level
+                 norm_gdl_lifexp +
+                 # Levels
+                 (1 | iso_country_code) +
+                 (1 +  
+                    #Household Level
+                    education_cleaned + 
+                    log_livestock_tlu + 
+                    log_land_cultivated + 
+                    logit_off_farm_orientation +
+                    logit_market_orientation +
+                    logit_proportion_female_control+
+                    log_income_diversity | iso_country_code:village)+
+                 (1 | id_form)),
+    prior="horseshoe"),
+  
+  # 8
+  
+  list(
+    tag="horseshoe_mixed_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +  
+                 #Household Level
+                 education_cleaned + 
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 logit_off_farm_orientation +
+                 logit_market_orientation +
+                 logit_proportion_female_control+
+                 log_income_diversity +
+                 
+                 # Village Level
+                 norm_growing_period +
+                 log_min_travel_time +
+                 #County Level
+                 norm_gdl_lifexp +
+                 # Levels
+                 (1 | iso_country_code) +
+                 (1 | iso_country_code:village)+
+                 (1  +  
+                    #Household Level
+                    education_cleaned + 
+                    log_livestock_tlu + 
+                    log_land_cultivated + 
+                    logit_off_farm_orientation +
+                    logit_market_orientation +
+                    logit_proportion_female_control+
+                    log_income_diversity | id_form)),
+    prior="horseshoe")
+  
+  
+
+  
+  
+)
+
+
+
+opt$index <- as.numeric(opt$index)
+
+if(models[[opt$index]][["prior"]]=="weak"){
+  prior_to_use <- c(
+    set_prior('normal(0, 1)', class = 'sd'),
+    set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'Intercept')
   )
-  
-  save(model,file=paste0(opt$output,"/overall_models/variable_addition/",model_name,".rda"))
-  
-  loo_model <- loo(model)
-  save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",model_name,".rda"))
-  loo_model <- NULL
-  
-  r2_model <- bayes_R2(model)
-  save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",model_name,".rda"))
-  
 }
 
-# Mixed effects Country
-if(as.numeric(opt$index)==2){
-  model_name <- "weak_prior_mixed_country"
-  model <- brm(
-    formula=log_tva ~ 1 +  
-      #Household Level
-      education_cleaned + 
-      log_livestock_tlu + 
-      log_land_cultivated + 
-      logit_off_farm_orientation +
-      logit_market_orientation +
-      logit_proportion_female_control+
-      log_income_diversity +
-      
-      # Village Level
-      norm_growing_period +
-      log_min_travel_time +
-      #County Level
-      norm_gdl_lifexp +
-      # Levels
-      (1 +  
-         #Household Level
-         education_cleaned + 
-         log_livestock_tlu + 
-         log_land_cultivated + 
-         logit_off_farm_orientation +
-         logit_market_orientation +
-         logit_proportion_female_control+
-         log_income_diversity +
-         
-         # Village Level
-         norm_growing_period +
-         log_min_travel_time +
-         #County Level
-         norm_gdl_lifexp | iso_country_code) +
-      (1 | iso_country_code:village)+
-      (1 | id_form),
-    data = indicator_data,
-    prior = c(
-      set_prior("normal(0, 1)", class = "b"),
-      set_prior('normal(0, 1)', class = 'sd'),
-      set_prior('normal(0, 1)', class = 'sigma'),
-      set_prior('normal(0, 1)', class = 'Intercept')
-    ),
-    cores = 4,
-    backend = "cmdstanr",
-    iter = opt$iter,
-    warmup = opt$warmup,
-    
-    
-    family=gaussian() 
+if(models[[opt$index]][["prior"]]=="horseshoe"){
+  prior_to_use <- c(
+    set_prior('normal(0, 1)', class = 'sd'),
+    set_prior('normal(0, 1)', class = 'sigma'),
+    set_prior('normal(0, 1)', class = 'Intercept')
   )
-  
-  save(model,file=paste0(opt$output,"/overall_models/variable_addition/",model_name,".rda"))
-  
-  loo_model <- loo(model)
-  save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",model_name,".rda"))
-  loo_model <- NULL
-  
-  r2_model <- bayes_R2(model)
-  save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",model_name,".rda"))
-  
-}
-
-
-# Mixed effects Village
-if(as.numeric(opt$index)==3){
-  model_name <- "weak_prior_mixed_village"
-  model <- brm(
-    formula=log_tva ~ 1 +  
-      #Household Level
-      education_cleaned + 
-      log_livestock_tlu + 
-      log_land_cultivated + 
-      logit_off_farm_orientation +
-      logit_market_orientation +
-      logit_proportion_female_control+
-      log_income_diversity +
-      
-      # Village Level
-      norm_growing_period +
-      log_min_travel_time +
-      #County Level
-      norm_gdl_lifexp +
-      # Levels
-      (1 | iso_country_code) +
-      (1 +  
-         #Household Level
-         education_cleaned + 
-         log_livestock_tlu + 
-         log_land_cultivated + 
-         logit_off_farm_orientation +
-         logit_market_orientation +
-         logit_proportion_female_control+
-         log_income_diversity | iso_country_code:village)+
-      (1 | id_form),
-    data = indicator_data,
-    prior = c(
-      set_prior("normal(0, 1)", class = "b"),
-      set_prior('normal(0, 1)', class = 'sd'),
-      set_prior('normal(0, 1)', class = 'sigma'),
-      set_prior('normal(0, 1)', class = 'Intercept')
-    ),
-    cores = 4,
-    backend = "cmdstanr",
-    iter = opt$iter,
-    warmup = opt$warmup,
-    
-    
-    family=gaussian() 
-  )
-  
-  save(model,file=paste0(opt$output,"/overall_models/variable_addition/",model_name,".rda"))
-  
-  loo_model <- loo(model)
-  save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",model_name,".rda"))
-  loo_model <- NULL
-  
-  r2_model <- bayes_R2(model)
-  save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",model_name,".rda"))
-  
-}
-
-
-# Mixed effects Country
-if(as.numeric(opt$index)==4){
-  model_name <- "weak_prior_mixed_form"
-  model  <- brm(
-    formula=log_tva ~ 1 +  
-      #Household Level
-      education_cleaned + 
-      log_livestock_tlu + 
-      log_land_cultivated + 
-      logit_off_farm_orientation +
-      logit_market_orientation +
-      logit_proportion_female_control+
-      log_income_diversity +
-      
-      # Village Level
-      norm_growing_period +
-      log_min_travel_time +
-      #County Level
-      norm_gdl_lifexp +
-      # Levels
-      (1 | iso_country_code) +
-      (1 | iso_country_code:village)+
-      (1  +  
-         #Household Level
-         education_cleaned + 
-         log_livestock_tlu + 
-         log_land_cultivated + 
-         logit_off_farm_orientation +
-         logit_market_orientation +
-         logit_proportion_female_control+
-         log_income_diversity | id_form),
-    data = indicator_data,
-    prior = c(
-      set_prior("normal(0, 1)", class = "b"),
-      set_prior('normal(0, 1)', class = 'sd'),
-      set_prior('normal(0, 1)', class = 'sigma'),
-      set_prior('normal(0, 1)', class = 'Intercept')
-    ),
-    cores = 4,
-    backend = "cmdstanr",
-    iter = opt$iter,
-    warmup = opt$warmup,
-    
-    
-    family=gaussian() 
-  )
-  
-  save(model,file=paste0(opt$output,"/overall_models/variable_addition/",model_name,".rda"))
-  
-  loo_model <- loo(model)
-  save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",model_name,".rda"))
-  loo_model <- NULL
-  
-  r2_model <- bayes_R2(model)
-  save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",model_name,".rda"))
-  
-}
-
-
-
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-# Horse Shoe Model --------------------------------------------------------
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-
-
-# Fixed effects 
-if(as.numeric(opt$index)==5){
-  model_name <- "horseshoe_fixed"
-  model <- brm(
-    formula=log_tva ~ 1 +  
-      #Household Level
-      education_cleaned + 
-      log_livestock_tlu + 
-      log_land_cultivated + 
-      logit_off_farm_orientation +
-      logit_market_orientation +
-      logit_proportion_female_control+
-      log_income_diversity +
-      
-      # Village Level
-      norm_growing_period +
-      log_min_travel_time +
-      #County Level
-      norm_gdl_lifexp +
-      # Levels
-      (1 | iso_country_code) +
-      (1 | iso_country_code:village)+
-      (1 | id_form),
-    data = indicator_data,
-    prior = c(
-      set_prior("horseshoe(1)", class="b"),
-      set_prior('normal(0, 1)', class = 'sd'),
-      set_prior('normal(0, 1)', class = 'sigma'),
-      set_prior('normal(0, 1)', class = 'Intercept')
-    ),
-    cores = 4,
-    backend = "cmdstanr",
-    iter = opt$iter,
-    warmup = opt$warmup,
-    
-    
-    family=gaussian() 
-  )
-  
-  save(model,file=paste0(opt$output,"/overall_models/variable_addition/",model_name,".rda"))
-  
-  loo_model <- loo(model)
-  save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",model_name,".rda"))
-  loo_model <- NULL
-  
-  r2_model <- bayes_R2(model)
-  save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",model_name,".rda"))
-  
-}
-
-# Mixed effects Country
-if(as.numeric(opt$index)==6){
-  model_name <- "horseshoe_mixed_country"
-  model <- brm(
-    formula=log_tva ~ 1 +  
-      #Household Level
-      education_cleaned + 
-      log_livestock_tlu + 
-      log_land_cultivated + 
-      logit_off_farm_orientation +
-      logit_market_orientation +
-      logit_proportion_female_control+
-      log_income_diversity +
-      
-      # Village Level
-      norm_growing_period +
-      log_min_travel_time +
-      #County Level
-      norm_gdl_lifexp +
-      # Levels
-      (1 +  
-         #Household Level
-         education_cleaned + 
-         log_livestock_tlu + 
-         log_land_cultivated + 
-         logit_off_farm_orientation +
-         logit_market_orientation +
-         logit_proportion_female_control+
-         log_income_diversity +
-         
-         # Village Level
-         norm_growing_period +
-         log_min_travel_time +
-         #County Level
-         norm_gdl_lifexp | iso_country_code) +
-      (1 | iso_country_code:village)+
-      (1 | id_form),
-    data = indicator_data,
-    prior = c(
-      set_prior("horseshoe(1)", class="b"),
-      set_prior('normal(0, 1)', class = 'sd'),
-      set_prior('normal(0, 1)', class = 'sigma'),
-      set_prior('normal(0, 1)', class = 'Intercept')
-    ),
-    cores = 4,
-    backend = "cmdstanr",
-    iter = opt$iter,
-    warmup = opt$warmup,
-    
-    
-    family=gaussian() 
-  )
-  
-  save(model,file=paste0(opt$output,"/overall_models/variable_addition/",model_name,".rda"))
-  
-  loo_model <- loo(model)
-  save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",model_name,".rda"))
-  loo_model <- NULL
-  
-  r2_model <- bayes_R2(model)
-  save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",model_name,".rda"))
-  
 }
 
 
-# Mixed effects Village
-if(as.numeric(opt$index)==7){
-  model_name <- "horseshoe_mixed_village"
-  model <- brm(
-    formula=log_tva ~ 1 +  
-      #Household Level
-      education_cleaned + 
-      log_livestock_tlu + 
-      log_land_cultivated + 
-      logit_off_farm_orientation +
-      logit_market_orientation +
-      logit_proportion_female_control+
-      log_income_diversity +
-      
-      # Village Level
-      norm_growing_period +
-      log_min_travel_time +
-      #County Level
-      norm_gdl_lifexp +
-      # Levels
-      (1 | iso_country_code) +
-      (1 +  
-         #Household Level
-         education_cleaned + 
-         log_livestock_tlu + 
-         log_land_cultivated + 
-         logit_off_farm_orientation +
-         logit_market_orientation +
-         logit_proportion_female_control+
-         log_income_diversity | iso_country_code:village)+
-      (1 | id_form),
-    data = indicator_data,
-    prior = c(
-      set_prior("horseshoe(1)", class="b"),
-      set_prior('normal(0, 1)', class = 'sd'),
-      set_prior('normal(0, 1)', class = 'sigma'),
-      set_prior('normal(0, 1)', class = 'Intercept')
-    ),
-    cores = 4,
-    backend = "cmdstanr",
-    iter = opt$iter,
-    warmup = opt$warmup,
-    
-    
-    family=gaussian() 
-  )
+model <- brm(
   
-  save(model,file=paste0(opt$output,"/overall_models/variable_addition/",model_name,".rda"))
+  formula=models[[opt$index]][["formula"]],
+  data=models[[opt$index]][["data"]],
+  prior = prior_to_use,
+  cores = opt$ncores,
+  backend = "cmdstanr",
+  iter = opt$iter,
+  warmup = opt$warmup,
   
-  loo_model <- loo(model)
-  save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",model_name,".rda"))
-  loo_model <- NULL
   
-  r2_model <- bayes_R2(model)
-  save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",model_name,".rda"))
-  
-}
+  family=gaussian() 
+)
 
 
-# Mixed effects From
-if(as.numeric(opt$index)==8){
-  
-  model_name <- "horseshoe_mixed_form"
-  model <- brm(
-    formula=log_tva ~ 1 +  
-      #Household Level
-      education_cleaned + 
-      log_livestock_tlu + 
-      log_land_cultivated + 
-      logit_off_farm_orientation +
-      logit_market_orientation +
-      logit_proportion_female_control+
-      log_income_diversity +
-      
-      # Village Level
-      norm_growing_period +
-      log_min_travel_time +
-      #County Level
-      norm_gdl_lifexp +
-      # Levels
-      (1 | iso_country_code) +
-      (1 | iso_country_code:village)+
-      (1  +  
-         #Household Level
-         education_cleaned + 
-         log_livestock_tlu + 
-         log_land_cultivated + 
-         logit_off_farm_orientation +
-         logit_market_orientation +
-         logit_proportion_female_control+
-         log_income_diversity | id_form),
-    data = indicator_data,
-    prior = c(
-      set_prior("horseshoe(1)", class="b"),
-      set_prior('normal(0, 1)', class = 'sd'),
-      set_prior('normal(0, 1)', class = 'sigma'),
-      set_prior('normal(0, 1)', class = 'Intercept')
-    ),
-    cores = 4,
-    backend = "cmdstanr",
-    iter = opt$iter,
-    warmup = opt$warmup,
-    
-    
-    family=gaussian() 
-  )
-  
-  save(model,file=paste0(opt$output,"/overall_models/variable_addition/",model_name,".rda"))
-  
-  loo_model <- loo(model)
-  save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",model_name,".rda"))
-  loo_model <- NULL
-  
-  r2_model <- bayes_R2(model)
-  save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",model_name,".rda"))
-  
-}
+save(model,file=paste0(opt$output,"/overall_models/variable_addition/",models[[opt$index]][["tag"]],".rda"))
 
+loo_model <- loo(model)
+save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",models[[opt$index]][["tag"]],".rda"))
+loo_model <- NULL
 
+r2_model <- bayes_R2(model)
+save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",models[[opt$index]][["tag"]],".rda"))
 
 
