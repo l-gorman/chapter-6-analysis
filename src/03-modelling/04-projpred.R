@@ -1,4 +1,4 @@
-# sbatch src/03-modelling/04-projpred.R
+# sbatch src/03-modelling/04-projpred.sh
 
 
 library(brms)

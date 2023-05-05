@@ -26,7 +26,7 @@ echo "More details on submitting jobs here https://www.acrc.bris.ac.uk/protected
 
 module add languages/r/4.1.0
 
-out_directory="/user/work/lg14410/chapter-6/outputs/"
+out_directory="/user/work/lg14410/chapter-6/outputs/overall_models/"
 cores=4
 
 Rscript "./src/03-modelling/04-projpred.R" -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
