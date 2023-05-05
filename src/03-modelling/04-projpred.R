@@ -49,10 +49,18 @@ loadRData <- function(fileName){
   get(ls()[ls() != "fileName"])
 }
 
+
+# Syntax & Usage
+start <- Sys.time()
+# Add here R code or 
+# Add function call
+
+
 ref_model <- loadRData(paste0(opt$output,"/weak_prior_mixed_country.rda"))
 ref_model <- projpred::get_refmodel(ref_model)
 
 seed <- as.numeric(opt$index)
+
 
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
@@ -60,5 +68,10 @@ varsel_model <- cv_varsel(ref_model,
                           K = 5, 
                           verbose = TRUE, 
                           seed = seed)
+save(varsel_model,file=paste0(opt$output,"/proj_pred/projpred_varsel_model_",seed,".rda"))
 
-save(varsel_model,file=paste0(opt$output,"/proj_pred/proj_pred_varsel_model_",seed,".rda"))
+
+print("Execution Time")
+print( Sys.time() - start )
+
+
