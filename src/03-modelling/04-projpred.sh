@@ -5,7 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=2-00:00:00
+#SBATCH --time=0-00:10:00
 #SBATCH --mem=12G
 #SBATCH --account=sscm012844
 #SBATCH --array=1-5
@@ -29,7 +29,7 @@ module add languages/r/4.1.0
 out_directory="/user/work/lg14410/chapter-6/outputs/"
 cores=4
 
-Rscript "./src/03-modelling/03-proj-pred-selection.R" -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
+Rscript "./src/03-modelling/04-projpred.R" -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
 
 unset out_directory
 unset cores

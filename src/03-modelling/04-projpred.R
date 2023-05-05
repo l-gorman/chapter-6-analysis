@@ -1,4 +1,4 @@
-# sbatch src/03-modelling/03-proj-pred-selection.R
+# sbatch src/03-modelling/04-projpred.R
 
 
 library(brms)
@@ -49,7 +49,7 @@ loadRData <- function(fileName){
   get(ls()[ls() != "fileName"])
 }
 
-ref_model <- loadRData(paste0(opt$output,"/weak_prior_tva.rda"))
+ref_model <- loadRData(paste0(opt$output,"/weak_prior_mixed_country.rda"))
 ref_model <- projpred::get_refmodel(ref_model)
 
 seed <- as.numeric(opt$index)

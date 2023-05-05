@@ -32,7 +32,7 @@ vpc <- function(model, params){
   return(vpcs)
 }
 
-summarise_estimates <- function(draws_df, params_list){
+summarise_estimates <- function(draws_df, param_list){
   # draws_df$Total <- rowSums(draws_df)
   draws.66 <- draws_df %>% 
     gather() %>% 
@@ -55,7 +55,7 @@ summarise_estimates <- function(draws_df, params_list){
     )
   
   draw_summary <- rbind(draws.66,draws.95)
-  clean_names <- names(params_list)[match(draw_summary$key,as.character(params_list))]
+  clean_names <- names(param_list)[match(draw_summary$key,as.character(param_list))]
   
   # clean_names <- c("Total",names(params_list))[match(draw_summary$key,c("Total",as.character(params_list)))]
   draw_summary$key <- clean_names
@@ -66,16 +66,16 @@ summarise_estimates <- function(draws_df, params_list){
 
 
 estimates_plot <- function(draws_df,
-                           params_list,
+                           param_list,
                            title,
                            sort=F
 ){
   
   draw_summary <-summarise_estimates(draws_df,
-                                     params_list)
+                                     param_list)
   
   draw_summary$key <- factor(draw_summary$key,
-                             levels=names(params_list),
+                             levels=names(param_list),
                              ordered = T)
   draw_summary$level <- factor(draw_summary$level, levels=c("0.66 Level","0.95 Level"),ordered = T)
   
@@ -141,17 +141,17 @@ all_plots <- function(model,
                       model_name,
                       param_list){
   draws <- as_draws_array(model)
-  mcmc_scatter <- mcmc_pairs(draws,pars = as.character(params_list),off_diag_fun = "hex")
+  mcmc_scatter <- mcmc_pairs(draws,pars = as.character(param_list),off_diag_fun = "hex")
   
-  mcmc_scatter <- mcmc_pairs(draws,pars = as.character(params_list))
+  mcmc_scatter <- mcmc_pairs(draws,pars = as.character(param_list))
   # mcmc_scatter <- mcmc_scatter + stat_density_2d(color = "black", size = .5)
   
   ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/mcmc_scatter.png"),
          plot = mcmc_scatter,width = 5000,height=3500,units = "px")
   
   # Variable Estimate
-  draws_df <- as_draws_df(model)[as.character(params_list)]
-  estimate_plot <- estimates_plot(draws_df = draws_df,params_list = params_list,
+  draws_df <- as_draws_df(model)[as.character(param_list)]
+  estimate_plot <- estimates_plot(draws_df = draws_df,param_list = param_list,
                                   title=paste0("Estimates for ",model_name," TVA Model")
   )
   ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/location_estimates.png"),
@@ -159,8 +159,8 @@ all_plots <- function(model,
   
   
   # VPC Estimates
-  vpcs <- vpc(model,as.character(params_list))
-  vpc_estimates <- estimates_plot(draws_df = vpcs,params_list = params_list,
+  vpcs <- vpc(model,as.character(param_list))
+  vpc_estimates <- estimates_plot(draws_df = vpcs,param_list = param_list,
                                   title=paste0("VPCs for ",model_name," TVA Model")
   )
   ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/location_vpcs.png"),
@@ -168,150 +168,38 @@ all_plots <- function(model,
   
 }
 
-# Country Only -------------------------------------------------------
 
-dir.create("outputs/overall_model_results/location_only_tva/country_only")
-
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "Unexplained"="sigma"
-)
-
-country_only <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_only.rda")
-
-all_plots(country_only,"country_only",params_list)
-
-# Country County -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_county")
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "County"="sd_iso_country_code:gdlcode__Intercept",
-  "Unexplained"="sigma"
-)
-
-country_county <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county.rda")
-all_plots(country_county,"country_county",params_list)
-
-# Country County Village -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_county_village")
+# All Models
 
 params_list <- list(
   "Country"="sd_iso_country_code__Intercept",
   "County"="sd_iso_country_code:gdlcode__Intercept",
   "Village"="sd_iso_country_code:gdlcode:village__Intercept",
-  "Unexplained"="sigma"
-)
-
-country_county_village <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_village.rda")
-all_plots(country_county_village,"country_county_village",params_list)
-
-# Country County Village KG Class -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_county_village_kg")
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "County"="sd_iso_country_code:gdlcode__Intercept",
-  "Village"="sd_iso_country_code:gdlcode:village__Intercept",
+  "Project"="sd_id_form__Intercept",
   "KG Class"="sd_kg_class_name__Intercept",
   "Unexplained"="sigma"
 )
 
-country_county_village_kg <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_village_kg.rda")
-all_plots(country_county_village_kg,"country_county_village_kg",params_list)
+
+model_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") 
+model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
+
+for (model_file in model_files){
+  model_name <- gsub(".rda","",model_file,fixed=T)
+  dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name))
+  model <- loadRData(paste0("outputs/14_04_2023/outputs/overall_models/location_only/",model_file))
+  
+  all_variables <- get_variables(model)
+  
+  param_list_temp <-params_list[as.character(params_list) %in% all_variables]
+  # model <- country_village_form
+  # model_name <- "country_village_form"
+  # params_list <- params_list
+  all_plots(model,model_name,param_list_temp)
+}
 
 
-# Country County Village KG Class Form -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_county_village_kg_form")
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "County"="sd_iso_country_code:gdlcode__Intercept",
-  "Village"="sd_iso_country_code:gdlcode:village__Intercept",
-  "KG Class"="sd_kg_class_name__Intercept",
-  "Project"="sd_id_form__Intercept",
-  "Unexplained"="sigma"
-)
-
-country_county_village_kg_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_village_kg_form.rda")
-all_plots(country_county_village_kg_form,"country_county_village_kg_form",params_list)
-
-# Country County Form -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_county_form")
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "County"="sd_iso_country_code:gdlcode__Intercept",
-  "Project"="sd_id_form__Intercept",
-  "Unexplained"="sigma"
-)
-
-country_county_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_form.rda")
-all_plots(country_county_form,"country_county_form",params_list)
-
-
-# Country County Form -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_county_form")
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "County"="sd_iso_country_code:gdlcode__Intercept",
-  "Project"="sd_id_form__Intercept",
-  "Unexplained"="sigma"
-)
-
-country_county_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_form.rda")
-all_plots(country_county_form,"country_county_form",params_list)
-
-
-# Country County Form -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_county_village_form")
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "County"="sd_iso_country_code:gdlcode__Intercept",
-  "Village"="sd_iso_country_code:gdlcode:village__Intercept",
-  "Project"="sd_id_form__Intercept",
-  "Unexplained"="sigma"
-)
-
-country_county_village_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_county_village_form.rda")
-all_plots(country_county_village_form,"country_county_village_form",params_list)
-
-
-# Country Form -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_form")
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "Project"="sd_id_form__Intercept",
-  "Unexplained"="sigma"
-)
-
-country_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_form.rda")
-all_plots(country_form,"country_form",params_list)
-
-
-# Country Form -------------------------------------------------------
-dir.create("outputs/overall_model_results/location_only_tva/country_village_form")
-
-params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
-  "Village"="sd_iso_country_code:gdlcode:village__Intercept",
-  "Project"="sd_id_form__Intercept",
-  "Unexplained"="sigma"
-)
-
-
-country_village_form <- loadRData("outputs/14_04_2023/outputs/overall_models/location_only/country_village_form.rda")
-# model <- country_village_form
-# model_name <- "country_village_form"
-# params_list <- params_list
-all_plots(country_village_form,"country_village_form",params_list)
-
-
-# Loo Comparison
+# R2 Comparison
 
 r2_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") %>% grep("^r2",x=., value=T)
 
@@ -359,8 +247,7 @@ r_2_comparison <- ggplot(r2_all)+
 ggsave("outputs/overall_model_results/location_only_tva/r2_summary.png",r_2_comparison, width=1500,height=1500,units="px")
   
   
-# loo Comparison
-
+# Loo Comparison
 
 loo_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") %>% grep("^loo",x=., value=T)
 
