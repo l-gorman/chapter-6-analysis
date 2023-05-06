@@ -16,6 +16,8 @@ library(cmdstanr)
 # Solution to globals size, found here:
 # https://stackoverflow.com/questions/40536067/how-to-adjust-future-global-maxsize
 options(future.globals.maxSize = 72000 * 1024^2)
+# options(mc.cores = parallel::detectCores())
+options(mc.cores = 24)
 
 option_list = list(
   make_option(c("-o", "--output"), type='character',
