@@ -66,8 +66,8 @@ seed <- as.numeric(opt$index)
 
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
-                          cv_method = 'kfold', 
-                          K = 5, 
+                          cv_method = 'loo', 
+                          # K = 5, 
                           verbose = TRUE, 
                           seed = seed)
 save(varsel_model,file=paste0(opt$output,"/proj_pred/projpred_varsel_model_",seed,".rda"))

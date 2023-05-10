@@ -8,6 +8,7 @@ library(brms)
 library(ggplot2)
 library(bayesplot)
 library(hexbin)
+library(flextable)
 loadRData <- function(fileName){
   #loads an RData file, and returns it
   load(fileName)
@@ -209,7 +210,7 @@ all_plots <- function(model,
   
   
   ggsave(filename = paste0("outputs/overall_model_results/variable_addition/",model_name,"/fixed_effects_plots.png"),
-         plot = fixed_plots,width = 5000,height=3500,units = "px")
+         plot = fixed_plots,width = 2500,height=3000,units = "px")
   
   
   # Mixed  Effects
@@ -256,7 +257,7 @@ all_plots <- function(model,
     mixed_plots <- quick_estimates_plot(mixed_effects_summary, title=paste0("Random Effects for Model ", model_name), sort=T)
     
     ggsave(filename = paste0("outputs/overall_model_results/variable_addition/",model_name,"/mixed_effects_plots.png"),
-           plot = mixed_plots,width = 5000,height=3500,units = "px")
+           plot = mixed_plots,width = 2500,height=3000,units = "px")
     
     
     # Plotting random effects
@@ -312,7 +313,7 @@ all_plots <- function(model,
       random_plots <- quick_estimates_plot(random_effects_summary, title=paste0("Random Effects for Model: ", model_name,'\nVariable: ',variable_to_plot), sort=T)
       
       ggsave(filename = paste0("outputs/overall_model_results/variable_addition/",model_name,"/random_effects/",variable_to_plot,".png"),
-             plot = random_plots,width = 5000,height=4500,units = "px")
+             plot = random_plots,width = 2500,height=3000,units = "px")
       
     }
     
