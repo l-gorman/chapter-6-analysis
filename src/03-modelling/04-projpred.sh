@@ -8,7 +8,7 @@
 #SBATCH --time=10-00:00:00
 #SBATCH --mem=72G
 #SBATCH --account=sscm012844
-#SBATCH --array=1-5
+#SBATCH --array=1-6
 
 
 cd "${SLURM_SUBMIT_DIR}"

@@ -64,14 +64,29 @@ ref_model <- projpred::get_refmodel(ref_model)
 seed <- as.numeric(opt$index)
 
 
+if (seed < 5){
+  
+
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
-                          cv_method = 'loo', 
-                          # K = 5, 
+                          cv_method = 'kfold', 
+                          K = 5,
                           verbose = TRUE, 
                           seed = seed)
-save(varsel_model,file=paste0(opt$output,"/proj_pred/projpred_varsel_model_",seed,".rda"))
 
+save(varsel_model,file=paste0(opt$output,"/proj_pred/projpred_varsel_model_",seed,".rda"))
+}
+
+if (seed == 6){
+  varsel_model <- cv_varsel(ref_model,
+                            method = 'forward', 
+                            cv_method = 'LOO', 
+                            # K = 5, 
+                            verbose = TRUE, 
+                            seed = seed)
+  
+  save(varsel_model,file=paste0(opt$output,"/proj_pred/projpred_varsel_model_loo.rda"))
+}
 
 print("Execution Time")
 print( Sys.time() - start )
