@@ -284,7 +284,13 @@ all_plots <- function(model,
 params_list <- list(
   "Country"="sd_iso_country_code__Intercept",
   "County"="sd_iso_country_code:gdlcode__Intercept",
+  "County"="sd_gdlcode__Intercept",
+  
   "Village"="sd_iso_country_code:gdlcode:village__Intercept",
+  "Village"="sd_iso_country_code:village__Intercept",
+  "Village"="sd_kg_class:village__Intercept",
+  
+  
   "Project"="sd_id_form__Intercept",
   "Project"="sd_iso_country_code:id_form__Intercept",
   
