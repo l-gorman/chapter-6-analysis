@@ -243,10 +243,10 @@ r_2_comparison <- ggplot(r2_all)+
   theme(
     plot.title = element_text(hjust=0.5),
     axis.text.x = element_text(angle=45,hjust=1))
-  
+
 ggsave("outputs/overall_model_results/location_only_tva/r2_summary.png",r_2_comparison, width=1500,height=1500,units="px")
-  
-  
+
+
 # Loo Comparison
 
 loo_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") %>% grep("^loo",x=., value=T)
@@ -277,8 +277,79 @@ readr::write_csv(loo_compare,"outputs/overall_model_results/location_only_tva/lo
 loo_compare_flextable <- loo_compare %>% flextable::flextable()
 
 save_as_image(loo_compare_flextable, "outputs/overall_model_results/location_only_tva/loo_comparison.png")
+i
 
 
-
-  
-  
+# 
+# # Looking at correlations for random effects
+# 
+# dir.create("outputs/overall_model_results/location_only_tva/effect_correlation")
+# 
+# 
+# 
+# var_type <- list(
+#   form="r_id_form",
+#   country="r_iso_country_code",
+#   county="r_iso_country_code:gdlcode",
+#   village="iso_country_code:gdlcode:village",
+#   climate_class="kg_class_name")
+#  
+# 
+# c 
+# 
+# 
+#   
+# random_effects_cors <- as_draws_df(full_model,variable = "^r", regex=T)
+# 
+# 
+# ?spread_draws
+# temp <- spread_rvars(full_model)
+# random_effects_correlation <- cor(random_effects_cors)
+# random_effects_correlation_df <- as.data.frame(as.table(random_effects_correlation))
+# 
+# random_effects_correlation_df$var_1_type <- NA
+# random_effects_correlation_df$var_1_form <- NA
+# random_effects_correlation_df$var_1_country <- NA
+# random_effects_correlation_df$var_1_county <- NA
+# random_effects_correlation_df$var_1_village <- NA
+# random_effects_correlation_df$var_1_climate_class <- NA
+# 
+# random_effects_correlation_df$var_2_type <- NA
+# random_effects_correlation_df$var_2_form <- NA
+# random_effects_correlation_df$var_2_country <- NA
+# random_effects_correlation_df$var_2_county <- NA
+# random_effects_correlation_df$var_2_village <- NA
+# random_effects_correlation_df$var_2_climate_class <- NA
+# 
+# for (var in names(var_type)){
+#   
+#   reg_name <- var_type[[var]]
+#   
+#   subset_var_1 <- grep(paste0("^",reg_name),random_effects_correlation_df$Var1)
+#   random_effects_correlation_df$var_1_type[subset_var_1] <- var
+#   
+#   if(var=="form"){
+#     form <- gsub(".*\\[","",random_effects_correlation_df$Var1[subset_var_1])
+#     form <- gsub(",.*","",form)
+#     country <- gsub(",.*","",form)
+#     
+#   }
+#   
+#   
+# 
+#   
+#   
+#   if ()
+#   
+#   
+#   var_1 <- 
+# }
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
