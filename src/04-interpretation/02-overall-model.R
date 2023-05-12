@@ -3,6 +3,7 @@ library(tidyr)
 library(tibble)
 library(magrittr)
 library(dplyr)
+library(reshape2)
 library(tidybayes)
 library(brms)
 library(ggplot2)
@@ -132,6 +133,65 @@ get_random_effects <- function(model,
   return(plot)
 }
 
+plot_levels_correlations <- function(
+    model,
+    level_1, 
+    level_2,
+    facet=T
+){
+  
+  
+  
+  draws <- as_draws_df(model,variable =c(level_1,level_2) )
+  vars <- colnames(draws)
+  vars <- vars[vars %in% c(".chain",".iteration",".draw")==F]
+  
+  level_1_vars <- vars[grep(paste0("^",level_1,"\\["),vars)]
+  level_1_levels <- gsub(".*\\[","",level_1_vars)
+  
+  level_1_levels <- gsub(",.*","",level_1_levels)
+  
+  level_2_vars <- vars[grep(paste0("^",level_2,"\\["),vars)]
+  
+  
+  all_data_to_plot <-list()
+  for (i in 1:length(level_1_vars))
+  {
+    upper_level <- level_1_levels[i]
+    upper_level_whole <- level_1_vars[i]
+    
+    relevant_level_2_levels <- level_2_vars[grep(paste0(upper_level,"_"),level_2_vars)]
+    
+    data_to_plot <- draws[c(upper_level_whole,relevant_level_2_levels)]
+    
+    data_to_plot <- data_to_plot %>% melt(id.vars=upper_level_whole)
+    data_to_plot$variable <- NULL
+    
+    colnames(data_to_plot) <- c("upper_group", "lower_group")
+    data_to_plot$upper_level <- upper_level
+    
+    all_data_to_plot[[upper_level]] <- data_to_plot
+  }
+  
+  all_data_to_plot <- bind_rows(all_data_to_plot)
+  
+  
+  if (facet==F){
+    plot_random_cors <- ggplot(all_data_to_plot,aes(x=upper_group,y=lower_group))+
+      geom_hex()
+      return(plot_random_cors)
+  }
+  
+  plot_random_cors <- ggplot(all_data_to_plot,aes(x=upper_group,y=lower_group))+
+    geom_hex()+
+    facet_wrap(~upper_level)
+  
+  return(plot_random_cors)
+  
+  
+}
+
+
 
 dir.create("outputs/overall_model_results/")
 dir.create("outputs/overall_model_results/location_only_tva/")
@@ -166,6 +226,56 @@ all_plots <- function(model,
   ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/location_vpcs.png"),
          plot = vpc_estimates,width = 1800,height=1200,units = "px")
   
+  
+  all_vars <-get_variables(model)
+  
+  all_vars <-get_variables(model)
+  group_effects <- grep("^sd",all_vars, value=T)
+  
+  dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/"))
+  
+  
+  if (any(grepl("r_iso_country_code",all_vars)) & any(grepl("r_iso_country_code:id_form",all_vars))){
+    
+    temp <- plot_levels_correlations(
+      model=model ,
+      level_1 = "r_iso_country_code",
+      level_2="r_iso_country_code:id_form"
+      
+    )
+    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/country_form.png"),
+           plot = temp,width = 1800,height=1200,units = "px")
+  }
+  
+  if (any(grepl("r_iso_country_code",all_vars)) & any(grepl("r_iso_country_code:gdlcode",all_vars))){
+    
+    temp <- plot_levels_correlations(
+      model=model ,
+      level_1 = "r_iso_country_code",
+      level_2="r_iso_country_code:gdlcode"
+      
+    )
+    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/country_county.png"),
+           plot = temp,width = 1800,height=1200,units = "px")
+  }
+  
+  if (any(grepl("r_iso_country_code:gdlcode",all_vars)) & any(grepl("r_iso_country_code:gdlcode:village",all_vars))){
+    
+    temp <- plot_levels_correlations(
+      model=model ,
+      level_1 = "r_iso_country_code:gdlcode",
+      level_2="r_iso_country_code:gdlcode:village",
+      facet=F
+      
+    )
+    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/county_village.png"),
+           plot = temp,width = 4000,height=3000,units = "px")
+  }
+  
+  
+  
+  
+  
 }
 
 
@@ -176,18 +286,20 @@ params_list <- list(
   "County"="sd_iso_country_code:gdlcode__Intercept",
   "Village"="sd_iso_country_code:gdlcode:village__Intercept",
   "Project"="sd_id_form__Intercept",
+  "Project"="sd_iso_country_code:id_form__Intercept",
+  
   "KG Class"="sd_kg_class_name__Intercept",
   "Unexplained"="sigma"
 )
 
 
-model_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") 
+model_files <- list.files("outputs/12_05_2023/outputs/overall_models/location_only/") 
 model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
 
 for (model_file in model_files){
   model_name <- gsub(".rda","",model_file,fixed=T)
   dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name))
-  model <- loadRData(paste0("outputs/14_04_2023/outputs/overall_models/location_only/",model_file))
+  model <- loadRData(paste0("outputs/12_05_2023/outputs/overall_models/location_only/",model_file))
   
   all_variables <- get_variables(model)
   
@@ -201,12 +313,12 @@ for (model_file in model_files){
 
 # R2 Comparison
 
-r2_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") %>% grep("^r2",x=., value=T)
+r2_files <- list.files("outputs/12_05_2023/outputs/overall_models/location_only/") %>% grep("^r2",x=., value=T)
 
 
 r2_all <- sapply(r2_files, function(x){
   r2_temp <- loadRData(paste0(
-    "outputs/14_04_2023/outputs/overall_models/location_only/",
+    "outputs/12_05_2023/outputs/overall_models/location_only/",
     x
     
   ))
@@ -249,12 +361,12 @@ ggsave("outputs/overall_model_results/location_only_tva/r2_summary.png",r_2_comp
 
 # Loo Comparison
 
-loo_files <- list.files("outputs/14_04_2023/outputs/overall_models/location_only/") %>% grep("^loo",x=., value=T)
+loo_files <- list.files("outputs/12_05_2023/outputs/overall_models/location_only/") %>% grep("^loo",x=., value=T)
 
 
 loo_all <- sapply(loo_files, function(x){
   loo_temp <- loadRData(paste0(
-    "outputs/14_04_2023/outputs/overall_models/location_only/",
+    "outputs/12_05_2023/outputs/overall_models/location_only/",
     x
     
   ))
@@ -277,7 +389,20 @@ readr::write_csv(loo_compare,"outputs/overall_model_results/location_only_tva/lo
 loo_compare_flextable <- loo_compare %>% flextable::flextable()
 
 save_as_image(loo_compare_flextable, "outputs/overall_model_results/location_only_tva/loo_comparison.png")
-i
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # 
