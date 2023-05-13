@@ -366,6 +366,16 @@ ggsave("./outputs/02-data-exploration/data-coverage/geographical_counts/villages
 # people_per_county -------------------------------------------------------
 
 
+hhs_per_county <- indicator_data %>% 
+  group_by(gdlcode) %>% 
+  summarise(n_hh=n(),
+            n_village=length(unique(village)))
+
+ggplot(hhs_per_county, aes(y=n_hh))+
+  geom_boxplot()
+
+ggplot(hhs_per_county, aes(y=n_village))+
+  geom_boxplot()
 
 
 

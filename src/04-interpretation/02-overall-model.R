@@ -235,7 +235,7 @@ all_plots <- function(model,
   dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/"))
   
   
-  if (any(grepl("r_iso_country_code",all_vars)) & any(grepl("r_iso_country_code:id_form",all_vars))){
+  if (any(grepl("r_iso_country_code\\[",all_vars)) & any(grepl("r_iso_country_code:id_form\\[",all_vars))){
     
     temp <- plot_levels_correlations(
       model=model ,
@@ -247,7 +247,19 @@ all_plots <- function(model,
            plot = temp,width = 1800,height=1200,units = "px")
   }
   
-  if (any(grepl("r_iso_country_code",all_vars)) & any(grepl("r_iso_country_code:gdlcode",all_vars))){
+  if (any(grepl("r_iso_country_code\\[",all_vars)) & any(grepl("r_iso_country_code:village\\[",all_vars))){
+    
+    temp <- plot_levels_correlations(
+      model=model ,
+      level_1 = "r_iso_country_code",
+      level_2="r_iso_country_code:village"
+      
+    )
+    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/country_village.png"),
+           plot = temp,width = 1800,height=1200,units = "px")
+  }
+  
+  if (any(grepl("r_iso_country_code\\[",all_vars)) & any(grepl("r_iso_country_code:gdlcode\\[",all_vars))){
     
     temp <- plot_levels_correlations(
       model=model ,
@@ -259,7 +271,7 @@ all_plots <- function(model,
            plot = temp,width = 1800,height=1200,units = "px")
   }
   
-  if (any(grepl("r_iso_country_code:gdlcode",all_vars)) & any(grepl("r_iso_country_code:gdlcode:village",all_vars))){
+  if (any(grepl("r_iso_country_code:gdlcode\\[",all_vars)) & any(grepl("r_iso_country_code:gdlcode:village\\[",all_vars))){
     
     temp <- plot_levels_correlations(
       model=model ,
@@ -273,7 +285,7 @@ all_plots <- function(model,
   }
   
   
-  if (any(grepl("r_gdlcode",all_vars)) & any(grepl("r_gdlcode:village",all_vars))){
+  if (any(grepl("r_gdlcode\\[",all_vars)) & any(grepl("r_gdlcode:village\\[",all_vars))){
     
     temp <- plot_levels_correlations(
       model=model ,
@@ -286,7 +298,7 @@ all_plots <- function(model,
            plot = temp,width = 4000,height=3000,units = "px")
   }
   
-  if (any(grepl("r_iso_country_code",all_vars)) & any(grepl("r_iso_country_code:village",all_vars))){
+  if (any(grepl("r_gdlcode\\[",all_vars)) & any(grepl("r_iso_country_code:village\\[",all_vars))){
     
     temp <- plot_levels_correlations(
       model=model ,
@@ -299,7 +311,7 @@ all_plots <- function(model,
            plot = temp,width = 1800,height=1200,units = "px")
   }
   
-  if (any(grepl("r_kg_class",all_vars)) & any(grepl("r_kg_class:village",all_vars))){
+  if (any(grepl("r_kg_class\\[",all_vars)) & any(grepl("r_kg_class:village\\[",all_vars))){
     
     temp <- plot_levels_correlations(
       model=model ,
@@ -330,7 +342,6 @@ params_list <- list(
   "Village"="sd_iso_country_code:gdlcode:village__Intercept",
   "Village"="sd_iso_country_code:village__Intercept",
   "Village"="sd_gdlcode:village__Intercept",
-  
   "Village"="sd_kg_class:village__Intercept",
   
   
