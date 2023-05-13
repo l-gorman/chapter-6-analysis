@@ -7,7 +7,8 @@ library(tidyr)
 library(ggplot2)
 library(bayesplot)
 library(optparse)
-
+library(tibble)
+library(readr)
 
 option_list = list(
   make_option(c("-i", "--iter"),  type='integer',
