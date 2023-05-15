@@ -249,7 +249,7 @@ configs <- list(
     avg_villages_per_project=20,
     avg_individuals_per_village=20
   ),
-  
+
   # 1 Country, many projects
   list(
     n_countries = 1,
@@ -257,18 +257,21 @@ configs <- list(
     avg_villages_per_project=20,
     avg_individuals_per_village=20
   ),
-  
+
   # Many countries,
   # Many projects
   list(
-    n_countries = 20,
-    avg_projects_per_country = 20,
-    avg_villages_per_project=20,
-    avg_individuals_per_village=20
+    n_countries = 10,
+    avg_projects_per_country = 10,
+    avg_villages_per_project=10,
+    avg_individuals_per_village=10
   )
   
 )
 
+if (i!=3){
+  stop("Only running final simulation this time!")
+}
 
 temp_config <- configs[[i]]
 
