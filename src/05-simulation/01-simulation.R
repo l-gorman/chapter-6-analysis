@@ -190,7 +190,7 @@ generate_simulated_data <- function(
   
   # Country Values
   countries <- unique(df$country)
-  country_means <- rnorm(length(countries),mean = mu,sd = sigma*country_vpc)
+  country_means <- rnorm(length(countries),mean = mu,sd = sigma*(country_vpc^0.5))
   country_means <- tibble::as_tibble(list(
     country=countries,
     country_value=country_means
@@ -202,7 +202,7 @@ generate_simulated_data <- function(
   projects <- df[c("project","country_value")]
   projects <- unique(projects)
   
-  project_means <- rnorm(nrow(projects),mean = projects$country_value,sd =project_vpc*sigma)
+  project_means <- rnorm(nrow(projects),mean = projects$country_value,sd =sigma*(project_vpc^0.5))
   project_means <- tibble::as_tibble(list(
     project=projects$project,
     project_value=project_means
@@ -214,7 +214,7 @@ generate_simulated_data <- function(
   villages <- df[c("village","project_value")]
   villages <- unique(villages)
   
-  village_means <- rnorm(nrow(villages),mean = villages$project_value,sd =village_vpc*sigma)
+  village_means <- rnorm(nrow(villages),mean = villages$project_value,sd =sigma*(village_vpc^0.5))
   village_means <- tibble::as_tibble(list(
     village=villages$village,
     village_value=village_means
@@ -227,7 +227,7 @@ generate_simulated_data <- function(
   individuals <- df[c("individual","village_value")]
   individuals <- unique(individuals)
   
-  individual_values <- rnorm(nrow(individuals),mean = individuals$village_value,sd =unexplained_vpc*sigma)
+  individual_values <- rnorm(nrow(individuals),mean = individuals$village_value,sd =sigma*(unexplained_vpc^0.5))
   individual_values <- tibble::as_tibble(list(
     individual=individuals$individual,
     individual_value=individual_values
@@ -262,16 +262,13 @@ configs <- list(
   # Many projects
   list(
     n_countries = 10,
-    avg_projects_per_country = 10,
+    avg_projects_per_country = 15,
     avg_villages_per_project=10,
     avg_individuals_per_village=10
   )
   
 )
 
-if (i!=3){
-  stop("Only running final simulation this time!")
-}
 
 temp_config <- configs[[i]]
 
