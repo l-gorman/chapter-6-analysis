@@ -4,3 +4,6 @@ outputs/
 .Rproj.user/
 outputs/
 copy-data-to.sh  
+Report/
+*.docx
+.Rhistory

@@ -223,7 +223,10 @@ levels <- list(
 draws <- as_draws_df(model_3,variable = as.character(levels))
 
 estimates_plot(draws_df = draws,params_list = levels, title = "")
-vpc(model = model_3,params = as.character(levels))
+vpcs <- vpc(model = model_3,params = as.character(levels))
+estimates_plot(draws_df = vpcs,params_list = levels, title = "")
+
+colMeans(vpcs)
 
 
 plot_levels_correlations(model = model_3,level_1 = "r_country",level_2 = "r_country:project",facet = T)
