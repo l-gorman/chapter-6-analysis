@@ -66,136 +66,136 @@ dir.create(paste0(opt$output,"/overall_models/location_only"))
 
 models <-  list(
   
-  # list(
-  #   tag="country_only",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code))
-  # ),
-  # 
-  # list(
-  #   tag="country_county",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:gdlcode))
-  # ),
-  # 
-  # list(
-  #   tag="country_county_village",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:gdlcode) +
-  #                (1 | iso_country_code:gdlcode:village))
-  # ),
-  # 
-  # list(
-  #   tag="country_county_village_kg",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:gdlcode) +
-  #                (1 | iso_country_code:gdlcode:village)+
-  #                (1 | kg_class_name))
-  # ),
-  # 
-  # list(
-  #   tag="country_county_village_kg_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:gdlcode) +
-  #                (1 | iso_country_code:gdlcode:village)+
-  #                (1 | kg_class_name)+
-  #                (1 | iso_country_code:id_form))
-  # ),
-  # 
-  # list(
-  #   tag="country_county_village_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:gdlcode) +
-  #                (1 | iso_country_code:gdlcode:village)+
-  #                (1 | iso_country_code:id_form))
-  # ),
-  # 
-  # list(
-  #   tag="country_county_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:gdlcode) +
-  #                (1 | iso_country_code:id_form))
-  # ),
-  # 
-  # 
-  # list(
-  #   tag="country_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:id_form))
-  # ),
-  # 
-  # list(
-  #   tag="country_village_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:gdlcode:village)+
-  #                (1 | iso_country_code:id_form))
-  # ),
-  # 
-  # list(
-  #   tag="country_village_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:gdlcode:village)+
-  #                (1 | iso_country_code:id_form))
-  # ),
-  # 
-  # 
-  # list(
-  #   tag="kg_only",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +  
-  #                (1 | kg_class_name))
-  # ),
-  # 
-  # list(
-  #   tag="kg_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +  
-  #                (1 | kg_class_name)+
-  #                (1 | id_form))
-  # ),
-  # 
-  # list(
-  #   tag="kg_village_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +  
-  #                (1 | kg_class_name)+
-  #                (1 | iso_country_code:gdlcode:village)+
-  #                (1 | iso_country_code:id_form))
-  # ),
-  # 
-  # list(
-  #   tag="country_kg_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +  
-  #                (1 | iso_country_code)+
-  #                (1 | kg_class_name)+
-  #                (1 | iso_country_code:id_form))
-  # ),
-  
+  list(
+    tag="country_only",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | iso_country_code))
+  ),
+
+  list(
+    tag="country_county",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code,by=gdlcode)) +
+                 (1 | iso_country_code:gdlcode))
+  ),
+
+  list(
+    tag="country_county_village",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code, by=gdlcode)) +
+                 (1 | gr(iso_country_code:gdlcode, by=village)) +
+                 (1 | iso_country_code:gdlcode:village))
+  ),
+
+  list(
+    tag="country_county_village_kg",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code, by=gdlcode)) +
+                 (1 | gr(iso_country_code:gdlcode, by=village)) +
+                 (1 | iso_country_code:gdlcode:village)+
+                 (1 | kg_class_name))
+  ),
+
+  list(
+    tag="country_county_village_kg_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code, by=gdlcode)) +
+                 (1 | gr(iso_country_code:gdlcode, by=village)) +
+                 (1 | iso_country_code:gdlcode:village)+
+                 (1 | kg_class_name)+
+                 (1 | iso_country_code:id_form))
+  ),
+
+  list(
+    tag="country_county_village_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code, by=gdlcode)) +
+                 (1 | gr(iso_country_code:gdlcode, by=village)) +
+                 (1 | iso_country_code:gdlcode:village)+
+                 (1 | iso_country_code:id_form))
+  ),
+
+  list(
+    tag="country_county_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code, by=gdlcode)) +
+                 (1 | iso_country_code:gdlcode) +
+                 (1 | iso_country_code:id_form))
+  ),
+
+
+  list(
+    tag="country_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code, by=id_form)) +
+                 (1 | iso_country_code:id_form))
+  ),
+
+  list(
+    tag="country_village_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code,  by=village)) +
+                 (1 | iso_country_code:gdlcode:village)+
+                 (1 | iso_country_code:id_form))
+  ),
+
+  list(
+    tag="country_village_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code, by=village)) +
+                 (1 | iso_country_code:gdlcode:village)+
+                 (1 | iso_country_code:id_form))
+  ),
+
+
+  list(
+    tag="kg_only",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | kg_class_name))
+  ),
+
+  list(
+    tag="kg_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | kg_class_name)+
+                 (1 | id_form))
+  ),
+
+  list(
+    tag="kg_village_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(kg_class_name, by=id_form))+
+                 (1 | iso_country_code:gdlcode:village)+
+                 (1 | iso_country_code:id_form))
+  ),
+
+  list(
+    tag="country_kg_form",
+    data=indicator_data,
+    formula=bf(log_tva ~ 1 +
+                 (1 | gr(iso_country_code,by=id_form))+
+                 (1 | kg_class_name)+
+                 (1 | iso_country_code:id_form))
+  ),
+
   list(
     tag="country_village",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +
-                 (1 | iso_country_code) +
+                 (1 | gr(iso_country_code,by=village)) +
                  (1 | iso_country_code:village))
   ),
   
@@ -203,7 +203,7 @@ models <-  list(
     tag="county_village",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +
-                 (1 | gdlcode) +
+                 (1 | gr(gdlcode,by=village)) +
                  (1 | gdlcode:village))
   ),
   
@@ -211,7 +211,7 @@ models <-  list(
     tag="kg_class_village",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +
-                 (1 | kg_class_name) +
+                 (1 | gr(kg_class_name,by=village)) +
                  (1 | kg_class_name:village))
   ),
   
@@ -219,7 +219,7 @@ models <-  list(
     tag="country_kg_village",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +
-                 (1 | iso_country_code) +
+                 (1 | gr(iso_country_code,by=village)) +
                  (1 | kg_class_name) +
                  (1 | iso_country_code:village))
   )
