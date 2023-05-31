@@ -29,6 +29,10 @@ indicator_data <- indicator_data[!is.na(indicator_data$iso_country_code),]
 # rhomis_data <- NULL
 
 
+
+indicator_data$village <- paste0(indicator_data$gdlcode,"_",indicator_data$village)
+
+
 # Identifying categorical Variables ---------------------------------------
 
 education <- indicator_data %>% count(education_level)
