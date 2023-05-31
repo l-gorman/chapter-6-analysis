@@ -113,10 +113,10 @@ rhomis_data <- indicator_data %>% merge(rhomis_data,by="id_unique")
 indicator_data <- NULL
 
 # Removing any data with missing GPS coordinates
-rhomis_data <- rhomis_data[!is.na(rhomis_data$x_gps_latitude) & !is.na(rhomis_data$x_gps_longitude),]
+rhomis_data <- rhomis_data[!is.na(rhomis_data$gps_lat) & !is.na(rhomis_data$gps_lon),]
 
 # Converting the dataset to a "spatial dataframe" to allow linkage 
-rhomis_data <- st_as_sf(rhomis_data, coords = c("x_gps_longitude", "x_gps_latitude"), 
+rhomis_data <- st_as_sf(rhomis_data, coords = c("gps_lon", "gps_lat"), 
                            crs = 4326, agr = "constant", remove = F)
 
 # Adding an index to ensure consistent row order before and after merging (see below)
@@ -143,7 +143,7 @@ gdl_info_country <- gdl_info_country %>% merge(country_codes,
                                                               by.y="alpha-3")
 
 
-three_letter_codes <- country_codes[country_codes[["alpha-2"]]%in%rhomis_data$iso_country_code.x,][["alpha-3"]]
+three_letter_codes <- country_codes[country_codes[["alpha-2"]]%in% rhomis_data$iso_country_code.x  ,][["alpha-3"]]
 
 gdl_shp <- gdl_shp[gdl_shp$iso_code %in%three_letter_codes,]
 gdl_code <- gdl_code[gdl_code$ISO_Code %in%three_letter_codes,]
@@ -153,6 +153,7 @@ joined_df_rhomis <- st_join(x=rhomis_data,
                             y=gdl_shp,
                             left=T)
 
+joined_df_rhomis <- joined_df_rhomis %>% rename(year=year.x)
 rhomis_data <- NULL
 subset_cols <- !grepl("gdl", colnames(gdl_info),ignore.case = T)
 colnames(gdl_info)[subset_cols] <- paste0("gdl_",colnames(gdl_info)[subset_cols])
@@ -233,6 +234,9 @@ travel_time_5M_to_50M <- raster("data/01-raw-data/external-data/travel-time/trav
 travel_time_5M_to_50M <- projectRaster(travel_time_5M_to_50M,koppen_geiger_classification)
 
 
+gridded_population <- raster("data/01-raw-data/external-data/gpw-v4-population-density-rev11_2015_2pt5_min_tif/gpw_v4_population_density_rev11_2015_2pt5_min.tif")
+gridded_population <- projectRaster(gridded_population,koppen_geiger_classification)
+
 
 
 r_stack <- raster::stack(koppen_geiger_classification,
@@ -244,7 +248,8 @@ r_stack <- raster::stack(koppen_geiger_classification,
                          travel_time_200k_to_500k,
                          travel_time_500k_to_1M,
                          travel_time_1M_to_5M,
-                         travel_time_5M_to_50M)
+                         travel_time_5M_to_50M,
+                         gridded_population)
 
 
 names(r_stack) <- c("koppen_geiger_classification",
@@ -256,9 +261,10 @@ names(r_stack) <- c("koppen_geiger_classification",
                     "travel_time_200k_to_500k",
                     "travel_time_500k_to_1M",
                     "travel_time_1M_to_5M",
-                    "travel_time_5M_to_50M")     
+                    "travel_time_5M_to_50M",
+                    "population_density")     
 
-rasValue_rhomis=raster::extract(r_stack, joined_df_rhomis[c("x_gps_longitude","x_gps_latitude")]) %>% tibble::as_tibble()
+rasValue_rhomis=raster::extract(r_stack, joined_df_rhomis[c("gps_lon","gps_lat")]) %>% tibble::as_tibble()
 
 rasValue_rhomis$koppen_geiger_classification <- as.integer(rasValue_rhomis$koppen_geiger_classification)
 rasValue_rhomis$index <- c(1:nrow(rasValue_rhomis))

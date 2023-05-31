@@ -179,7 +179,7 @@ plot_levels_correlations <- function(
   if (facet==F){
     plot_random_cors <- ggplot(all_data_to_plot,aes(x=upper_group,y=lower_group))+
       geom_hex()
-      return(plot_random_cors)
+    return(plot_random_cors)
   }
   
   plot_random_cors <- ggplot(all_data_to_plot,aes(x=upper_group,y=lower_group))+
@@ -353,13 +353,14 @@ params_list <- list(
 )
 
 
-model_files <- list.files("outputs/12_05_2023/outputs/overall_models/location_only/") 
+
+model_files <- list.files("outputs/31_05_2023/outputs/location_only/") 
 model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
 
 for (model_file in model_files){
   model_name <- gsub(".rda","",model_file,fixed=T)
   dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name))
-  model <- loadRData(paste0("outputs/12_05_2023/outputs/overall_models/location_only/",model_file))
+  model <- loadRData(paste0("outputs/31_05_2023/outputs/location_only/",model_file))
   
   all_variables <- get_variables(model)
   
@@ -368,17 +369,54 @@ for (model_file in model_files){
   # model_name <- "country_village_form"
   # params_list <- params_list
   all_plots(model,model_name,param_list_temp)
+  
+  
+  # Random effects plots
+  
+  temp <- sapply(as.character(params_list),function(x){
+    grep(paste0(x,"\\:"),all_variables, value=T)
+    
+  })
+  random_vars <- temp[lapply(temp, function(x){length(x)>0}) %>% unlist()]
+  
+  if (length(random_vars)>0){
+    dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_vars"))
+    
+    for (i in 1:length(random_vars)){
+      
+      
+      draws_temp <- as_draws_df(model,variable = random_vars[[i]])
+      
+      draws_temp <- draws_temp[colnames(draws_temp) %in% c(".chain",".iteration",".draw")==F]
+      
+      params_list_temp <- random_vars[[i]]
+      
+      names_params_list_temp_ <- gsub(paste0(names(random_vars)[i],":"),"",params_list_temp, fixed=T)
+      
+      params_list_temp <- setNames(params_list_temp, names_params_list_temp_)
+      temp_plot <- estimates_plot(draws_temp,param_list = params_list_temp,title = names(random_vars)[i])
+      
+      ggsave(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_vars/",names(random_vars)[i], ".png"))
+      
+    }
+    
+  }
+  
+  
+  
+  
+
 }
 
 
 # R2 Comparison
 
-r2_files <- list.files("outputs/12_05_2023/outputs/overall_models/location_only/") %>% grep("^r2",x=., value=T)
+r2_files <- list.files("outputs/31_05_2023/outputs/location_only/") %>% grep("^r2",x=., value=T)
 
 
 r2_all <- sapply(r2_files, function(x){
   r2_temp <- loadRData(paste0(
-    "outputs/12_05_2023/outputs/overall_models/location_only/",
+    "outputs/31_05_2023/outputs/location_only/",
     x
     
   ))
@@ -421,12 +459,12 @@ ggsave("outputs/overall_model_results/location_only_tva/r2_summary.png",r_2_comp
 
 # Loo Comparison
 
-loo_files <- list.files("outputs/12_05_2023/outputs/overall_models/location_only/") %>% grep("^loo",x=., value=T)
+loo_files <- list.files("outputs/31_05_2023/outputs/location_only/") %>% grep("^loo",x=., value=T)
 
 
 loo_all <- sapply(loo_files, function(x){
   loo_temp <- loadRData(paste0(
-    "outputs/12_05_2023/outputs/overall_models/location_only/",
+    "outputs/31_05_2023/outputs/location_only/",
     x
     
   ))
@@ -445,6 +483,31 @@ loo_compare$elpd_diff <- round(loo_compare$elpd_diff,1)
 loo_compare$se_diff <- round(loo_compare$se_diff,1)
 
 readr::write_csv(loo_compare,"outputs/overall_model_results/location_only_tva/loo_comparison.csv")
+
+loo_compare <- loo_compare[order(loo_compare$elpd_diff),]
+
+loo_compare$model <- factor(loo_compare$model, 
+                            levels=loo_compare$model,
+                            ordered=T)
+
+loo_comparison_plot <- ggplot(loo_compare)+
+  geom_point(aes(x=model, y=elpd_diff))+
+  geom_path(aes(x=model, y=elpd_diff,),group=1, color="blue") +
+  # geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
+  
+  geom_hline(yintercept = max(loo_compare$elpd_diff),linetype="dashed")+
+  
+  # ylim(c(0.25,1))+
+  
+  labs(title = 'ELPD for Intercept Only Models',
+       x="Levels Included",
+       y="ELPD")+
+  theme(
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle=45,hjust=1))
+
+ggsave("outputs/overall_model_results/location_only_tva/loo_summary.png",loo_comparison_plot, width=1500,height=1500,units="px")
+
 
 loo_compare_flextable <- loo_compare %>% flextable::flextable()
 

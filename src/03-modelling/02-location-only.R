@@ -90,7 +90,7 @@ models <-  list(
     formula=bf(log_tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
-                 (1 | gr(iso_country_code:gdlcode:village, by=gdlcode)))
+                 (1 | gr(iso_country_code:gdlcode:village, by=iso_country_code)))
   ),
 
   list(
@@ -99,7 +99,7 @@ models <-  list(
     formula=bf(log_tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
-                 (1 | gr(iso_country_code:gdlcode:village, by=gdlcode))+
+                 (1 | gr(iso_country_code:gdlcode:village, by=iso_country_code))+
                  (1 | kg_class_name))
   ),
 
@@ -109,7 +109,7 @@ models <-  list(
     formula=bf(log_tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
-                 (1 | gr(iso_country_code:gdlcode:village,by=gdlcode))+
+                 (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
                  (1 | kg_class_name)+
                  (1 | gr(iso_country_code:id_form, by=iso_country_code)))
   ),
@@ -120,7 +120,7 @@ models <-  list(
     formula=bf(log_tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
-                 (1 | gr(iso_country_code:gdlcode:village,by=gdlcode))+
+                 (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
                  (1 | gr(iso_country_code:id_form,by=iso_country_code)))
   ),
 
