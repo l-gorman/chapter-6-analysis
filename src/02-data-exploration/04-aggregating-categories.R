@@ -9,7 +9,7 @@ library(XML)
 library(GGally)
 
 indicator_data <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
-indicator_data <- indicator_data[!is.na(indicator_data$x_gps_latitude) & !is.na(indicator_data$x_gps_longitude),]
+indicator_data <- indicator_data[!is.na(indicator_data$gps_lat) & !is.na(indicator_data$gps_lon),]
 indicator_data <- indicator_data[!is.na(indicator_data$village),]
 indicator_data <- indicator_data[!is.na(indicator_data$iso_country_code),]
 # indicator_data <- indicator_data[indicator_data$iso_country_code%in%c(
