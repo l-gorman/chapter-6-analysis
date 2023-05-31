@@ -181,7 +181,7 @@ models <-  list(
     data=indicator_data,
     formula=bf(log_tva ~ 1 +
                  (1 | kg_class_name)+
-                 (1 | gr(iso_country_code:gdlcode:village, by=kg_class_name))+
+                 (1 | gr(iso_country_code:gdlcode:village))+
                  (1 | iso_country_code:id_form))
   ),
 
@@ -215,7 +215,7 @@ models <-  list(
     data=indicator_data,
     formula=bf(log_tva ~ 1 +
                  (1 | kg_class_name) +
-                 (1 | gr(kg_class_name:village,by=kg_class_name)))
+                 (1 | gr(kg_class_name:village)))
   ),
   
   list(
