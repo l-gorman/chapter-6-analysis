@@ -334,21 +334,21 @@ all_plots <- function(model,
 # All Models
 
 params_list <- list(
-  "Country"="sd_iso_country_code__Intercept",
+  "Between Countries (sd)"="sd_iso_country_code__Intercept",
   
-  "County"="sd_iso_country_code:gdlcode__Intercept",
-  "County"="sd_gdlcode__Intercept",
+  "Between Counties (sd)"="sd_iso_country_code:gdlcode__Intercept",
+  "Between Counties (sd)"="sd_gdlcode__Intercept",
   
-  "Village"="sd_iso_country_code:gdlcode:village__Intercept",
-  "Village"="sd_iso_country_code:village__Intercept",
-  "Village"="sd_gdlcode:village__Intercept",
-  "Village"="sd_kg_class:village__Intercept",
+  "Between Villages (sd)"="sd_iso_country_code:gdlcode:village__Intercept",
+  "Between Villages (sd)"="sd_iso_country_code:village__Intercept",
+  "Between Villages (sd)"="sd_gdlcode:village__Intercept",
+  "Between Villages (sd)"="sd_kg_class:village__Intercept",
   
   
-  "Project"="sd_id_form__Intercept",
-  "Project"="sd_iso_country_code:id_form__Intercept",
+  "Between Projects (sd)"="sd_id_form__Intercept",
+  "Between Projects (sd)"="sd_iso_country_code:id_form__Intercept",
   
-  "KG Class"="sd_kg_class_name__Intercept",
+  "Between KG Class (sd)"="sd_kg_class_name__Intercept",
   "Unexplained"="sigma"
 )
 
@@ -378,25 +378,64 @@ for (model_file in model_files){
     
   })
   random_vars <- temp[lapply(temp, function(x){length(x)>0}) %>% unlist()]
-  
+  fixed_vars <- param_list_temp
   if (length(random_vars)>0){
     dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_vars"))
     
     for (i in 1:length(random_vars)){
       
       
-      draws_temp <- as_draws_df(model,variable = random_vars[[i]])
+      draws_temp <- as_draws_df(model,variable = c(random_vars[[i]],fixed_vars))
       
       draws_temp <- draws_temp[colnames(draws_temp) %in% c(".chain",".iteration",".draw")==F]
       
-      params_list_temp <- random_vars[[i]]
+      params_list_temp <- c(random_vars[[i]],fixed_vars)
       
-      names_params_list_temp_ <- gsub(paste0(names(random_vars)[i],":"),"",params_list_temp, fixed=T)
+      names_params_list_temp_ <- gsub(paste0(names(random_vars)[i],":iso_country_code"),"",params_list_temp, fixed=T)
       
+      clean_name_random <- names(params_list)[params_list==names(random_vars)[i]]
+      names_params_list_temp_[names_params_list_temp_ %in% fixed_vars==F] <- paste0(names_params_list_temp_[names_params_list_temp_ %in% fixed_vars==F])
+      names_params_list_temp_[names_params_list_temp_ %in% fixed_vars==T] <- names(fixed_vars)
       params_list_temp <- setNames(params_list_temp, names_params_list_temp_)
-      temp_plot <- estimates_plot(draws_temp,param_list = params_list_temp,title = names(random_vars)[i])
       
-      ggsave(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_vars/",names(random_vars)[i], ".png"))
+      
+      
+      
+      draw_summary <-summarise_estimates(draws_temp,
+                                         params_list_temp)
+      
+      draw_summary$key <- factor(draw_summary$key,
+                                 levels=names(params_list_temp),
+                                 ordered = T)
+      draw_summary$level <- factor(draw_summary$level, levels=c("0.66 Level","0.95 Level"),ordered = T)
+      
+      draw_summary$facet_split <- ifelse(draw_summary$key %in% names(fixed_vars),"Whole Dataset",paste0("Per Country: ",clean_name_random))
+      draw_summary$facet_split <- factor(draw_summary$facet_split, 
+                                            levels=c("Whole Dataset",
+                                                     paste0("Per Country: ",clean_name_random)),
+                                            ordered=T)
+      
+      plot <- ggplot(draw_summary, aes(y = key,x=Estimate,shape="Estimate"))+
+        geom_point(show.legend = T,size=3)+
+        geom_segment(aes(y=key,yend=key,x=min,xend=max,linewidth=level))+
+        scale_discrete_manual("linewidth", values = c("0.95 Level"=0.75, "0.66 Level"=1.5))+
+        facet_wrap(~facet_split, ncol = 1, scales = "free_y",strip.position = "right")+
+        labs(x="Estimate", y="", title="Estimates for Standard Deviation in Group Effects")+
+        guides(linewidth = guide_legend(title="",
+                                        nrow = 2,
+                                        byrow = TRUE,
+                                        override.aes = list(shape = c(NA), linetype = c("solid", "solid"))),
+               shape=guide_legend(title="")) +
+        theme(plot.title = element_text(hjust=0.5))
+        # axis.text.y = element_text(face =  draw_summary$embolden_overall[draw_summary$level=="0.66 Level"]))
+
+       
+      
+
+      ggsave(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_vars/",names(random_vars)[i], ".png"), 
+             plot,
+             width=2000, 
+             height = 2500, units = "px")
       
     }
     
@@ -490,10 +529,15 @@ loo_compare$model <- factor(loo_compare$model,
                             levels=loo_compare$model,
                             ordered=T)
 
+loo_compare$lower <- loo_compare$elpd_diff-loo_compare$se_diff
+loo_compare$upper <- loo_compare$elpd_diff+loo_compare$se_diff
+
+
+
 loo_comparison_plot <- ggplot(loo_compare)+
   geom_point(aes(x=model, y=elpd_diff))+
   geom_path(aes(x=model, y=elpd_diff,),group=1, color="blue") +
-  # geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
+  geom_segment(aes(x = model,xend=model,y=lower,yend=upper))+
   
   geom_hline(yintercept = max(loo_compare$elpd_diff),linetype="dashed")+
   
