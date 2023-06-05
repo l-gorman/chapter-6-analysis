@@ -637,7 +637,6 @@ dir.create(paste0(opt$output,"/overall_models/location_only/tva"))
 dir.create(paste0(opt$output,"/overall_models/location_only/hdds"))
 
 
-opt$index <- 35
 
 if (grepl("hdds",as.character(models[[opt$index]][["formula"]])[1])){
   base_path <- paste0(opt$output,"/overall_models/location_only/tva/")
