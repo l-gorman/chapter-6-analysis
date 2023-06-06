@@ -12,6 +12,8 @@ library(fastDummies)
 library(cmdstanr)
 
 
+
+
 option_list = list(
   make_option(c("-i", "--iter"),  type='integer',
               help="Iterations"),
@@ -44,6 +46,7 @@ opt = parse_args(opt_parser);
 
 options(mc.cores = opt$ncores, brms.backend = "cmdstanr") # allows threading
 options(loo.cores = opt$ncores)
+
 
 opt$data <- gsub("/$", "", opt$data)
 opt$output <- gsub("/$", "", opt$output)
