@@ -651,11 +651,11 @@ if(grepl("tva",as.character(models[[opt$index]][["formula"]])[1])){
 save(model,file=paste0(base_path,models[[opt$index]][["tag"]],".rda"))
 
 loo_model <- loo(model)
-save(loo_model,file=paste0(base_path,models[[opt$index]][["tag"]],".rda"))
+save(loo_model,file=paste0(base_path,"loo_",models[[opt$index]][["tag"]],".rda"))
 loo_model <- NULL
 
 r2_model <- bayes_R2(model)
-save(r2_model,file=paste0(base_path,models[[opt$index]][["tag"]],".rda"))
+save(r2_model,file=paste0(base_path,"r2_",models[[opt$index]][["tag"]],".rda"))
 
 
 

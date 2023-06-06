@@ -199,14 +199,15 @@ dir.create("outputs/overall_model_results/location_only_tva/")
 
 all_plots <- function(model,
                       model_name,
-                      param_list){
+                      param_list,
+                      base_dir){
   draws <- as_draws_array(model)
   mcmc_scatter <- mcmc_pairs(draws,pars = as.character(param_list),off_diag_fun = "hex")
   
   mcmc_scatter <- mcmc_pairs(draws,pars = as.character(param_list))
   # mcmc_scatter <- mcmc_scatter + stat_density_2d(color = "black", size = .5)
   
-  ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/mcmc_scatter.png"),
+  ggsave(filename = paste0(base_dir,model_name,"/mcmc_scatter.png"),
          plot = mcmc_scatter,width = 5000,height=3500,units = "px")
   
   # Variable Estimate
@@ -214,7 +215,7 @@ all_plots <- function(model,
   estimate_plot <- estimates_plot(draws_df = draws_df,param_list = param_list,
                                   title=paste0("Estimates for ",model_name," TVA Model")
   )
-  ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/location_estimates.png"),
+  ggsave(filename = paste0(base_dir,model_name,"/location_estimates.png"),
          plot = estimate_plot,width = 1800,height=1200,units = "px")
   
   
@@ -223,7 +224,7 @@ all_plots <- function(model,
   vpc_estimates <- estimates_plot(draws_df = vpcs,param_list = param_list,
                                   title=paste0("VPCs for ",model_name," TVA Model")
   )
-  ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/location_vpcs.png"),
+  ggsave(filename = paste0(base_dir,model_name,"/location_vpcs.png"),
          plot = vpc_estimates,width = 1800,height=1200,units = "px")
   
   
@@ -232,7 +233,7 @@ all_plots <- function(model,
   all_vars <-get_variables(model)
   group_effects <- grep("^sd",all_vars, value=T)
   
-  dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/"))
+  dir.create(paste0(base_dir,model_name,"/random_cors/"))
   
   
   if (any(grepl("r_iso_country_code\\[",all_vars)) & any(grepl("r_iso_country_code:id_form\\[",all_vars))){
@@ -243,7 +244,7 @@ all_plots <- function(model,
       level_2="r_iso_country_code:id_form"
       
     )
-    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/country_form.png"),
+    ggsave(filename = paste0(base_dir,model_name,"/random_cors/country_form.png"),
            plot = temp,width = 1800,height=1200,units = "px")
   }
   
@@ -255,7 +256,7 @@ all_plots <- function(model,
       level_2="r_iso_country_code:village"
       
     )
-    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/country_village.png"),
+    ggsave(filename = paste0(base_dir,model_name,"/random_cors/country_village.png"),
            plot = temp,width = 1800,height=1200,units = "px")
   }
   
@@ -267,7 +268,7 @@ all_plots <- function(model,
       level_2="r_iso_country_code:gdlcode"
       
     )
-    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/country_county.png"),
+    ggsave(filename = paste0(base_dir,model_name,"/random_cors/country_county.png"),
            plot = temp,width = 1800,height=1200,units = "px")
   }
   
@@ -280,7 +281,7 @@ all_plots <- function(model,
       facet=F
       
     )
-    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/county_village.png"),
+    ggsave(filename = paste0(base_dir,model_name,"/random_cors/county_village.png"),
            plot = temp,width = 4000,height=3000,units = "px")
   }
   
@@ -294,7 +295,7 @@ all_plots <- function(model,
       facet=F
       
     )
-    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/county_village.png"),
+    ggsave(filename = paste0(base_dir,model_name,"/random_cors/county_village.png"),
            plot = temp,width = 4000,height=3000,units = "px")
   }
   
@@ -307,7 +308,7 @@ all_plots <- function(model,
       facet=F
       
     )
-    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/country_village.png"),
+    ggsave(filename = paste0(base_dir,model_name,"/random_cors/country_village.png"),
            plot = temp,width = 1800,height=1200,units = "px")
   }
   
@@ -320,7 +321,7 @@ all_plots <- function(model,
       facet=F
       
     )
-    ggsave(filename = paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_cors/kg_class_village.png"),
+    ggsave(filename = paste0(base_dir,model_name,"/random_cors/kg_class_village.png"),
            plot = temp,width = 1800,height=1200,units = "px")
   }
   
@@ -354,7 +355,10 @@ params_list <- list(
 
 
 
-model_files <- list.files("outputs/31_05_2023/outputs/location_only/") 
+model_files <- list.files("outputs/31_05_2023/outputs/location_only/hdds/") 
+model_files <- c(model_files, list.files("outputs/31_05_2023/outputs/location_only/tva/"))
+model_files <- unique(model_files) 
+
 model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
 
 for (model_file in model_files){
@@ -448,54 +452,6 @@ for (model_file in model_files){
 }
 
 
-# R2 Comparison
-
-r2_files <- list.files("outputs/31_05_2023/outputs/location_only/") %>% grep("^r2",x=., value=T)
-
-
-r2_all <- sapply(r2_files, function(x){
-  r2_temp <- loadRData(paste0(
-    "outputs/31_05_2023/outputs/location_only/",
-    x
-    
-  ))
-  
-  model_name <- gsub("r2_", "",x)
-  model_name <- gsub(".rda", "",model_name,fixed=T)
-  r2_temp <- as_tibble(r2_temp)
-  r2_temp$model_type <- model_name
-  return(r2_temp)
-  
-},simplify=F)
-
-
-r2_all <- r2_all %>% bind_rows()
-
-r2_all <- r2_all[order(r2_all$Estimate),]
-
-r2_all$model_type <- factor(r2_all$model_type, 
-                            levels=r2_all$model_type,
-                            ordered=T)
-
-r_2_comparison <- ggplot(r2_all)+
-  geom_point(aes(x=model_type, y=Estimate))+
-  geom_path(aes(x=model_type, y=Estimate,),group=1, color="blue") +
-  geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
-  
-  geom_hline(yintercept = max(r2_all$Estimate),linetype="dashed")+
-  
-  # ylim(c(0.25,1))+
-  
-  labs(title = bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'),
-       x="Levels Included", 
-       y=bquote('Bayesian '~R^2))+
-  theme(
-    plot.title = element_text(hjust=0.5),
-    axis.text.x = element_text(angle=45,hjust=1))
-
-ggsave("outputs/overall_model_results/location_only_tva/r2_summary.png",r_2_comparison, width=1500,height=1500,units="px")
-
-
 # Loo Comparison
 
 loo_files <- list.files("outputs/31_05_2023/outputs/location_only/") %>% grep("^loo",x=., value=T)
@@ -512,7 +468,9 @@ loo_all <- sapply(loo_files, function(x){
   
 },simplify=F)
 
-loo_compare <- loo_compare(loo_all) %>% as_data_frame()
+loo_compare <- loo_compare(loo_all) %>% as_tibble()
+
+
 loo_compare$model <- row.names(loo_compare(loo_all))
 loo_compare$model <- gsub(".rda","",loo_compare$model,fixed=T)
 loo_compare$model <- gsub("loo_","",loo_compare$model,fixed=T)
@@ -558,6 +516,7 @@ loo_compare_flextable <- loo_compare %>% flextable::flextable()
 save_as_image(loo_compare_flextable, "outputs/overall_model_results/location_only_tva/loo_comparison.png")
 
 
+ loo_order <- loo_compare$model
 
 
 
@@ -567,6 +526,57 @@ save_as_image(loo_compare_flextable, "outputs/overall_model_results/location_onl
 
 
 
+
+
+
+# R2 Comparison
+
+r2_files <- list.files("outputs/31_05_2023/outputs/location_only/") %>% grep("^r2",x=., value=T)
+
+
+r2_all <- sapply(r2_files, function(x){
+  r2_temp <- loadRData(paste0(
+    "outputs/31_05_2023/outputs/location_only/",
+    x
+    
+  ))
+  
+  model_name <- gsub("r2_", "",x)
+  model_name <- gsub(".rda", "",model_name,fixed=T)
+  r2_temp <- as_tibble(r2_temp)
+  r2_temp$model_type <- model_name
+  return(r2_temp)
+  
+},simplify=F)
+
+
+r2_all <- r2_all %>% bind_rows()
+
+r2_all <- r2_all[order(r2_all$Estimate),]
+
+r2_all$model_type <- factor(r2_all$model_type, 
+                            levels=loo_compare$model,
+                            ordered=T)
+
+r2_all <- r2_all[order(r2_all$model_type),]
+
+r_2_comparison <- ggplot(r2_all)+
+  geom_point(aes(x=model_type, y=Estimate))+
+  geom_path(aes(x=model_type, y=Estimate,),group=1, color="blue") +
+  geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
+  
+  geom_hline(yintercept = max(r2_all$Estimate),linetype="dashed")+
+  
+  # ylim(c(0.25,1))+
+  
+  labs(title = bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'),
+       x="Levels Included", 
+       y=bquote('Bayesian '~R^2))+
+  theme(
+    plot.title = element_text(hjust=0.5),
+    axis.text.x = element_text(angle=45,hjust=1))
+
+ggsave("outputs/overall_model_results/location_only_tva/r2_summary.png",r_2_comparison, width=1500,height=1500,units="px")
 
 
 

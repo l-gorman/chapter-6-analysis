@@ -75,6 +75,8 @@ models <-  list(
   # -------------------------------------------------------------------------
   # 1
   list(
+    
+    
     tag="weak_prior_fixed",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +  
@@ -82,16 +84,19 @@ models <-  list(
                  education_cleaned + 
                  log_livestock_tlu + 
                  log_land_cultivated + 
-                 logit_off_farm_orientation +
-                 logit_market_orientation +
-                 logit_proportion_female_control+
-                 log_income_diversity +
+                 off_farm_any+ 
+                 # logit_off_farm_orientation +
+                 # logit_market_orientation +
+                 # logit_proportion_female_control+
+                 # log_income_diversity +
                  
                  # Village Level
                  norm_growing_period +
                  log_min_travel_time +
+                 
+                 norm_gdl_country_shdi+
+                 
                  #County Level
-                 norm_gdl_lifexp +
                  # Levels
                  (1 | iso_country_code) +
                  (1 | iso_country_code:village)),
@@ -108,32 +113,20 @@ models <-  list(
                  education_cleaned + 
                  log_livestock_tlu + 
                  log_land_cultivated + 
-                 logit_off_farm_orientation +
-                 logit_market_orientation +
-                 logit_proportion_female_control+
-                 log_income_diversity +
+                 off_farm_any+ 
+                
                  
                  # Village Level
                  norm_growing_period +
                  log_min_travel_time +
-                 #County Level
-                 norm_gdl_lifexp +
+                 
+                 norm_gdl_country_shdi+
                  # Levels
                  (1 +  
                     #Household Level
-                    education_cleaned + 
-                    log_livestock_tlu + 
                     log_land_cultivated + 
-                    logit_off_farm_orientation +
-                    logit_market_orientation +
-                    logit_proportion_female_control+
-                    log_income_diversity +
-                    
-                    # Village Level
-                    norm_growing_period +
-                    log_min_travel_time +
-                    #County Level
-                    norm_gdl_lifexp | iso_country_code) +
+                    log_livestock_tlu + 
+                    off_farm_any | iso_country_code) +
                  (1 | iso_country_code:village)),
                  # (1 | id_form)),
     prior="weak"),
@@ -147,64 +140,24 @@ models <-  list(
                  education_cleaned + 
                  log_livestock_tlu + 
                  log_land_cultivated + 
-                 logit_off_farm_orientation +
-                 logit_market_orientation +
-                 logit_proportion_female_control+
-                 log_income_diversity +
-                 
+                 off_farm_any+ 
+                
                  # Village Level
                  norm_growing_period +
                  log_min_travel_time +
-                 #County Level
-                 norm_gdl_lifexp +
+                 
+                 norm_gdl_country_shdi+
                  # Levels
                  (1 | iso_country_code) +
                  (1 +  
                     #Household Level
-                    education_cleaned + 
-                    log_livestock_tlu + 
                     log_land_cultivated + 
-                    logit_off_farm_orientation +
-                    logit_market_orientation +
-                    logit_proportion_female_control+
-                    log_income_diversity | iso_country_code:village)),
+                    log_livestock_tlu + 
+                    off_farm_any| iso_country_code:village)),
                  # (1 | id_form)),
     prior="weak"),
   
-  # 4
-  
-  # list(
-  #   tag="weak_prior_mixed_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +  
-  #                #Household Level
-  #                education_cleaned + 
-  #                log_livestock_tlu + 
-  #                log_land_cultivated + 
-  #                logit_off_farm_orientation +
-  #                logit_market_orientation +
-  #                logit_proportion_female_control+
-  #                log_income_diversity +
-  #                
-  #                # Village Level
-  #                norm_growing_period +
-  #                log_min_travel_time +
-  #                #County Level
-  #                norm_gdl_lifexp +
-  #                # Levels
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:village)+
-  #                (1  +  
-  #                   #Household Level
-  #                   education_cleaned + 
-  #                   log_livestock_tlu + 
-  #                   log_land_cultivated + 
-  #                   logit_off_farm_orientation +
-  #                   logit_market_orientation +
-  #                   logit_proportion_female_control+
-  #                   log_income_diversity | id_form)),
-  #   prior="weak"),
-  # 
+
   
   
   # -------------------------------------------------------------------------
@@ -222,16 +175,17 @@ models <-  list(
                  education_cleaned + 
                  log_livestock_tlu + 
                  log_land_cultivated + 
-                 logit_off_farm_orientation +
-                 logit_market_orientation +
-                 logit_proportion_female_control+
-                 log_income_diversity +
+                 off_farm_any+ 
+                 # logit_off_farm_orientation +
+                 # logit_market_orientation +
+                 # logit_proportion_female_control+
+                 # log_income_diversity +
                  
                  # Village Level
                  norm_growing_period +
                  log_min_travel_time +
-                 #County Level
-                 norm_gdl_lifexp +
+                 
+                 norm_gdl_country_shdi+
                  # Levels
                  (1 | iso_country_code) +
                  (1 | iso_country_code:village)),
@@ -249,16 +203,17 @@ models <-  list(
                  education_cleaned + 
                  log_livestock_tlu + 
                  log_land_cultivated + 
-                 logit_off_farm_orientation +
-                 logit_market_orientation +
-                 logit_proportion_female_control+
-                 log_income_diversity +
+                 off_farm_any+ 
+                 # logit_off_farm_orientation +
+                 # logit_market_orientation +
+                 # logit_proportion_female_control+
+                 # log_income_diversity +
                  
                  # Village Level
                  norm_growing_period +
                  log_min_travel_time +
-                 #County Level
-                 norm_gdl_lifexp +
+                 
+                 norm_gdl_country_shdi+
                  # Levels
                  (1 +  
                     #Household Level
@@ -288,16 +243,17 @@ models <-  list(
                  education_cleaned + 
                  log_livestock_tlu + 
                  log_land_cultivated + 
-                 logit_off_farm_orientation +
-                 logit_market_orientation +
-                 logit_proportion_female_control+
-                 log_income_diversity +
+                 off_farm_any+ 
+                 # logit_off_farm_orientation +
+                 # logit_market_orientation +
+                 # logit_proportion_female_control+
+                 # log_income_diversity +
                  
                  # Village Level
                  norm_growing_period +
                  log_min_travel_time +
-                 #County Level
-                 norm_gdl_lifexp +
+                 
+                 norm_gdl_country_shdi+
                  # Levels
                  (1 | iso_country_code) +
                  (1 +  
@@ -312,41 +268,7 @@ models <-  list(
                  # (1 | id_form)),
     prior="horseshoe")
   
-  # 8
-  
-  # list(
-  #   tag="horseshoe_mixed_form",
-  #   data=indicator_data,
-  #   formula=bf(log_tva ~ 1 +  
-  #                #Household Level
-  #                education_cleaned + 
-  #                log_livestock_tlu + 
-  #                log_land_cultivated + 
-  #                logit_off_farm_orientation +
-  #                logit_market_orientation +
-  #                logit_proportion_female_control+
-  #                log_income_diversity +
-  #                
-  #                # Village Level
-  #                norm_growing_period +
-  #                log_min_travel_time +
-  #                #County Level
-  #                norm_gdl_lifexp +
-  #                # Levels
-  #                (1 | iso_country_code) +
-  #                (1 | iso_country_code:village)+
-  #                (1  +  
-  #                   #Household Level
-  #                   education_cleaned + 
-  #                   log_livestock_tlu + 
-  #                   log_land_cultivated + 
-  #                   logit_off_farm_orientation +
-  #                   logit_market_orientation +
-  #                   logit_proportion_female_control+
-  #                   log_income_diversity | id_form)),
-  #   prior="horseshoe")
-  # 
-  # 
+
 
   
   
