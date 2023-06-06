@@ -11,27 +11,15 @@ library(GGally)
 indicator_data <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
 
 
-crop_name_cleaner <- readr::read_csv("./data/01-raw-data/rhomis-data/rhomis/crop_name_to_std.csv")
+# crop_name_cleaner <- readr::read_csv("./data/01-raw-data/rhomis-data/rhomis/crop_name_to_std.csv")
 
 indicator_data <- indicator_data[!is.na(indicator_data$gps_lat) & !is.na(indicator_data$gps_lon),]
 indicator_data <- indicator_data[!is.na(indicator_data$village),]
 indicator_data <- indicator_data[!is.na(indicator_data$iso_country_code),]
 indicator_data$index <- 1:nrow(indicator_data)
-# indicator_data <- indicator_data[indicator_data$iso_country_code%in%c(
-#   "EC",
-#   "SN"
-#   # "IN",
-#   # "KH",
-#   # "PE",
-#   # "VN"
-# )==F,]
 
 
 
-
-# rhomis_data <- readr::read_csv("./data/01-raw-data/rhomis-data/rhomis/processed_data.csv")
-# indicator_data <- rhomis_data %>% merge(indicator_data, by="id_unique",all.x = F, all.y=T)
-# rhomis_data <- NULL
 
 
 
@@ -127,28 +115,79 @@ save_as_image(cleaned_aggregation, "./outputs/02-data-exploration/category_mergi
 # Farming Practices -------------------------------------------------------
 
 
-# till_not_by_hand <- grepl("by_animal",indicator_data$tillage_power) |
-#                     grepl("by_machine",indicator_data$tillage_power)
-# till_not_by_hand <- as.numeric(till_not_by_hand)
-# indicator_data$till_not_by_hand <- till_not_by_hand
-# 
-# #labour 
-# hired_labour <- grepl("hire_labour",indicator_data$farm_labour) | 
-#   grepl("reciprocal",indicator_data$farm_labour)
-# hired_labour <- as.numeric(hired_labour)
-# indicator_data$hired_labour <- hired_labour
-# 
-# pesticide <- grepl("pest",indicator_data$agric_inputs)
-# pesticide <- as.numeric(pesticide)
-# indicator_data$pesticide <- pesticide
-# 
-# 
-# legume_fert <- indicator_data$use_legumes_fertility=="y" |
-#   indicator_data$use_legumes_fertility=="rotation" |
-#   indicator_data$use_legumes_fertility=="intercrop"
-# legume_fert <- as.numeric(legume_fert)
-# indicator_data$legume_fert <- legume_fert
+till_not_by_hand <- grepl("by_animal",indicator_data$tillage_power) |
+  grepl("by_machine",indicator_data$tillage_power)
+till_not_by_hand <- as.numeric(till_not_by_hand)
+indicator_data$till_not_by_hand <- till_not_by_hand
 
+#labour
+hired_labour <- grepl("hire_labour",indicator_data$farm_labour) |
+  grepl("reciprocal",indicator_data$farm_labour)
+hired_labour <- as.numeric(hired_labour)
+indicator_data$external_labour <- hired_labour
+
+pesticide <- grepl("pest",indicator_data$agric_inputs)
+pesticide <- as.numeric(pesticide)
+indicator_data$pesticide <- pesticide
+
+
+
+
+debts_have <- indicator_data$debts_have
+debts_have[debts_have=="dont_know"] <- NA
+debts_have[debts_have=="no_answer"] <- NA
+debts_have <- debts_have=="y"
+debts_have <- as.numeric(debts_have)
+indicator_data$debts_have <- debts_have
+indicator_data$debts_have[is.na(indicator_data$debts_have)] <- 0
+
+
+aidreceived <- indicator_data$aidreceived
+aidreceived[aidreceived=="dont_know"] <- NA
+aidreceived[aidreceived=="no_answer"] <- NA
+aidreceived <- aidreceived=="y"
+aidreceived <- as.numeric(aidreceived)
+indicator_data$aidreceived <- aidreceived
+indicator_data$aidreceived[is.na(indicator_data$aidreceived)] <- 0
+
+livestock_inputs_use <- indicator_data$livestock_inputs_use
+livestock_inputs_use[livestock_inputs_use=="no_answer"] <- NA
+livestock_inputs_use <- livestock_inputs_use=="y"
+livestock_inputs_use <- as.numeric(livestock_inputs_use)
+livestock_inputs_use[is.na(indicator_data$livestock_all)] <- 0
+indicator_data$livestock_inputs_any <- livestock_inputs_use
+indicator_data$livestock_inputs_any[is.na(indicator_data$livestock_inputs_any)] <- 0
+
+
+land_irrigated <- indicator_data$land_irrigated
+land_irrigated[land_irrigated=="no_answer"] <- NA
+land_irrigated[land_irrigated=="dont_know"] <- NA
+land_irrigated[land_irrigated=="none"] <- "n"
+
+land_irrigated[land_irrigated%in%c("all","half","little","most","underhalf")] <- "y"
+
+land_irrigated <- land_irrigated=="y"
+land_irrigated <- as.numeric(land_irrigated)
+indicator_data$land_irrigated_any <- land_irrigated
+indicator_data$land_irrigated_any[is.na(indicator_data$land_irrigated_any)] <- 0
+
+
+# c("till_not_by_hand",
+#   "external_labour",
+#   "pesticide",
+#   "legume_fert",
+#   "debts_have",
+#   "aidreceived",
+#   "livestock_inputs_any",
+#   "land_irrigated_any",
+#   )
+
+
+
+
+
+
+#
 
 
 #' Fertiliser not used. Almost 100 percent of 
@@ -409,10 +448,20 @@ vars <- c(
   # "off_farm_orientation", #logit transform
   # "market_orientation", # logit transform
   
+  "till_not_by_hand",
+  "external_labour",
+  "pesticide",
+  "debts_have",
+  "aidreceived",
+  "livestock_inputs_any",
+  "land_irrigated_any",
+  
+  
+  
   # "weighted_income_diversity", # centred transform
   "tva_per_mae_per_day_ppp", # centered transform
   "hdds_lean_season", # z-score notmalisation
-
+  
   # Village Level Variables
   "adjusted_length_growing_period", # centered transform
   "min_travel_time", # centered transform
@@ -685,7 +734,7 @@ variable_summary <- tribble(
   
   "Performance Indicators","tva_per_mae_per_day_ppp","continuous","Household Level","","", # centered transform
   "Performance Indicators","hdds","ordinal","Household Level","","",
-
+  
 )
 
 readr::write_csv(variable_summary,"./outputs/02-data-exploration/variable_summary.csv")
@@ -822,10 +871,19 @@ vars <- c(
   "village",
   
   # "log_hh_size",
+  "log_hh_size",
   "education_cleaned",
   "log_livestock_tlu", 
   "log_land_cultivated",
   "off_farm_any",
+  
+  "till_not_by_hand",
+  "external_labour",
+  "pesticide",
+  "debts_have",
+  "aidreceived",
+  "livestock_inputs_any",
+  "land_irrigated_any",
   
   # "logit_proportion_female_control",
   

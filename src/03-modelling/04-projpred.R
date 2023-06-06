@@ -58,14 +58,36 @@ start <- Sys.time()
 # Add function call
 
 
-ref_model <- loadRData(paste0(opt$output,"/weak_prior_mixed_country.rda"))
-ref_model <- projpred::get_refmodel(ref_model)
+dir.create( paste0(opt$output,"/proj_pred/"))
+
 
 seed <- as.numeric(opt$index)
 
 
-if (seed < 5){
+if (seed>=1 & seed < 6){
+  ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_fixed.rda"))
   
+  dir.create(paste0(opt$output,"/proj_pred/"))
+  dir.create(paste0(opt$output,"/proj_pred/tva"))
+  output_dir <- paste0(opt$output,"/proj_pred/tva/weak_prior_fixed")
+  dir.create(output_dir)
+  
+}
+
+if (seed>=6 & seed < 11){
+  ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_fixed.rda"))
+  
+  dir.create(paste0(opt$output,"/proj_pred/"))
+  dir.create(paste0(opt$output,"/proj_pred/hdds"))
+  output_dir <- paste0(opt$output,"/proj_pred/hdds/weak_prior_fixed")
+  dir.create(output_dir)
+  
+}
+
+
+
+ref_model <- projpred::get_refmodel(ref_model)
+
 
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
@@ -74,19 +96,9 @@ varsel_model <- cv_varsel(ref_model,
                           verbose = TRUE, 
                           seed = seed)
 
-save(varsel_model,file=paste0(opt$output,"/proj_pred/projpred_varsel_model_",seed,".rda"))
-}
+save(varsel_model,file=paste0(output_dir,"/projpred_varsel_model_",seed,".rda"))
 
-if (seed == 6){
-  varsel_model <- cv_varsel(ref_model,
-                            method = 'forward', 
-                            cv_method = 'LOO', 
-                            # K = 5, 
-                            verbose = TRUE, 
-                            seed = seed)
-  
-  save(varsel_model,file=paste0(opt$output,"/proj_pred/projpred_varsel_model_loo.rda"))
-}
+
 
 print("Execution Time")
 print( Sys.time() - start )

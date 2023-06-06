@@ -639,11 +639,11 @@ dir.create(paste0(opt$output,"/overall_models/location_only/hdds"))
 
 
 if (grepl("hdds",as.character(models[[opt$index]][["formula"]])[1])){
-  base_path <- paste0(opt$output,"/overall_models/location_only/tva/")
+  base_path <- paste0(opt$output,"/overall_models/location_only/hdds/")
 }
 
 if(grepl("tva",as.character(models[[opt$index]][["formula"]])[1])){
-  base_path <- paste0(opt$output,"/overall_models/location_only/hdds/")
+  base_path <- paste0(opt$output,"/overall_models/location_only/tva/")
 }
 
 

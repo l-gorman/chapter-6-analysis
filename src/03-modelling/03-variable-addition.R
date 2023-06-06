@@ -70,94 +70,96 @@ models <-  list(
   
   # -------------------------------------------------------------------------
   # -------------------------------------------------------------------------
+  # TVA --------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
   # Weak Prior Model --------------------------------------------------------
   # -------------------------------------------------------------------------
   # -------------------------------------------------------------------------
-  # 1
   list(
     
     
     tag="weak_prior_fixed",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +  
-                 #Household Level
+                 
+                 #------------------
+               #Household Level
+               # Demographics
+               log_hh_size +
                  education_cleaned + 
+                 
+                 #Assets
                  log_livestock_tlu + 
                  log_land_cultivated + 
+                 
+                 # Practices
                  off_farm_any+ 
-                 # logit_off_farm_orientation +
-                 # logit_market_orientation +
-                 # logit_proportion_female_control+
-                 # log_income_diversity +
+                 till_not_by_hand+
+                 external_labour+
+                 pesticide+
+                 debts_have+
+                 aidreceived+
+                 livestock_inputs_any+
+                 land_irrigated_any+
                  
-                 # Village Level
-                 norm_growing_period +
+                 #------------------
+               # Village Level
+               norm_growing_period +
                  log_min_travel_time +
+                 log_pop_dens +
+                 #------------------
+               #County Level
+               norm_gdl_country_shdi+
                  
-                 norm_gdl_country_shdi+
-                 
-                 #County Level
                  # Levels
                  (1 | iso_country_code) +
                  (1 | iso_country_code:village)),
-                 # (1 | id_form)),
     prior="weak"
   ),
   
-  # 2
+  
   list(
     tag="weak_prior_mixed_country",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +  
                  #Household Level
+                 # Demographics
+                 log_hh_size +
                  education_cleaned + 
+                 
+                 #Assets
                  log_livestock_tlu + 
                  log_land_cultivated + 
+                 
+                 # Practices
                  off_farm_any+ 
-                
+                 till_not_by_hand+
+                 external_labour+
+                 pesticide+
+                 debts_have+
+                 aidreceived+
+                 livestock_inputs_any+
+                 land_irrigated_any+
                  
-                 # Village Level
-                 norm_growing_period +
+                 #------------------
+               # Village Level
+               norm_growing_period +
                  log_min_travel_time +
-                 
-                 norm_gdl_country_shdi+
+                 log_pop_dens +
+                 #------------------
+               #County Level
+               norm_gdl_country_shdi+
                  # Levels
                  (1 +  
-                    #Household Level
                     log_land_cultivated + 
                     log_livestock_tlu + 
                     off_farm_any | iso_country_code) +
                  (1 | iso_country_code:village)),
-                 # (1 | id_form)),
     prior="weak"),
-  
-  # 3
-  list(
-    tag="weak_prior_mixed_village",
-    data=indicator_data,
-    formula=bf(log_tva ~ 1 +  
-                 #Household Level
-                 education_cleaned + 
-                 log_livestock_tlu + 
-                 log_land_cultivated + 
-                 off_farm_any+ 
-                
-                 # Village Level
-                 norm_growing_period +
-                 log_min_travel_time +
-                 
-                 norm_gdl_country_shdi+
-                 # Levels
-                 (1 | iso_country_code) +
-                 (1 +  
-                    #Household Level
-                    log_land_cultivated + 
-                    log_livestock_tlu + 
-                    off_farm_any| iso_country_code:village)),
-                 # (1 | id_form)),
-    prior="weak"),
-  
-
   
   
   # -------------------------------------------------------------------------
@@ -166,110 +168,269 @@ models <-  list(
   # -------------------------------------------------------------------------
   # -------------------------------------------------------------------------
   
-  # 5
   list(
     tag="horseshoe_fixed",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +  
                  #Household Level
+                 # Demographics
+                 log_hh_size +
                  education_cleaned + 
+                 
+                 #Assets
                  log_livestock_tlu + 
                  log_land_cultivated + 
+                 
+                 # Practices
                  off_farm_any+ 
-                 # logit_off_farm_orientation +
-                 # logit_market_orientation +
-                 # logit_proportion_female_control+
-                 # log_income_diversity +
+                 till_not_by_hand+
+                 external_labour+
+                 pesticide+
+                 debts_have+
+                 aidreceived+
+                 livestock_inputs_any+
+                 land_irrigated_any+
                  
-                 # Village Level
-                 norm_growing_period +
+                 #------------------
+               # Village Level
+               norm_growing_period +
                  log_min_travel_time +
+                 log_pop_dens +
+                 #------------------
+               #County Level
+               norm_gdl_country_shdi+
                  
-                 norm_gdl_country_shdi+
                  # Levels
                  (1 | iso_country_code) +
                  (1 | iso_country_code:village)),
-                 # (1 | id_form)),
-    prior="weak"
+    prior="horseshoe"
   ),
   
-  # 6
   
   list(
     tag="horseshoe_mixed_country",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +  
                  #Household Level
+                 # Demographics
+                 log_hh_size +
                  education_cleaned + 
+                 
+                 #Assets
                  log_livestock_tlu + 
                  log_land_cultivated + 
+                 
+                 # Practices
                  off_farm_any+ 
-                 # logit_off_farm_orientation +
-                 # logit_market_orientation +
-                 # logit_proportion_female_control+
-                 # log_income_diversity +
+                 till_not_by_hand+
+                 external_labour+
+                 pesticide+
+                 debts_have+
+                 aidreceived+
+                 livestock_inputs_any+
+                 land_irrigated_any+
                  
-                 # Village Level
-                 norm_growing_period +
+                 #------------------
+               # Village Level
+               norm_growing_period +
                  log_min_travel_time +
+                 log_pop_dens +
+                 #------------------
+               #County Level
+               norm_gdl_country_shdi+
                  
-                 norm_gdl_country_shdi+
                  # Levels
                  (1 +  
-                    #Household Level
-                    education_cleaned + 
-                    log_livestock_tlu + 
                     log_land_cultivated + 
-                    logit_off_farm_orientation +
-                    logit_market_orientation +
-                    logit_proportion_female_control+
-                    log_income_diversity +
-                    
-                    # Village Level
-                    norm_growing_period +
-                    log_min_travel_time +
-                    #County Level
-                    norm_gdl_lifexp | iso_country_code) +
+                    log_livestock_tlu + 
+                    off_farm_any | iso_country_code) +
                  (1 | iso_country_code:village)),
-                 # (1 | id_form)),
     prior="horseshoe"),
   
-  # 7
+  
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # HDDS --------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # Weak Prior Model --------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
   list(
-    tag="horseshoe_mixed_village",
+    
+    
+    tag="weak_prior_fixed",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +  
-                 #Household Level
+    formula=bf(norm_hdds_lean_season ~ 1 +  
+                 
+                 #------------------
+               #Household Level
+               # Demographics
+               log_hh_size +
                  education_cleaned + 
+                 
+                 #Assets
                  log_livestock_tlu + 
                  log_land_cultivated + 
+                 
+                 # Practices
                  off_farm_any+ 
-                 # logit_off_farm_orientation +
-                 # logit_market_orientation +
-                 # logit_proportion_female_control+
-                 # log_income_diversity +
+                 till_not_by_hand+
+                 external_labour+
+                 pesticide+
+                 debts_have+
+                 aidreceived+
+                 livestock_inputs_any+
+                 land_irrigated_any+
                  
-                 # Village Level
-                 norm_growing_period +
+                 #------------------
+               # Village Level
+               norm_growing_period +
                  log_min_travel_time +
+                 log_pop_dens +
+                 #------------------
+               #County Level
+               norm_gdl_country_shdi+
                  
-                 norm_gdl_country_shdi+
                  # Levels
                  (1 | iso_country_code) +
+                 (1 | iso_country_code:village)),
+    prior="weak"
+  ),
+  
+  
+  list(
+    tag="weak_prior_mixed_country",
+    data=indicator_data,
+    formula=bf(norm_hdds_lean_season ~ 1 +  
+                 #Household Level
+                 # Demographics
+                 log_hh_size +
+                 education_cleaned + 
+                 
+                 #Assets
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 
+                 # Practices
+                 off_farm_any+ 
+                 till_not_by_hand+
+                 external_labour+
+                 pesticide+
+                 debts_have+
+                 aidreceived+
+                 livestock_inputs_any+
+                 land_irrigated_any+
+                 log_pop_dens +
+                 #------------------
+               # Village Level
+               norm_growing_period +
+                 log_min_travel_time +
+                 log_pop_dens +
+                 #------------------
+               #County Level
+               norm_gdl_country_shdi+
+                 # Levels
                  (1 +  
-                    #Household Level
-                    education_cleaned + 
-                    log_livestock_tlu + 
                     log_land_cultivated + 
-                    logit_off_farm_orientation +
-                    logit_market_orientation +
-                    logit_proportion_female_control+
-                    log_income_diversity | iso_country_code:village)),
-                 # (1 | id_form)),
+                    log_livestock_tlu + 
+                    off_farm_any | iso_country_code) +
+                 (1 | iso_country_code:village)),
+    prior="weak"),
+  
+  
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # Horse Shoe Model --------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  
+  list(
+    tag="horseshoe_fixed",
+    data=indicator_data,
+    formula=bf(norm_hdds_lean_season ~ 1 +  
+                 #Household Level
+                 # Demographics
+                 log_hh_size +
+                 education_cleaned + 
+                 
+                 #Assets
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 
+                 # Practices
+                 off_farm_any+ 
+                 till_not_by_hand+
+                 external_labour+
+                 pesticide+
+                 debts_have+
+                 aidreceived+
+                 livestock_inputs_any+
+                 land_irrigated_any+
+                 
+                 #------------------
+               # Village Level
+               norm_growing_period +
+                 log_min_travel_time +
+                 log_pop_dens +
+                 #------------------
+               #County Level
+               norm_gdl_country_shdi+
+                 
+                 # Levels
+                 (1 | iso_country_code) +
+                 (1 | iso_country_code:village)),
+    prior="horseshoe"
+  ),
+  
+  
+  list(
+    tag="horseshoe_mixed_country",
+    data=indicator_data,
+    formula=bf(norm_hdds_lean_season ~ 1 +  
+                 #Household Level
+                 # Demographics
+                 log_hh_size +
+                 education_cleaned + 
+                 
+                 #Assets
+                 log_livestock_tlu + 
+                 log_land_cultivated + 
+                 
+                 # Practices
+                 off_farm_any+ 
+                 till_not_by_hand+
+                 external_labour+
+                 pesticide+
+                 debts_have+
+                 aidreceived+
+                 livestock_inputs_any+
+                 land_irrigated_any+
+                 
+                 #------------------
+               # Village Level
+               norm_growing_period +
+                 log_min_travel_time +
+                 log_pop_dens +
+                 #------------------
+               #County Level
+               norm_gdl_country_shdi+
+                 
+                 # Levels
+                 (1 +  
+                    log_land_cultivated + 
+                    log_livestock_tlu + 
+                    off_farm_any | iso_country_code) +
+                 (1 | iso_country_code:village)),
     prior="horseshoe")
   
-
-
+  
+  
+  
+  
   
   
 )
@@ -310,13 +471,28 @@ model <- brm(
 )
 
 
-save(model,file=paste0(opt$output,"/overall_models/variable_addition/",models[[opt$index]][["tag"]],".rda"))
+dir.create(paste0(opt$output,"/overall_models/variable_addition/tva"))
+dir.create(paste0(opt$output,"/overall_models/variable_addition/hdds"))
+
+
+
+if (grepl("hdds",as.character(models[[opt$index]][["formula"]])[1])){
+  base_path <- paste0(opt$output,"/overall_models/variable_addition/hdds/")
+}
+
+if(grepl("tva",as.character(models[[opt$index]][["formula"]])[1])){
+  base_path <- paste0(opt$output,"/overall_models/variable_addition/tva/")
+}
+
+
+
+save(model,file=paste0(base_path,models[[opt$index]][["tag"]],".rda"))
 
 loo_model <- loo(model)
-save(loo_model,file=paste0(opt$output,"/overall_models/variable_addition/loo_",models[[opt$index]][["tag"]],".rda"))
+save(loo_model,file=paste0(base_path,"loo_",models[[opt$index]][["tag"]],".rda"))
 loo_model <- NULL
 
 r2_model <- bayes_R2(model)
-save(r2_model,file=paste0(opt$output,"/overall_models/variable_addition/r2_",models[[opt$index]][["tag"]],".rda"))
+save(r2_model,file=paste0(base_path,"r2_",models[[opt$index]][["tag"]],".rda"))
 
 
