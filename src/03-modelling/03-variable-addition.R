@@ -426,13 +426,6 @@ models <-  list(
                     off_farm_any | iso_country_code) +
                  (1 | iso_country_code:village)),
     prior="horseshoe")
-  
-  
-  
-  
-  
-  
-  
 )
 
 
