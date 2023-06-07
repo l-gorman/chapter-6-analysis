@@ -1,4 +1,4 @@
-# 
+# sbatch src/03-modelling/03-variable-addition.sh
 
 library(brms)
 # library(ggplot2)
