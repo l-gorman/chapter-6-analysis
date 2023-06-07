@@ -196,6 +196,8 @@ plot_levels_correlations <- function(
 dir.create("outputs/overall_model_results/")
 dir.create("outputs/overall_model_results/location_only_tva/")
 
+dir.create("outputs/overall_model_results/location_only_hdds/")
+
 
 all_plots <- function(model,
                       model_name,
@@ -332,48 +334,13 @@ all_plots <- function(model,
 }
 
 
-# All Models
-
-params_list <- list(
-  "Between Countries (sd)"="sd_iso_country_code__Intercept",
-  
-  "Between Counties (sd)"="sd_iso_country_code:gdlcode__Intercept",
-  "Between Counties (sd)"="sd_gdlcode__Intercept",
-  
-  "Between Villages (sd)"="sd_iso_country_code:gdlcode:village__Intercept",
-  "Between Villages (sd)"="sd_iso_country_code:village__Intercept",
-  "Between Villages (sd)"="sd_gdlcode:village__Intercept",
-  "Between Villages (sd)"="sd_kg_class:village__Intercept",
-  
-  
-  "Between Projects (sd)"="sd_id_form__Intercept",
-  "Between Projects (sd)"="sd_iso_country_code:id_form__Intercept",
-  
-  "Between KG Class (sd)"="sd_kg_class_name__Intercept",
-  "Unexplained"="sigma"
-)
-
-
-
-model_files <- list.files("outputs/31_05_2023/outputs/location_only/hdds/") 
-model_files <- c(model_files, list.files("outputs/31_05_2023/outputs/location_only/tva/"))
-model_files <- unique(model_files) 
-
-model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
-
-for (model_file in model_files){
-  model_name <- gsub(".rda","",model_file,fixed=T)
-  dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name))
-  model <- loadRData(paste0("outputs/31_05_2023/outputs/location_only/",model_file))
-  
-  all_variables <- get_variables(model)
-  
-  param_list_temp <-params_list[as.character(params_list) %in% all_variables]
-  # model <- country_village_form
-  # model_name <- "country_village_form"
-  # params_list <- params_list
-  all_plots(model,model_name,param_list_temp)
-  
+varied_group_effects_plots <- function(model,
+                                       model_name,
+                                       params_list,
+                                       all_variables,
+                                       param_list_temp,
+                                       base_path
+){
   
   # Random effects plots
   
@@ -381,10 +348,12 @@ for (model_file in model_files){
     grep(paste0(x,"\\:"),all_variables, value=T)
     
   })
+  
+  
   random_vars <- temp[lapply(temp, function(x){length(x)>0}) %>% unlist()]
   fixed_vars <- param_list_temp
   if (length(random_vars)>0){
-    dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_vars"))
+    dir.create(paste0(base_path,model_name,"/random_vars"))
     
     for (i in 1:length(random_vars)){
       
@@ -415,9 +384,9 @@ for (model_file in model_files){
       
       draw_summary$facet_split <- ifelse(draw_summary$key %in% names(fixed_vars),"Whole Dataset",paste0("Per Country: ",clean_name_random))
       draw_summary$facet_split <- factor(draw_summary$facet_split, 
-                                            levels=c("Whole Dataset",
-                                                     paste0("Per Country: ",clean_name_random)),
-                                            ordered=T)
+                                         levels=c("Whole Dataset",
+                                                  paste0("Per Country: ",clean_name_random)),
+                                         ordered=T)
       
       plot <- ggplot(draw_summary, aes(y = key,x=Estimate,shape="Estimate"))+
         geom_point(show.legend = T,size=3)+
@@ -431,93 +400,187 @@ for (model_file in model_files){
                                         override.aes = list(shape = c(NA), linetype = c("solid", "solid"))),
                shape=guide_legend(title="")) +
         theme(plot.title = element_text(hjust=0.5))
-        # axis.text.y = element_text(face =  draw_summary$embolden_overall[draw_summary$level=="0.66 Level"]))
-
-       
+      # axis.text.y = element_text(face =  draw_summary$embolden_overall[draw_summary$level=="0.66 Level"]))
       
-
-      ggsave(paste0("outputs/overall_model_results/location_only_tva/",model_name,"/random_vars/",names(random_vars)[i], ".png"), 
+      
+      
+      
+      ggsave(paste0(base_path,model_name,"/random_vars/",names(random_vars)[i], ".png"), 
              plot,
              width=2000, 
              height = 2500, units = "px")
       
     }
+  }
+  
+  
+  return()
+}
+
+
+# All Models
+
+params_list <- list(
+  "Between Countries (sd)"="sd_iso_country_code__Intercept",
+  
+  "Between Counties (sd)"="sd_iso_country_code:gdlcode__Intercept",
+  "Between Counties (sd)"="sd_gdlcode__Intercept",
+  
+  "Between Villages (sd)"="sd_iso_country_code:gdlcode:village__Intercept",
+  "Between Villages (sd)"="sd_iso_country_code:village__Intercept",
+  "Between Villages (sd)"="sd_gdlcode:village__Intercept",
+  "Between Villages (sd)"="sd_kg_class:village__Intercept",
+  
+  
+  "Between Projects (sd)"="sd_id_form__Intercept",
+  "Between Projects (sd)"="sd_iso_country_code:id_form__Intercept",
+  
+  "Between KG Class (sd)"="sd_kg_class_name__Intercept",
+  "Unexplained"="sigma"
+)
+
+
+
+model_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/hdds/") 
+model_files <- c(model_files, list.files("outputs/31_05_2023/outputs/overall_models/location_only/tva/"))
+model_files <- unique(model_files) 
+
+model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
+
+dir.create(paste0("outputs/overall_model_results/location_only_tva/"))
+dir.create(paste0("outputs/overall_model_results/location_only_hdds/"))
+
+
+for (model_file in model_files){
+  model_name <- gsub(".rda","",model_file,fixed=T)
+  dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name))
+  dir.create(paste0("outputs/overall_model_results/location_only_hdds/",model_name))
+  
+  tva_file <- paste0("outputs/31_05_2023/outputs/overall_models/location_only/tva/",model_file)
+  if (file.exists(tva_file)){
+    tva_model <- loadRData(tva_file)
     
+    all_variables <- get_variables(tva_model)
+    param_list_temp <-params_list[as.character(params_list) %in% all_variables]
+    all_plots(tva_model,model_name,param_list_temp,base_dir = "outputs/overall_model_results/location_only_tva/")
+    
+    varied_group_effects_plots(model=tva_model,
+                               model_name = model_name,
+                               params_list=params_list,
+                               all_variables=all_variables,
+                               param_list_temp=param_list_temp,
+                               base_path ="outputs/overall_model_results/location_only_tva/"
+    )
+  }
+  hdds_file <- paste0("outputs/31_05_2023/outputs/overall_models/location_only/hdds/",model_file)
+  if (file.exists(hdds_file)){
+    
+    hdds_model <- loadRData(hdds_file)
+    
+    all_variables <- get_variables(hdds_model)
+    param_list_temp <-params_list[as.character(params_list) %in% all_variables]
+    all_plots(hdds_model,model_name,param_list_temp,base_dir = "outputs/overall_model_results/location_only_hdds/")
+    
+    
+    varied_group_effects_plots(model=hdds_model,
+                               model_name = model_name,
+                               params_list=params_list,
+                               all_variables=all_variables,
+                               param_list_temp=param_list_temp,
+                               base_path ="outputs/overall_model_results/location_only_hdds/"
+    )
   }
   
   
   
   
-
+  
 }
+
+hdds_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/hdds/") %>% grep("^loo",x=., value=T)
+tva_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/tva/") %>% grep("^loo",x=., value=T)
+
+
+loo_comparison_plot <- function(base_input_path,
+                                base_output_path){
+  
+  loo_files <- list.files(base_input_path) %>% grep("^loo",x=., value=T)
+  
+  
+  loo_all <- sapply(loo_files, function(x){
+    loo_temp <- loadRData(paste0(
+      base_input_path,
+      x
+      
+    ))
+    
+    loo_temp
+    
+  },simplify=F)
+  
+  loo_compare <- loo_compare(loo_all) %>% as_tibble()
+  
+  
+  loo_compare$model <- row.names(loo_compare(loo_all))
+  loo_compare$model <- gsub(".rda","",loo_compare$model,fixed=T)
+  loo_compare$model <- gsub("loo_","",loo_compare$model,fixed=T)
+  loo_compare <- loo_compare[c("model","elpd_diff","se_diff")]
+  
+  loo_compare$elpd_diff <- round(loo_compare$elpd_diff,1)
+  loo_compare$se_diff <- round(loo_compare$se_diff,1)
+  
+  readr::write_csv(loo_compare,paste0(base_output_path,"loo_comparison.csv"))
+  
+  loo_compare <- loo_compare[order(loo_compare$elpd_diff),]
+  
+  loo_compare$model <- factor(loo_compare$model, 
+                              levels=loo_compare$model,
+                              ordered=T)
+  
+  loo_compare$lower <- loo_compare$elpd_diff-loo_compare$se_diff
+  loo_compare$upper <- loo_compare$elpd_diff+loo_compare$se_diff
+  
+  
+  
+  loo_comparison_plot <- ggplot(loo_compare)+
+    geom_point(aes(x=model, y=elpd_diff))+
+    geom_path(aes(x=model, y=elpd_diff,),group=1, color="blue") +
+    geom_segment(aes(x = model,xend=model,y=lower,yend=upper))+
+    
+    geom_hline(yintercept = max(loo_compare$elpd_diff),linetype="dashed")+
+    
+    # ylim(c(0.25,1))+
+    
+    labs(title = 'ELPD for Intercept Only Models',
+         x="Levels Included",
+         y="ELPD")+
+    theme(
+      plot.title = element_text(hjust=0.5),
+      axis.text.x = element_text(angle=45,hjust=1))
+  
+  ggsave(paste0(base_output_path,"loo_summary.png"),loo_comparison_plot, width=1500,height=1500,units="px")
+  
+  
+  loo_compare_flextable <- loo_compare %>% flextable::flextable()
+  
+  save_as_image(loo_compare_flextable, paste0(base_output_path,"loo_comparison.png"))
+  
+  
+  loo_order <- loo_compare$model
+  return(loo_order)
+}
+
 
 
 # Loo Comparison
 
-loo_files <- list.files("outputs/31_05_2023/outputs/location_only/") %>% grep("^loo",x=., value=T)
+hdds_loo_order<- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/hdds/",
+                    base_output_path = "./outputs/overall_model_results/location_only_hdds/"
+                    )
 
-
-loo_all <- sapply(loo_files, function(x){
-  loo_temp <- loadRData(paste0(
-    "outputs/31_05_2023/outputs/location_only/",
-    x
-    
-  ))
-  
-  loo_temp
-  
-},simplify=F)
-
-loo_compare <- loo_compare(loo_all) %>% as_tibble()
-
-
-loo_compare$model <- row.names(loo_compare(loo_all))
-loo_compare$model <- gsub(".rda","",loo_compare$model,fixed=T)
-loo_compare$model <- gsub("loo_","",loo_compare$model,fixed=T)
-loo_compare <- loo_compare[c("model","elpd_diff","se_diff")]
-
-loo_compare$elpd_diff <- round(loo_compare$elpd_diff,1)
-loo_compare$se_diff <- round(loo_compare$se_diff,1)
-
-readr::write_csv(loo_compare,"outputs/overall_model_results/location_only_tva/loo_comparison.csv")
-
-loo_compare <- loo_compare[order(loo_compare$elpd_diff),]
-
-loo_compare$model <- factor(loo_compare$model, 
-                            levels=loo_compare$model,
-                            ordered=T)
-
-loo_compare$lower <- loo_compare$elpd_diff-loo_compare$se_diff
-loo_compare$upper <- loo_compare$elpd_diff+loo_compare$se_diff
-
-
-
-loo_comparison_plot <- ggplot(loo_compare)+
-  geom_point(aes(x=model, y=elpd_diff))+
-  geom_path(aes(x=model, y=elpd_diff,),group=1, color="blue") +
-  geom_segment(aes(x = model,xend=model,y=lower,yend=upper))+
-  
-  geom_hline(yintercept = max(loo_compare$elpd_diff),linetype="dashed")+
-  
-  # ylim(c(0.25,1))+
-  
-  labs(title = 'ELPD for Intercept Only Models',
-       x="Levels Included",
-       y="ELPD")+
-  theme(
-    plot.title = element_text(hjust=0.5),
-    axis.text.x = element_text(angle=45,hjust=1))
-
-ggsave("outputs/overall_model_results/location_only_tva/loo_summary.png",loo_comparison_plot, width=1500,height=1500,units="px")
-
-
-loo_compare_flextable <- loo_compare %>% flextable::flextable()
-
-save_as_image(loo_compare_flextable, "outputs/overall_model_results/location_only_tva/loo_comparison.png")
-
-
- loo_order <- loo_compare$model
-
+tva_loo_order <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/tva/",
+                    base_output_path = "./outputs/overall_model_results/location_only_tva/"
+)
 
 
 
@@ -531,127 +594,73 @@ save_as_image(loo_compare_flextable, "outputs/overall_model_results/location_onl
 
 # R2 Comparison
 
-r2_files <- list.files("outputs/31_05_2023/outputs/location_only/") %>% grep("^r2",x=., value=T)
 
 
-r2_all <- sapply(r2_files, function(x){
-  r2_temp <- loadRData(paste0(
-    "outputs/31_05_2023/outputs/location_only/",
-    x
+r2_comparison <- function(loo_order,
+                          base_input_path,
+                          base_output_path){
+  
+  
+  r2_files <- list.files(base_input_path) %>% grep("^r2",x=., value=T)
+  
+  r2_all <- sapply(r2_files, function(x){
+    r2_temp <- loadRData(paste0(
+      base_input_path,
+      x
+      
+    ))
     
-  ))
+    model_name <- gsub("r2_", "",x)
+    model_name <- gsub(".rda", "",model_name,fixed=T)
+    r2_temp <- as_tibble(r2_temp)
+    r2_temp$model_type <- model_name
+    return(r2_temp)
+    
+  },simplify=F)
   
-  model_name <- gsub("r2_", "",x)
-  model_name <- gsub(".rda", "",model_name,fixed=T)
-  r2_temp <- as_tibble(r2_temp)
-  r2_temp$model_type <- model_name
-  return(r2_temp)
   
-},simplify=F)
-
-
-r2_all <- r2_all %>% bind_rows()
-
-r2_all <- r2_all[order(r2_all$Estimate),]
-
-r2_all$model_type <- factor(r2_all$model_type, 
-                            levels=loo_compare$model,
-                            ordered=T)
-
-r2_all <- r2_all[order(r2_all$model_type),]
-
-r_2_comparison <- ggplot(r2_all)+
-  geom_point(aes(x=model_type, y=Estimate))+
-  geom_path(aes(x=model_type, y=Estimate,),group=1, color="blue") +
-  geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
+  r2_all <- r2_all %>% bind_rows()
   
-  geom_hline(yintercept = max(r2_all$Estimate),linetype="dashed")+
+  r2_all <- r2_all[order(r2_all$Estimate),]
   
-  # ylim(c(0.25,1))+
+  r2_all$model_type <- factor(r2_all$model_type, 
+                              levels=loo_order,
+                              ordered=T)
   
-  labs(title = bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'),
-       x="Levels Included", 
-       y=bquote('Bayesian '~R^2))+
-  theme(
-    plot.title = element_text(hjust=0.5),
-    axis.text.x = element_text(angle=45,hjust=1))
+  r2_all <- r2_all[order(r2_all$model_type),]
+  
+  r_2_comparison <- ggplot(r2_all)+
+    geom_point(aes(x=model_type, y=Estimate))+
+    geom_path(aes(x=model_type, y=Estimate,),group=1, color="blue") +
+    geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
+    
+    geom_hline(yintercept = max(r2_all$Estimate),linetype="dashed")+
+    
+    # ylim(c(0.25,1))+
+    
+    labs(title = bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'),
+         x="Levels Included", 
+         y=bquote('Bayesian '~R^2))+
+    theme(
+      plot.title = element_text(hjust=0.5),
+      axis.text.x = element_text(angle=45,hjust=1))
+  
+  ggsave(paste0(base_output_path,"r2_summary.png"),r_2_comparison, width=1500,height=1500,units="px")
+  
+  
+}
 
-ggsave("outputs/overall_model_results/location_only_tva/r2_summary.png",r_2_comparison, width=1500,height=1500,units="px")
+
+
+r2_comparison(loo_order = hdds_loo_order,
+              base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/hdds/",
+              base_output_path = "./outputs/overall_model_results/location_only_hdds/")
+
+r2_comparison(tva_loo_order,
+              base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/tva/",
+              base_output_path = "./outputs/overall_model_results/location_only_tva/")
 
 
 
 
 
-# 
-# # Looking at correlations for random effects
-# 
-# dir.create("outputs/overall_model_results/location_only_tva/effect_correlation")
-# 
-# 
-# 
-# var_type <- list(
-#   form="r_id_form",
-#   country="r_iso_country_code",
-#   county="r_iso_country_code:gdlcode",
-#   village="iso_country_code:gdlcode:village",
-#   climate_class="kg_class_name")
-#  
-# 
-# c 
-# 
-# 
-#   
-# random_effects_cors <- as_draws_df(full_model,variable = "^r", regex=T)
-# 
-# 
-# ?spread_draws
-# temp <- spread_rvars(full_model)
-# random_effects_correlation <- cor(random_effects_cors)
-# random_effects_correlation_df <- as.data.frame(as.table(random_effects_correlation))
-# 
-# random_effects_correlation_df$var_1_type <- NA
-# random_effects_correlation_df$var_1_form <- NA
-# random_effects_correlation_df$var_1_country <- NA
-# random_effects_correlation_df$var_1_county <- NA
-# random_effects_correlation_df$var_1_village <- NA
-# random_effects_correlation_df$var_1_climate_class <- NA
-# 
-# random_effects_correlation_df$var_2_type <- NA
-# random_effects_correlation_df$var_2_form <- NA
-# random_effects_correlation_df$var_2_country <- NA
-# random_effects_correlation_df$var_2_county <- NA
-# random_effects_correlation_df$var_2_village <- NA
-# random_effects_correlation_df$var_2_climate_class <- NA
-# 
-# for (var in names(var_type)){
-#   
-#   reg_name <- var_type[[var]]
-#   
-#   subset_var_1 <- grep(paste0("^",reg_name),random_effects_correlation_df$Var1)
-#   random_effects_correlation_df$var_1_type[subset_var_1] <- var
-#   
-#   if(var=="form"){
-#     form <- gsub(".*\\[","",random_effects_correlation_df$Var1[subset_var_1])
-#     form <- gsub(",.*","",form)
-#     country <- gsub(",.*","",form)
-#     
-#   }
-#   
-#   
-# 
-#   
-#   
-#   if ()
-#   
-#   
-#   var_1 <- 
-# }
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
