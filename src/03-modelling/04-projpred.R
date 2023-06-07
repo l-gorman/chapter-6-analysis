@@ -58,7 +58,6 @@ start <- Sys.time()
 # Add function call
 
 
-dir.create( paste0(opt$output,"/proj_pred/"))
 
 
 seed <- as.numeric(opt$index)
