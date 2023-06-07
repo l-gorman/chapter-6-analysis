@@ -1,4 +1,5 @@
-# sbatch src/03-modelling/03-variable-addition.sh 
+# 
+
 library(brms)
 # library(ggplot2)
 # library(ggridges)
@@ -471,7 +472,7 @@ models <-  list(
     prior="weak"),
   
   list(
-    tag="horeshoe_fixed_only",
+    tag="horseshoe_fixed_only",
     data=indicator_data,
     formula=bf(norm_hdds_lean_season ~ 1 +  
                  #Household Level
@@ -501,7 +502,7 @@ models <-  list(
                  #------------------
                #County Level
                norm_gdl_country_shdi),
-    prior="weak"),
+    prior="horseshoe"),
   
   list(
     tag="weak_fixed_only",
@@ -537,7 +538,7 @@ models <-  list(
     prior="weak"),
   
   list(
-    tag="horeshoe_fixed_only",
+    tag="horseshoe_fixed_only",
     data=indicator_data,
     formula=bf(log_tva ~ 1 +  
                  #Household Level
@@ -567,7 +568,7 @@ models <-  list(
                  #------------------
                #County Level
                norm_gdl_country_shdi),
-    prior="horeshoe")
+    prior="horseshoe")
   
   
   
