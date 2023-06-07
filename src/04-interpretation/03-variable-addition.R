@@ -9,6 +9,25 @@ library(ggplot2)
 library(bayesplot)
 library(hexbin)
 library(flextable)
+
+
+file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/tva/country_village.rda",
+          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/")
+
+file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/tva/loo_country_village.rda",
+          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/")
+
+file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/tva/r2_country_village.rda",
+          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/")
+
+file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/hdds/country_village.rda",
+          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/")
+
+file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/hdds/loo_country_village.rda",
+          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/")
+
+file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/hdds/r2_country_village.rda",
+          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/")
 loadRData <- function(fileName){
   #loads an RData file, and returns it
   load(fileName)
@@ -135,10 +154,11 @@ get_random_effects <- function(model,
 all_plots <- function(model,
                       model_name,
                       variables,
-                      levels_variables
+                      levels_variables,
+                      base_path
 ){
   
-  dir.create(paste0("outputs/overall_model_results/variable_addition/",model_name))
+  dir.create(base_path)
   
   all_vars <- get_variables(model)
   
@@ -181,7 +201,7 @@ all_plots <- function(model,
   
   levels_plots <- quick_estimates_plot(levels_summary, title=paste0("Levels of Variation for Model ", model_name), sort=F)
   
-  ggsave(filename = paste0("outputs/overall_model_results/variable_addition/",model_name,"/levels_estimates.png"),
+  ggsave(filename = paste0(base_path,"/levels_estimates.png"),
          plot = levels_plots,width = 5000,height=3500,units = "px")
   
   
@@ -209,7 +229,7 @@ all_plots <- function(model,
   fixed_plots <- quick_estimates_plot(fixed_effects_summary, title=paste0("Fixed Effects for Model ", model_name), sort=T)
   
   
-  ggsave(filename = paste0("outputs/overall_model_results/variable_addition/",model_name,"/fixed_effects_plots.png"),
+  ggsave(filename = paste0(base_path,"/fixed_effects_plots.png"),
          plot = fixed_plots,width = 2500,height=3000,units = "px")
   
   
@@ -256,13 +276,13 @@ all_plots <- function(model,
     
     mixed_plots <- quick_estimates_plot(mixed_effects_summary, title=paste0("Random Effects for Model ", model_name), sort=T)
     
-    ggsave(filename = paste0("outputs/overall_model_results/variable_addition/",model_name,"/mixed_effects_plots.png"),
+    ggsave(filename = paste0(base_path,"/mixed_effects_plots.png"),
            plot = mixed_plots,width = 2500,height=3000,units = "px")
     
     
     # Plotting random effects
     
-    dir.create(paste0("outputs/overall_model_results/variable_addition/",model_name,"/random_effects"))
+    dir.create(paste0(base_path,"/random_effects"))
     
     variables_in <- lapply(variables,function(x){
       grepl(as.character(x),draw_summary$key)
@@ -312,7 +332,7 @@ all_plots <- function(model,
       
       random_plots <- quick_estimates_plot(random_effects_summary, title=paste0("Random Effects for Model: ", model_name,'\nVariable: ',variable_to_plot), sort=T)
       
-      ggsave(filename = paste0("outputs/overall_model_results/variable_addition/",model_name,"/random_effects/",variable_to_plot,".png"),
+      ggsave(filename = paste0(base_path,"/random_effects/",variable_to_plot,".png"),
              plot = random_plots,width = 2500,height=3000,units = "px")
       
     }
@@ -355,17 +375,27 @@ dir.create(paste0("outputs/overall_model_results/variable_addition/"))
 
 variables <- list(
   # "Education (Pre Primary)"="education_cleanedpre_primary",
+  "Household Size"="log_hh_size",
   "Education (Primary)"="education_cleanedprimary",
-  "Education (Secondary)"="education_cleanedsecondary_or_higher",
+  "Education (Secondary/Higher)"="education_cleanedsecondary_or_higher",
   "Livestock TLU"="log_livestock_tlu",
   "Land Cultivated"="log_land_cultivated",
-  "Off Farm Orientation"="logit_off_farm_orientation",
-  "Market Orientation"="logit_market_orientation",
-  "Female Control"="logit_proportion_female_control",
-  "Income Diversity"="log_income_diversity",
+  "Any Off Farm Income"= "off_farm_any",
+  "Till with Machine/Animal"="till_not_by_hand",
+  "External Labour"="external_labour",
+  "Use Pesticide"="pesticide",
+  "Have Debts"="debts_have",
+  "Received Aid"="aidreceived",
+  "Use Livestock Inputs"="livestock_inputs_any",
+  "Irrigate Land"="land_irrigated_any",
+  
+  
+  
   "Growing Period"="norm_growing_period",
+  "Population Density"="log_pop_dens",
   "Minimum Travel Time"="log_min_travel_time",
-  "County Life Expectancy"="norm_gdl_lifexp"
+  
+  "Country HDIS"="norm_gdl_country_shdi"
   
 )
 
@@ -376,105 +406,206 @@ levels_variables <- list(
   "Unexplained"="sigma"
 )
 
-model_files <- list.files("outputs/14_04_2023/outputs/overall_models/variable_addition/") 
+
+model_files <- list.files("outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/") 
+model_files <- c(model_files, list.files("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/"))
+model_files <- unique(model_files) 
+
 model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
 
 
-
+# model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
+dir.create("outputs/overall_model_results/variable_addition/hdds/")
+dir.create("outputs/overall_model_results/variable_addition/tva/")
 for (model_file in model_files){
   
+
   
   model_name <- gsub(".rda","",model_file,fixed=T)
-  model <- loadRData(paste0("outputs/14_04_2023/outputs/overall_models/variable_addition/",model_file))
   
-  all_plots(model=model,
+  tva_path <- paste0("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/",model_file)
+  if (file.exists(tva_path)){
+  tva_model <- loadRData(tva_path)
+  
+  
+  all_plots(model=tva_model,
             model_name = model_name,
             variables = variables,
-            levels_variables = levels_variables
+            levels_variables = levels_variables,
+            base_path=paste0("outputs/overall_model_results/variable_addition/tva/",model_name)
   )
+  
+  }
+  
+  
+  hdds_path <- paste0("outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/",model_file)
+  if (file.exists(hdds_path)){
+    hdds_model <- loadRData(hdds_path)
+    
+    
+    all_plots(model=hdds_model,
+              model_name = model_name,
+              variables = variables,
+              levels_variables = levels_variables,
+              base_path=paste0("outputs/overall_model_results/variable_addition/hdds/",model_name)
+    )
+    
+  }
 }
+
+
+
+
+loo_comparison_plot <- function(base_input_path,
+                                base_output_path){
+  
+  loo_files <- list.files(base_input_path) %>% grep("^loo",x=., value=T)
+  
+  
+  loo_all <- sapply(loo_files, function(x){
+    loo_temp <- loadRData(paste0(
+      base_input_path,
+      x
+      
+    ))
+    
+    loo_temp
+    
+  },simplify=F)
+  
+  loo_compare <- loo_compare(loo_all) %>% as_tibble()
+  
+  
+  loo_compare$model <- row.names(loo_compare(loo_all))
+  loo_compare$model <- gsub(".rda","",loo_compare$model,fixed=T)
+  loo_compare$model <- gsub("loo_","",loo_compare$model,fixed=T)
+  loo_compare <- loo_compare[c("model","elpd_diff","se_diff")]
+  
+  loo_compare$elpd_diff <- round(loo_compare$elpd_diff,1)
+  loo_compare$se_diff <- round(loo_compare$se_diff,1)
+  
+  readr::write_csv(loo_compare,paste0(base_output_path,"loo_comparison.csv"))
+  
+  loo_compare <- loo_compare[order(loo_compare$elpd_diff),]
+  
+  loo_compare$model <- factor(loo_compare$model, 
+                              levels=loo_compare$model,
+                              ordered=T)
+  
+  loo_compare$lower <- loo_compare$elpd_diff-loo_compare$se_diff
+  loo_compare$upper <- loo_compare$elpd_diff+loo_compare$se_diff
+  
+  
+  
+  loo_comparison_plot <- ggplot(loo_compare)+
+    geom_point(aes(x=model, y=elpd_diff))+
+    geom_path(aes(x=model, y=elpd_diff,),group=1, color="blue") +
+    geom_segment(aes(x = model,xend=model,y=lower,yend=upper))+
+    
+    geom_hline(yintercept = max(loo_compare$elpd_diff),linetype="dashed")+
+    
+    # ylim(c(0.25,1))+
+    
+    labs(title = 'ELPD for Intercept Only Models',
+         x="Levels Included",
+         y="ELPD")+
+    theme(
+      plot.title = element_text(hjust=0.5),
+      axis.text.x = element_text(angle=45,hjust=1))
+  
+  ggsave(paste0(base_output_path,"loo_summary.png"),loo_comparison_plot, width=1500,height=1500,units="px")
+  
+  
+  loo_compare_flextable <- loo_compare %>% flextable::flextable()
+  
+  save_as_image(loo_compare_flextable, paste0(base_output_path,"loo_comparison.png"))
+  
+  
+  loo_order <- loo_compare$model
+  return(loo_order)
+}
+
+
+hdds_loo_order<- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/",
+                                     base_output_path = "./outputs/overall_model_results/variable_addition/hdds/"
+)
+
+tva_loo_order <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/",
+                                     base_output_path = "./outputs/overall_model_results/variable_addition/tva/"
+)
+
 
 
 # R2 Comparison
 
-r2_files <- list.files("outputs/14_04_2023/outputs/overall_models/variable_addition/") %>% grep("^r2",x=., value=T)
 
 
-r2_all <- sapply(r2_files, function(x){
-  r2_temp <- loadRData(paste0(
-    "outputs/14_04_2023/outputs/overall_models/variable_addition/",
-    x
+r2_comparison <- function(loo_order,
+                          base_input_path,
+                          base_output_path){
+  
+  
+  r2_files <- list.files(base_input_path) %>% grep("^r2",x=., value=T)
+  
+  r2_all <- sapply(r2_files, function(x){
+    r2_temp <- loadRData(paste0(
+      base_input_path,
+      x
+      
+    ))
     
-  ))
-  
-  model_name <- gsub("r2_", "",x)
-  model_name <- gsub(".rda", "",model_name,fixed=T)
-  r2_temp <- as_tibble(r2_temp)
-  r2_temp$model_type <- model_name
-  return(r2_temp)
-  
-},simplify=F)
-
-
-r2_all <- r2_all %>% bind_rows()
-
-r2_all <- r2_all[order(r2_all$Estimate),]
-
-r2_all$model_type <- factor(r2_all$model_type, 
-                            levels=r2_all$model_type,
-                            ordered=T)
-
-r_2_comparison <- ggplot(r2_all)+
-  geom_point(aes(x=model_type, y=Estimate))+
-  geom_path(aes(x=model_type, y=Estimate,),group=1, color="blue") +
-  geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
-  
-  geom_hline(yintercept = max(r2_all$Estimate),linetype="dashed")+
-  
-  # ylim(c(0.25,1))+
-  
-  labs(title = bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'),
-       x="Levels Included", 
-       y=bquote('Bayesian '~R^2))+
-  theme(
-    plot.title = element_text(hjust=0.5),
-    axis.text.x = element_text(angle=45,hjust=1))
-
-ggsave("outputs/overall_model_results/variable_addition/r2_summary.png",r_2_comparison, width=1500,height=1500,units="px")
-
-
-
-
-# Loo Comparison
-
-loo_files <- list.files("outputs/14_04_2023/outputs/overall_models/variable_addition/") %>% grep("^loo",x=., value=T)
-
-
-loo_all <- sapply(loo_files, function(x){
-  loo_temp <- loadRData(paste0(
-    "outputs/14_04_2023/outputs/overall_models/variable_addition/",
-    x
+    model_name <- gsub("r2_", "",x)
+    model_name <- gsub(".rda", "",model_name,fixed=T)
+    r2_temp <- as_tibble(r2_temp)
+    r2_temp$model_type <- model_name
+    return(r2_temp)
     
-  ))
+  },simplify=F)
   
-  loo_temp
   
-},simplify=F)
+  r2_all <- r2_all %>% bind_rows()
+  
+  r2_all <- r2_all[order(r2_all$Estimate),]
+  
+  r2_all$model_type <- factor(r2_all$model_type, 
+                              levels=loo_order,
+                              ordered=T)
+  
+  r2_all <- r2_all[order(r2_all$model_type),]
+  
+  r_2_comparison <- ggplot(r2_all)+
+    geom_point(aes(x=model_type, y=Estimate))+
+    geom_path(aes(x=model_type, y=Estimate,),group=1, color="blue") +
+    geom_segment(aes(x = model_type,xend=model_type,y=Q2.5,yend=Q97.5))+
+    
+    geom_hline(yintercept = max(r2_all$Estimate),linetype="dashed")+
+    
+    # ylim(c(0.25,1))+
+    
+    labs(title = bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'),
+         x="Levels Included", 
+         y=bquote('Bayesian '~R^2))+
+    theme(
+      plot.title = element_text(hjust=0.5),
+      axis.text.x = element_text(angle=45,hjust=1))
+  
+  ggsave(paste0(base_output_path,"r2_summary.png"),r_2_comparison, width=1500,height=1500,units="px")
+  
+  
+}
 
-loo_compare <- loo_compare(loo_all) %>% as_data_frame()
-loo_compare$model <- row.names(loo_compare(loo_all))
-loo_compare$model <- gsub(".rda","",loo_compare$model,fixed=T)
-loo_compare$model <- gsub("loo_","",loo_compare$model,fixed=T)
-loo_compare <- loo_compare[c("model","elpd_diff","se_diff")]
 
-loo_compare$elpd_diff <- round(loo_compare$elpd_diff,1)
-loo_compare$se_diff <- round(loo_compare$se_diff,1)
 
-readr::write_csv(loo_compare,"outputs/overall_model_results/variable_addition/loo_comparison.csv")
+r2_comparison(loo_order = hdds_loo_order,
+              base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/",
+              base_output_path = "./outputs/overall_model_results/variable_addition/hdds/")
 
-loo_compare_flextable <- loo_compare %>% flextable::flextable()
+r2_comparison(tva_loo_order,
+              base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/",
+              base_output_path = "./outputs/overall_model_results/variable_addition/tva/")
 
-save_as_image(loo_compare_flextable, "outputs/overall_model_results/variable_addition/loo_comparison.png")
+
+
 
 
 # 
