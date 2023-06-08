@@ -197,7 +197,7 @@ models <-  list(
 
                  #------------------
                # Village Level
-               norm_growing_period +
+                 norm_growing_period +
                  log_min_travel_time +
                  log_pop_dens +
                  #------------------

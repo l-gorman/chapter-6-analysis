@@ -80,25 +80,26 @@ subset_df$combined_fs_score <- factor(subset_df$combined_fs_score,
 
 dir.create(paste0(opt$output,"/",project_id))
 
-horseshoe_food_sec <- brm(
-  formula=combined_fs_score ~ 1 +  
+horseshoe_tva <- brm(
+  formula=log_tva ~ 1 +
+    #Household Level
+    # Demographics
+    log_hh_size +
     education_cleaned +
-    log_livestock_tlu + 
-    log_land_cultivated + 
-    logit_livestock_orientation +
-    logit_crop_orientation + 
-    logit_off_farm_orientation +
-    logit_market_orientation +
-    log_income_diversity +
-    norm_growing_period +
-    log_min_travel_time +
-    # aez_class_cleaned +
-    norm_gdl_lifexp +
-    logit_gdl_hdi + 
-    # (1 | iso_country_code) + 
-    # (1 | iso_country_code:gdlcode) + 
-    # (1 | iso_country_code:gdlcode:village),
-    (1 | village),
+    
+    #Assets
+    log_livestock_tlu +
+    log_land_cultivated +
+    
+    # Practices
+    off_farm_any+
+    till_not_by_hand+
+    external_labour+
+    pesticide+
+    debts_have+
+    aidreceived+
+    livestock_inputs_any+
+    land_irrigated_any,
   data = subset_df,
   prior = c(
     set_prior("horseshoe(1)", class="b"),# HorseShoe
@@ -118,24 +119,22 @@ horseshoe_food_sec <- brm(
 save(horseshoe_food_sec,file=paste0(opt$output,"/",project_id,"/horseshoe_food_sec.rda"))
 
 horseshoe_tva <- brm(
-  formula=log_tva ~ 1 +  
+  formula=log_hh_size +
     education_cleaned +
-    log_livestock_tlu + 
-    log_land_cultivated + 
-    logit_livestock_orientation +
-    logit_crop_orientation + 
-    logit_off_farm_orientation +
-    logit_market_orientation +
-    log_income_diversity +
-    norm_growing_period +
-    log_min_travel_time +
-    # aez_class_cleaned +
-    norm_gdl_lifexp +
-    logit_gdl_hdi + 
-    # (1 | iso_country_code) + 
-    # (1 | iso_country_code:gdlcode) + 
-    # (1 | iso_country_code:gdlcode:village),
-    (1 | village),
+    
+    #Assets
+    log_livestock_tlu +
+    log_land_cultivated +
+    
+    # Practices
+    off_farm_any+
+    till_not_by_hand+
+    external_labour+
+    pesticide+
+    debts_have+
+    aidreceived+
+    livestock_inputs_any+
+    land_irrigated_any,
   data = subset_df,
   prior = c(
     set_prior("horseshoe(1)", class="b"),# HorseShoe
@@ -156,24 +155,22 @@ save(horseshoe_tva,file=paste0(opt$output,"/",project_id,"/horseshoe_tva.rda"))
 
 
 weak_prior_food_sec <- brm(
-  formula=combined_fs_score ~ 1 +  
+  formula=log_hh_size +
     education_cleaned +
-    log_livestock_tlu + 
-    log_land_cultivated + 
-    logit_livestock_orientation +
-    logit_crop_orientation + 
-    logit_off_farm_orientation +
-    logit_market_orientation +
-    log_income_diversity +
-    norm_growing_period +
-    log_min_travel_time +
-    # aez_class_cleaned +
-    norm_gdl_lifexp +
-    logit_gdl_hdi + 
-    # (1 | iso_country_code) + 
-    # (1 | iso_country_code:gdlcode) + 
-    # (1 | iso_country_code:gdlcode:village),
-    (1 | village),
+    
+    #Assets
+    log_livestock_tlu +
+    log_land_cultivated +
+    
+    # Practices
+    off_farm_any+
+    till_not_by_hand+
+    external_labour+
+    pesticide+
+    debts_have+
+    aidreceived+
+    livestock_inputs_any+
+    land_irrigated_any,
   data = subset_df,
   prior = c(
     set_prior("normal(0, 1)", class = "b"),

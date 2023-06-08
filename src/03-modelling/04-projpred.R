@@ -87,13 +87,48 @@ if (seed>=6 & seed < 11){
 
 ref_model <- projpred::get_refmodel(ref_model)
 
+fixed_effects <- c(
+  "log_hh_size",
+  'education_cleaned',
+  
+  #Assets
+  'log_livestock_tlu',
+  'log_land_cultivated',
+  
+  # Practices
+  'off_farm_any',
+  'till_not_by_hand',
+  'external_labour',
+  'pesticide',
+  'debts_have',
+  'aidreceived',
+  'livestock_inputs_any',
+  'land_irrigated_any',
+  
+  #------------------
+  # Village Level
+  'norm_growing_period',
+  'log_min_travel_time',
+  'log_pop_dens',
+    #------------------
+  #County Level
+  'norm_gdl_country_shdi'
+)
+
+group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
+fixed_effects <- paste0(group_effects, " + ", fixed_effects)
+
+# Basing from this: https://discourse.mc-stan.org/t/advice-on-using-search-terms-in-projpred/22846/3
+search_terms <- c("1", group_effects, fixed_effects)
+
 
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
                           cv_method = 'kfold', 
                           K = 5,
                           verbose = TRUE, 
-                          seed = seed)
+                          seed = seed,
+                          search_terms=search_terms)
 
 save(varsel_model,file=paste0(output_dir,"/projpred_varsel_model_",seed,".rda"))
 
