@@ -502,7 +502,8 @@ tva_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_
 
 
 loo_comparison_plot <- function(base_input_path,
-                                base_output_path){
+                                base_output_path,
+                                return_data=F){
   
   loo_files <- list.files(base_input_path) %>% grep("^loo",x=., value=T)
   
@@ -567,6 +568,10 @@ loo_comparison_plot <- function(base_input_path,
   
   
   loo_order <- loo_compare$model
+  
+  if (return_data==T){
+    return(loo_compare)
+  }
   return(loo_order)
 }
 
@@ -574,12 +579,15 @@ loo_comparison_plot <- function(base_input_path,
 
 # Loo Comparison
 
-hdds_loo_order<- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/hdds/",
-                    base_output_path = "./outputs/overall_model_results/location_only_hdds/"
+hdds_loo_table<- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/hdds/",
+                    base_output_path = "./outputs/overall_model_results/location_only_hdds/",
+                    return_data = T
                     )
 
-tva_loo_order <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/tva/",
-                    base_output_path = "./outputs/overall_model_results/location_only_tva/"
+tva_loo_table <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/tva/",
+                    base_output_path = "./outputs/overall_model_results/location_only_tva/",
+                    return_data = T
+                    
 )
 
 
@@ -598,7 +606,8 @@ tva_loo_order <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/out
 
 r2_comparison <- function(loo_order,
                           base_input_path,
-                          base_output_path){
+                          base_output_path,
+                          return_data=T){
   
   
   r2_files <- list.files(base_input_path) %>% grep("^r2",x=., value=T)
@@ -646,19 +655,115 @@ r2_comparison <- function(loo_order,
       axis.text.x = element_text(angle=45,hjust=1))
   
   ggsave(paste0(base_output_path,"r2_summary.png"),r_2_comparison, width=1500,height=1500,units="px")
-  
+  return(r2_all)
   
 }
 
 
 
-r2_comparison(loo_order = hdds_loo_order,
+hdds_r2_table <- r2_comparison(loo_order = hdds_loo_table$model,
               base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/hdds/",
               base_output_path = "./outputs/overall_model_results/location_only_hdds/")
 
-r2_comparison(tva_loo_order,
+tva_r2_table <- r2_comparison(tva_loo_table$model,
               base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/tva/",
               base_output_path = "./outputs/overall_model_results/location_only_tva/")
+
+
+
+
+dual_axis_plot <- function(loo_table,
+                           r2_table,
+                           title,
+                           base_output_path
+){
+  
+  plot_df <- bind_cols(loo_table,r2_table)
+  
+  
+  if (all(plot_df$model==plot_df$model_type)==F){
+    stop("Mismatched rows")
+  }
+  
+  
+  max_r2_axis <- max(plot_df$Estimate)
+  
+  max_elpd_axis <- abs(min(plot_df$elpd_diff))
+  
+  # rescaled_value <- max_elpd_axis*(x/(max-min)) - min/(max-min)-max_elpd_axis
+  
+  
+  plot_df$embolden_ticks <- ifelse(plot_df$model %in% candidate_models,"bold","plain")
+  plot_df$shape <- ifelse(plot_df$model %in% candidate_models,'Candidate Model','Other Model')
+  
+  
+  plot_df$ticks_colour <- ifelse(grepl("group",plot_df$model),"darkgreen","black")
+  
+  
+  
+  plot <- ggplot(plot_df)+
+    geom_point(aes(x=model, y=elpd_diff,color="red", shape=shape))+
+    geom_point(aes(x=model_type, y= max_elpd_axis*Estimate/max_r2_axis-max_elpd_axis,color="blue"))+
+    
+    geom_path(aes(x=model_type, y=max_elpd_axis*Estimate/max_r2_axis-max_elpd_axis, color="blue"),group=1) +
+    geom_path(aes(x=model_type, y=elpd_diff,color="red"),group=1) +
+    
+    geom_segment(aes(x = model_type,xend=model_type,y=max_elpd_axis*Q2.5/max_r2_axis-max_elpd_axis,yend=max_elpd_axis*Q97.5/max_r2_axis-max_elpd_axis),color="blue")+
+    geom_segment(aes(x = model,xend=model,y=lower,yend=upper),color="red")+
+
+    geom_hline(yintercept = max(plot_df$Estimate),linetype="dashed")+
+    scale_colour_manual(name = 'Measure', 
+                        values =c('blue'='blue','red'='red'), labels = c(bquote(~R^2),'ELPD'),guide='legend')+
+    scale_shape_manual(name = 'Candidate Models', 
+                        values =c('Candidate Model'=1,'Other Model'=4), labels = c("Potential to be selected","Excluded"))+
+    
+    
+    scale_y_continuous(
+
+      # Features of the first axis
+      name = "ELPD",
+
+      # Add a second axis and specify its features
+      sec.axis = sec_axis(~ ((.+max_elpd_axis)*max_r2_axis)/max_elpd_axis, name=bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'))
+    ) +
+    labs(title = title,
+         x="Levels Included")+
+    theme(
+      plot.title = element_text(hjust=0.5),
+      axis.text.x = element_text(angle=45,
+                                 hjust=1,
+                                 face =  plot_df$embolden_ticks,
+                                 colour=plot_df$ticks_colour),
+      panel.background  = element_blank(),
+      panel.border = element_rect(fill=NA, colour = "black"))
+  plot
+    
+
+  
+  ggsave(paste0(base_output_path,"r2_loo_comparison.png"),plot, width=3000,height=2000,units="px")
+  return(plot)
+  
+}
+
+dual_axis_plot(loo_table=tva_loo_table,
+                           r2_table=tva_r2_table,
+                           title=bquote(~'ELPD and Bayesian '~R^2 ~'for Intercept Only Models (TVA)'),
+               base_output_path = "./outputs/overall_model_results/location_only_tva/",
+               candidate_models=c( "kg_class_village",
+                                   "country_village",
+                                   "county_village",
+                                   "county_village_group")
+)
+
+dual_axis_plot(loo_table=hdds_loo_table,
+               r2_table=hdds_r2_table,
+               title=bquote(~'ELPD and Bayesian '~R^2 ~'for Intercept Only Models (HDDS)'),
+               base_output_path = "./outputs/overall_model_results/location_only_hdds/",
+               candidate_models=c( "kg_class_village",
+                                   "country_village",
+                                   "county_village",
+                                   "county_village_group")
+)
 
 
 
