@@ -87,7 +87,21 @@ if (seed>=6 & seed < 11){
 
 ref_model <- get_refmodel(ref_model)
 
-fixed_effects <- c(
+# Addapted from Frank Weber's Solution
+# https://github.com/stan-dev/projpred/issues/346
+get_search_terms <- function(fixed_terms, other_predictors) {
+  search_terms <- unlist(lapply(1:length(other_predictors), function(m_predictors) {
+    lapply(combn(other_predictors, m = m_predictors, simplify = FALSE),
+           function(idxs_predictors) {
+             paste0(idxs_predictors, collapse = " + ")
+           })
+  }))
+  search_terms <- c(fixed_terms, paste(fixed_terms, "+", search_terms))
+  return(search_terms)
+}
+
+
+auxilliary_variables <- c(
   "log_hh_size",
   'education_cleaned',
   
@@ -115,11 +129,17 @@ fixed_effects <- c(
   'norm_gdl_country_shdi'
 )
 
+
+
 group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
-fixed_effects <- paste0(group_effects, " + ", fixed_effects)
+# fixed_effects <- paste0(group_effects, " + ", fixed_effects)
+
+# Basing this off of discussion on stan forum:
+# https://discourse.mc-stan.org/t/projpred-fixing-group-effects-in-search-terms-and-tips-for-speed/31678/4
+search_terms <- get_search_terms(group_effects,auxilliary_variables) 
+
 
 # Basing from this: https://discourse.mc-stan.org/t/advice-on-using-search-terms-in-projpred/22846/3
-search_terms <- c("1", group_effects, fixed_effects)
 
 
 varsel_model <- cv_varsel(ref_model,
