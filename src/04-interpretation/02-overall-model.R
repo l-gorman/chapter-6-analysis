@@ -675,7 +675,8 @@ tva_r2_table <- r2_comparison(tva_loo_table$model,
 dual_axis_plot <- function(loo_table,
                            r2_table,
                            title,
-                           base_output_path
+                           base_output_path,
+                           candidate_models
 ){
   
   plot_df <- bind_cols(loo_table,r2_table)
@@ -695,15 +696,15 @@ dual_axis_plot <- function(loo_table,
   
   plot_df$embolden_ticks <- ifelse(plot_df$model %in% candidate_models,"bold","plain")
   plot_df$shape <- ifelse(plot_df$model %in% candidate_models,'Candidate Model','Other Model')
-  
+
   
   plot_df$ticks_colour <- ifelse(grepl("group",plot_df$model),"darkgreen","black")
   
   
   
   plot <- ggplot(plot_df)+
-    geom_point(aes(x=model, y=elpd_diff,color="red", shape=shape))+
-    geom_point(aes(x=model_type, y= max_elpd_axis*Estimate/max_r2_axis-max_elpd_axis,color="blue"))+
+    geom_point(aes(x=model, y=elpd_diff,color="red", shape=shape, size=shape))+
+    geom_point(aes(x=model_type, y= max_elpd_axis*Estimate/max_r2_axis-max_elpd_axis,color="blue",shape=shape,size=shape))+
     
     geom_path(aes(x=model_type, y=max_elpd_axis*Estimate/max_r2_axis-max_elpd_axis, color="blue"),group=1) +
     geom_path(aes(x=model_type, y=elpd_diff,color="red"),group=1) +
@@ -715,7 +716,8 @@ dual_axis_plot <- function(loo_table,
     scale_colour_manual(name = 'Measure', 
                         values =c('blue'='blue','red'='red'), labels = c(bquote(~R^2),'ELPD'),guide='legend')+
     scale_shape_manual(name = 'Candidate Models', 
-                        values =c('Candidate Model'=1,'Other Model'=4), labels = c("Potential to be selected","Excluded"))+
+                        values =c('Candidate Model'=4,'Other Model'=16), labels = c("Potential to be selected","Excluded"))+
+    scale_size_manual(values =c('Candidate Model'=3,'Other Model'=1.5),guide = 'none')+
     
     
     scale_y_continuous(
@@ -764,6 +766,8 @@ dual_axis_plot(loo_table=hdds_loo_table,
                                    "county_village",
                                    "county_village_group")
 )
+
+
 
 
 
