@@ -85,7 +85,7 @@ if (seed>=6 & seed < 11){
 
 
 
-ref_model <- projpred::get_refmodel(ref_model)
+ref_model <- get_refmodel(ref_model)
 
 fixed_effects <- c(
   "log_hh_size",
@@ -130,7 +130,7 @@ varsel_model <- cv_varsel(ref_model,
                           seed = seed,
                           search_terms=search_terms)
 
-save(varsel_model,file=paste0(output_dir,"/projpred_varsel_model_",seed,".rda"))
+save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))
 
 
 
