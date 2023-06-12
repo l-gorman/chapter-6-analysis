@@ -5,7 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=0-12:00:00
+#SBATCH --time=0-6:00:00
 #SBATCH --mem=72G
 #SBATCH --account=sscm012844
 #SBATCH --array=1-12
@@ -28,8 +28,8 @@ module add languages/r/4.1.0
 
 out_directory="/user/work/lg14410/chapter-6/outputs/"
 data_directory="/user/work/lg14410/chapter-6/data/"
-iterations=8000
-warmup=4000
+iterations=2000
+warmup=1000
 cores=4
 
 Rscript "./src/03-modelling/03-variable-addition.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}

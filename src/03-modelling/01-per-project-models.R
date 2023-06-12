@@ -67,9 +67,6 @@ project_id <- unique(indicator_data$id_form)[as.numeric(opt$proj)]
 
 subset_df <- indicator_data[indicator_data$id_form==project_id,]
 
-subset_df$combined_fs_score <- factor(subset_df$combined_fs_score,
-                                      levels=c("severely_fi","moderately_fi","mildly_fi","not_fi"),
-                                      ordered = T)
 
 
 
@@ -116,10 +113,13 @@ horseshoe_tva <- brm(
   family=cumulative("logit") 
 )
 
-save(horseshoe_food_sec,file=paste0(opt$output,"/",project_id,"/horseshoe_food_sec.rda"))
+save(horseshoe_tva,file=paste0(opt$output,"/",project_id,"/horseshoe_food_sec.rda"))
 
 horseshoe_tva <- brm(
-  formula=log_hh_size +
+  formula=log_tva ~ 1 +
+    #Household Level
+    # Demographics
+    log_hh_size +
     education_cleaned +
     
     #Assets
@@ -154,8 +154,11 @@ horseshoe_tva <- brm(
 save(horseshoe_tva,file=paste0(opt$output,"/",project_id,"/horseshoe_tva.rda"))
 
 
-weak_prior_food_sec <- brm(
-  formula=log_hh_size +
+weak_prior_hdds <- brm(
+  formula=log_tva ~ 1 +
+    #Household Level
+    # Demographics
+    log_hh_size +
     education_cleaned +
     
     #Assets
@@ -187,44 +190,7 @@ weak_prior_food_sec <- brm(
   family=cumulative("logit") 
 )
 
-save(weak_prior_food_sec,file=paste0(opt$output,"/",project_id,"/weak_prior_food_sec.rda"))
-
-weak_prior_tva <- brm(
-  formula=log_tva ~ 1 +  
-    education_cleaned +
-    log_livestock_tlu + 
-    log_land_cultivated + 
-    logit_livestock_orientation +
-    logit_crop_orientation + 
-    logit_off_farm_orientation +
-    logit_market_orientation +
-    log_income_diversity +
-    norm_growing_period +
-    log_min_travel_time +
-    # aez_class_cleaned +
-    norm_gdl_lifexp +
-    logit_gdl_hdi + 
-    # (1 | iso_country_code) + 
-    # (1 | iso_country_code:gdlcode) + 
-    # (1 | iso_country_code:gdlcode:village),
-    (1 | village),
-  data = subset_df,
-  prior = c(
-    set_prior("normal(0, 1)", class = "b"),
-    set_prior('normal(0, 1)', class = 'sd'),
-    set_prior('normal(0, 1)', class = 'sigma'),
-    set_prior('normal(0, 1)', class = 'Intercept')
-  ),
-  cores = 4,
-  backend = "cmdstanr",
-  iter = opt$iter,
-  warmup = opt$warmup,
-  
-  family=gaussian()
-)
-
-
-save(weak_prior_tva,file=paste0(opt$output,"/",project_id,"/weak_prior_tva.rda"))
+save(weak_prior_hdds,file=paste0(opt$output,"/",project_id,"/weak_prior_food_sec.rda"))
 
 
 
