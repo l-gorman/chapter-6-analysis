@@ -87,7 +87,7 @@ if (seed>=6 & seed < 11){
 
 ref_model <- get_refmodel(ref_model)
 
-# Addapted from Frank Weber's Solution
+# Adapted from Frank Weber's Solution
 # https://github.com/stan-dev/projpred/issues/346
 get_search_terms <- function(fixed_terms, other_predictors) {
   search_terms <- unlist(lapply(1:length(other_predictors), function(m_predictors) {
