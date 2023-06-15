@@ -148,7 +148,8 @@ varsel_model <- cv_varsel(ref_model,
                           K = 5,
                           verbose = TRUE, 
                           seed = seed,
-                          search_terms=search_terms)
+                          search_terms=search_terms,
+                          nterms_max=12)
 
 save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))
 
