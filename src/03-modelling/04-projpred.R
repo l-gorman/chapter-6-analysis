@@ -89,8 +89,13 @@ ref_model <- get_refmodel(ref_model)
 
 # Adapted from Frank Weber's Solution
 # https://github.com/stan-dev/projpred/issues/346
-get_search_terms <- function(fixed_terms, other_predictors) {
-  search_terms <- unlist(lapply(1:length(other_predictors), function(m_predictors) {
+get_search_terms <- function(fixed_terms, other_predictors, max_terms) {
+  
+  if (max_terms > length(other_predictors)){
+    stop("Cannot have max terms more than predictors")
+  }
+    
+  search_terms <- unlist(lapply(1:max_terms, function(m_predictors) {
     lapply(combn(other_predictors, m = m_predictors, simplify = FALSE),
            function(idxs_predictors) {
              paste0(idxs_predictors, collapse = " + ")
@@ -136,7 +141,7 @@ group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
 
 # Basing this off of discussion on stan forum:
 # https://discourse.mc-stan.org/t/projpred-fixing-group-effects-in-search-terms-and-tips-for-speed/31678/4
-search_terms <- get_search_terms(group_effects,auxilliary_variables) 
+search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=12) 
 
 
 # Basing from this: https://discourse.mc-stan.org/t/advice-on-using-search-terms-in-projpred/22846/3
