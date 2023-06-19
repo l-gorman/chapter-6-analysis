@@ -111,6 +111,8 @@ auxilliary_variables <- c(
   #Assets
   'log_livestock_tlu',
   'log_land_cultivated',
+  "logit_market_orientation",
+    
   
   # Practices
   'off_farm_any',
@@ -148,7 +150,7 @@ search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=l
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
                           cv_method = 'kfold', 
-                          K = ,
+                          K = 10,
                           verbose = TRUE, 
                           seed = seed,
                           ndraws_pred=1000,
