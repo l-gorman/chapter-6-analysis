@@ -154,7 +154,7 @@ varsel_model <- cv_varsel(ref_model,
                           seed = seed,
                           ndraws_pred=1000,
                           search_terms=search_terms,
-                          nterms_max=length(length(auxilliary_variables)))
+                          nterms_max=length(auxilliary_variables))
 
 save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))
 
