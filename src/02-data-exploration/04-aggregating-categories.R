@@ -201,44 +201,7 @@ indicator_data$land_irrigated_any[is.na(indicator_data$land_irrigated_any)] <- 0
 
 
 
-# PCA attempt -------------------------------------------------------------
 
-
-# temp_pca <- FactoMineR::PCA(tibble::as_tibble(list(
-#   till_not_by_hand=till_not_by_hand,
-#   hired_labour=hired_labour,
-#   pesticide=pesticide,
-#   education= as.numeric(indicator_data$education_cleaned=="primary" | indicator_data$education_cleaned=="secondary_or_higher"),
-#   livestock=indicator_data$livestock_tlu,
-#   land=indicator_data$land_cultivated_ha,
-#   off_farm_any=indicator_data$off_farm_any
-#   
-#   )))
-# 
-# 
-# temp_pca$eig
-# temp_pca$var
-
-# Proportion of land fertiliser
-
-
-
-
-
-
-
-table(indicator_data$agric_inputs)
-
-
-table(indicator_data$land_irrigated)
-
-table(indicator_data$livestock_inputs_use)
-
-
-table(indicator_data$aidreceived)
-table(indicator_data$debts_have)
-
-table(indicator_data$debts_have)
 # HDDS Lean Season Indicator ----------------------------------------------
 
 
@@ -354,7 +317,48 @@ indicator_data$min_travel_time <- min_travel_time
 
 # indicator_data <- diversity(indicator_data)
 
+
+# Number of people of Working Age
+
+working_age_members <- c("males11to24",
+  "females11to24",
+  
+  "males25to50",
+  "females25to50",
+  
+  "malesover50",
+  "femalesover50"
+  )
+
+
+na_vals <- indicator_data$hh_size_members==0
+proportion_of_working_members <- rowSums(indicator_data[working_age_members],na.rm=T)/indicator_data$hh_size_members
+boxplot(proportion_of_working_members)
+proportion_of_working_members[na_vals] <- NA
+indicator_data$proportion_working_age <- proportion_of_working_members
+table(is.na(indicator_data$proportion_working_age))
+boxplot(indicator_data$hh_size_mae, outline=F)
+
+
+# Improved Breeds
+livestock_column_loop_number <- rhomis::find_number_of_loops(indicator_data,name_column = "livestock_breeds")
+loop_columns <- paste0("livestock_breeds_",c(1:livestock_column_loop_number))
+breeds_data <- indicator_data[loop_columns]
+improved_breeds <- lapply(breeds_data, function(x) {
+  as.numeric(grepl("improved",x) |   grepl("exotic",x))
+
+  }
+  ) %>% 
+  bind_cols() %>% 
+  rowSums(., na.rm=T)
+
+find_loop_number_and_extract_values(indicator_data, "livestock_breeds")
+# Less than 10% have an improved breed
+
+
 # Livestock Orientation, Market Orientation ----------------------------------------
+
+
 
 # Tva per hh per year (LCU)
 subset_columns <- c("total_income_lcu_per_year","value_farm_products_consumed_lcu_per_hh_per_year")
@@ -400,10 +404,10 @@ indicator_data$off_farm_any <- as.numeric(off_farm_prop>0)
 # indicator_data$livestock_value_per_hh_per_year[na.rows] <- NA
 
 # Farm income per hh per year (LCU)
-# subset_columns <- c("crop_income_lcu_per_year","livestock_income_lcu_per_year")
-# na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
-# indicator_data$value_farm_products_sold_per_hh_per_year <- rowSums(indicator_data[subset_columns], na.rm=T)
-# indicator_data$value_farm_products_sold_per_hh_per_year[na.rows] <- NA
+subset_columns <- c("crop_income_lcu_per_year","livestock_income_lcu_per_year")
+na.rows <- rowSums(is.na(indicator_data[subset_columns]))==length(subset_columns)
+indicator_data$value_farm_products_sold_per_hh_per_year <- rowSums(indicator_data[subset_columns], na.rm=T)
+indicator_data$value_farm_products_sold_per_hh_per_year[na.rows] <- NA
 
 #Livestock Orientation
 # subset_columns <- c("livestock_value_per_hh_per_year","tva_per_hh_per_year")
@@ -419,9 +423,9 @@ indicator_data$off_farm_any <- as.numeric(off_farm_prop>0)
 
 
 
-# # Market orientation
-# subset_columns <- c("value_farm_products_sold_per_hh_per_year","tva_per_hh_per_year")
-# indicator_data$market_orientation <- indicator_data[["value_farm_products_sold_per_hh_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
+# Market orientation
+subset_columns <- c("value_farm_products_sold_per_hh_per_year","tva_per_hh_per_year")
+indicator_data$market_orientation <- indicator_data[["value_farm_products_sold_per_hh_per_year"]]/indicator_data[["tva_per_hh_per_year"]]
 
 
 # indicator_data$proportion_female_control <- indicator_data$proportion_of_value_controlled_female_youth+
@@ -432,47 +436,55 @@ indicator_data$off_farm_any <- as.numeric(off_farm_prop>0)
 vars <- c(
   "id_form",
   "id_unique",
-  "gdlcode",
+  
   "iso_country_code",
+  "kg_class_name",
+  "gdlcode",
   "village",
-  
-  "hh_size_mae",
-  "education_cleaned",
-  "livestock_tlu", # centered transform
-  "land_cultivated_ha",
-  "off_farm_any",
-  # "proportion_female_control",
-  
-  # "livestock_orientation", #logit transform
-  # "crop_orientation", #logit transform
-  # "off_farm_orientation", #logit transform
-  # "market_orientation", # logit transform
-  
-  "till_not_by_hand",
-  "external_labour",
-  "pesticide",
-  "debts_have",
-  "aidreceived",
-  "livestock_inputs_any",
-  "land_irrigated_any",
-  
-  
-  
-  # "weighted_income_diversity", # centred transform
-  "tva_per_mae_per_day_ppp", # centered transform
-  "hdds_lean_season", # z-score notmalisation
   
   # Village Level Variables
   "adjusted_length_growing_period", # centered transform
   "min_travel_time", # centered transform
-  "kg_class_name",
   "population_density",
   
   # County Level Variables
   "gdl_shdi",
   
   # Country Level Variables
-  "gdl_country_shdi"
+  "gdl_country_shdi",
+  
+  # Not using proportion of working age, can't get it out of enough datasets
+  "hh_size_mae",
+  "education_cleaned",
+  
+  "external_labour",
+  "till_not_by_hand",
+  
+  
+  "livestock_tlu", # centered transform
+  "land_cultivated_ha",
+  
+  "aidreceived",
+  "debts_have",
+  
+  # "proportion_female_control",
+  
+  # "livestock_orientation", #logit transform
+  # "crop_orientation", #logit transform
+  # "off_farm_orientation", #logit transform
+  
+  "pesticide",
+  "livestock_inputs_any",
+  "land_irrigated_any",
+  
+  "off_farm_any",
+  "market_orientation", # logit transform
+  
+  # "weighted_income_diversity", # centred transform
+  "tva_per_mae_per_day_ppp", # centered transform
+  "hdds_lean_season" # z-score notmalisation
+  
+
 )
 
 modelling_data_set <- indicator_data[vars]
@@ -740,7 +752,10 @@ variable_summary <- tribble(
 readr::write_csv(variable_summary,"./outputs/02-data-exploration/variable_summary.csv")
 
 # Transformation ----------------------------------------------------------
-
+ihs <- function(x) {
+  y <- log(x + sqrt(x^2 + 1))
+  return(y)
+}
 
 log_add_half_min <- function(x){
   replacement <- min(x[x>0 & !is.na(x)])/2
@@ -815,8 +830,8 @@ modelling_data_set$log_land_cultivated <- normalisation(modelling_data_set$log_l
 # modelling_data_set$logit_off_farm_orientation <- normalisation(modelling_data_set$logit_off_farm_orientation)
 
 # Market Orientation (Logit)
-# modelling_data_set$logit_market_orientation <- logit(modelling_data_set$market_orientation)
-# modelling_data_set$logit_market_orientation <- normalisation(modelling_data_set$logit_market_orientation)
+modelling_data_set$logit_market_orientation <- logit(modelling_data_set$market_orientation)
+modelling_data_set$logit_market_orientation <- normalisation(modelling_data_set$logit_market_orientation)
 
 # Income diversity (Log)
 # modelling_data_set$log_income_diversity <- log_add_half_min(modelling_data_set$weighted_income_diversity)
@@ -870,12 +885,23 @@ vars <- c(
   "iso_country_code",
   "village",
   
-  # "log_hh_size",
+  # Country Level Variables
+  "norm_gdl_country_shdi",
+  "norm_gdl_county_shdi",
+  
+  # Village Level Variables
+  "norm_growing_period", # centered transform
+  "log_min_travel_time", # centered transform
+  "kg_class_name",
+  "log_pop_dens",
+  
   "log_hh_size",
   "education_cleaned",
   "log_livestock_tlu", 
   "log_land_cultivated",
   "off_farm_any",
+  
+  "logit_market_orientation",
   
   "till_not_by_hand",
   "external_labour",
@@ -894,20 +920,16 @@ vars <- c(
   
   # "log_income_diversity", # centred transform
   
-  "log_tva", # centered transform
-  "norm_hdds_lean_season",
+
   # "combined_fs_score",
   
-  # Village Level Variables
-  "norm_growing_period", # centered transform
-  "log_min_travel_time", # centered transform
-  "kg_class_name",
-  "log_pop_dens",
+
   
-  # Country Level Variables
-  "norm_gdl_country_shdi",
-  "norm_gdl_county_shdi"
+
   # "logit_gdl_hdi"
+  
+  "log_tva", # centered transform
+  "norm_hdds_lean_season"
   
   
 )

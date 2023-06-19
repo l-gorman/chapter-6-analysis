@@ -63,7 +63,7 @@ start <- Sys.time()
 seed <- as.numeric(opt$index)
 
 
-if (seed>=1 & seed < 6){
+if (seed==1){
   ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_fixed.rda"))
   
   dir.create(paste0(opt$output,"/proj_pred/"))
@@ -73,7 +73,7 @@ if (seed>=1 & seed < 6){
   
 }
 
-if (seed>=6 & seed < 11){
+if (seed==2){
   ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_fixed.rda"))
   
   dir.create(paste0(opt$output,"/proj_pred/"))
@@ -82,8 +82,6 @@ if (seed>=6 & seed < 11){
   dir.create(output_dir)
   
 }
-
-
 
 ref_model <- get_refmodel(ref_model)
 
@@ -141,7 +139,7 @@ group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
 
 # Basing this off of discussion on stan forum:
 # https://discourse.mc-stan.org/t/projpred-fixing-group-effects-in-search-terms-and-tips-for-speed/31678/4
-search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=12) 
+search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=length(auxilliary_variables)) 
 
 
 # Basing from this: https://discourse.mc-stan.org/t/advice-on-using-search-terms-in-projpred/22846/3
@@ -150,11 +148,12 @@ search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=1
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
                           cv_method = 'kfold', 
-                          K = 5,
+                          K = ,
                           verbose = TRUE, 
                           seed = seed,
+                          ndraws_pred=1000,
                           search_terms=search_terms,
-                          nterms_max=12)
+                          nterms_max=length(length(auxilliary_variables)))
 
 save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))
 
