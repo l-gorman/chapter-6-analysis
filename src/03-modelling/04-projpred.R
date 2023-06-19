@@ -12,7 +12,6 @@ library(optparse)
 library(projpred)
 library(cmdstanr)
 
-
 # Solution to globals size, found here:
 # https://stackoverflow.com/questions/40536067/how-to-adjust-future-global-maxsize
 options(future.globals.maxSize = 100000 * 1024^2)
@@ -159,9 +158,20 @@ varsel_model <- cv_varsel(ref_model,
 
 save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))
 
-
-
 print("Execution Time")
 print( Sys.time() - start )
+
+selection_summary <- unclass(summary(varsel_model))[["selection"]]
+save(selection_summary,file=paste0(output_dir,"/selection_summary_",seed,".rda"))
+
+rk <- ranking(varsel_model)
+cv_props_direct <- cv_proportions(rk)
+save(cv_props_direct,file=paste0(output_dir,"/cv_props_direct_",seed,".rda"))
+
+cv_props_cumul <- cv_proportions(rk, cumulate = TRUE)
+save(cv_props_cumul,file=paste0(output_dir,"/cv_props_cumul_",seed,".rda"))
+
+print("Done")
+
 
 
