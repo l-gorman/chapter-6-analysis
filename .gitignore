@@ -7,3 +7,6 @@ copy-data-to.sh
 Report/
 *.docx
 .Rhistory
+
+.Rapp.history
+src/04-interpretation/temp.R
