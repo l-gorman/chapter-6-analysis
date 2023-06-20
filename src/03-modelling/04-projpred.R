@@ -138,9 +138,11 @@ auxilliary_variables <- c(
 group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
 # fixed_effects <- paste0(group_effects, " + ", fixed_effects)
 
+max_vars <- 10
+
 # Basing this off of discussion on stan forum:
 # https://discourse.mc-stan.org/t/projpred-fixing-group-effects-in-search-terms-and-tips-for-speed/31678/4
-search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=length(auxilliary_variables)) 
+search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=max_vars)
 
 
 # Basing from this: https://discourse.mc-stan.org/t/advice-on-using-search-terms-in-projpred/22846/3
@@ -152,9 +154,9 @@ varsel_model <- cv_varsel(ref_model,
                           K = 5,
                           verbose = TRUE, 
                           seed = seed,
-                          ndraws_pred=400,
+                          ndraws_pred=1000,
                           search_terms=search_terms,
-                          nterms_max=length(auxilliary_variables))
+                          nterms_max=max_vars)
 
 save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))
 
