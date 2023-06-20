@@ -149,7 +149,7 @@ search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=l
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
                           cv_method = 'kfold', 
-                          K = 10,
+                          K = 5,
                           verbose = TRUE, 
                           seed = seed,
                           ndraws_pred=400,
