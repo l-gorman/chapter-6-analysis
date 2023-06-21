@@ -117,9 +117,9 @@ auxilliary_variables <- c(
   'off_farm_any',
   'till_not_by_hand',
   'external_labour',
-  'pesticide',
+  # 'pesticide',
   'debts_have',
-  'aidreceived',
+  # 'aidreceived',
   'livestock_inputs_any',
   'land_irrigated_any',
   
@@ -127,7 +127,7 @@ auxilliary_variables <- c(
   # Village Level
   'norm_growing_period',
   'log_min_travel_time',
-  'log_pop_dens',
+  # 'log_pop_dens',
     #------------------
   #County Level
   'norm_gdl_country_shdi'

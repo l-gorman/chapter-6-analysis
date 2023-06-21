@@ -103,9 +103,9 @@ models <-  list(
                  off_farm_any+
                  till_not_by_hand+
                  external_labour+
-                 pesticide+
+                 # pesticide+
                  debts_have+
-                 aidreceived+
+                 # aidreceived+
                  livestock_inputs_any+
                  land_irrigated_any+
                  
@@ -113,7 +113,7 @@ models <-  list(
                # Village Level
                norm_growing_period +
                  log_min_travel_time +
-                 log_pop_dens +
+                 # log_pop_dens +
                  #------------------
                #County Level
                norm_gdl_country_shdi),
@@ -127,33 +127,32 @@ models <-  list(
     data=indicator_data,
     formula=bf(log_tva ~ 1 +
 
-                 #------------------
-               #Household Level
-               # Demographics
-               log_hh_size +
+                 #Household Level
+                 # Demographics
+                 log_hh_size +
                  education_cleaned +
-
+                 
                  #Assets
                  log_livestock_tlu +
                  log_land_cultivated +
                  logit_market_orientation+
                  
-
+                 
                  # Practices
                  off_farm_any+
                  till_not_by_hand+
                  external_labour+
-                 pesticide+
+                 # pesticide+
                  debts_have+
-                 aidreceived+
+                 # aidreceived+
                  livestock_inputs_any+
                  land_irrigated_any+
-
+                 
                  #------------------
                # Village Level
                norm_growing_period +
                  log_min_travel_time +
-                 log_pop_dens +
+                 # log_pop_dens +
                  #------------------
                #County Level
                norm_gdl_country_shdi+
@@ -169,32 +168,33 @@ list(
   tag="weak_prior_mixed_country",
   data=indicator_data,
   formula=bf(log_tva ~ 1 +
+               
                #Household Level
                # Demographics
                log_hh_size +
                education_cleaned +
-
+               
                #Assets
                log_livestock_tlu +
                log_land_cultivated +
                logit_market_orientation+
                
-
+               
                # Practices
                off_farm_any+
                till_not_by_hand+
                external_labour+
-               pesticide+
+               # pesticide+
                debts_have+
-               aidreceived+
+               # aidreceived+
                livestock_inputs_any+
                land_irrigated_any+
-
+               
                #------------------
              # Village Level
              norm_growing_period +
                log_min_travel_time +
-               log_pop_dens +
+               # log_pop_dens +
                #------------------
              #County Level
              norm_gdl_country_shdi+
@@ -225,6 +225,7 @@ list(
   tag="weak_fixed_only",
   data=indicator_data,
   formula=bf(norm_hdds_lean_season ~ 1 +
+               
                #Household Level
                # Demographics
                log_hh_size +
@@ -240,17 +241,17 @@ list(
                off_farm_any+
                till_not_by_hand+
                external_labour+
-               pesticide+
+               # pesticide+
                debts_have+
-               aidreceived+
+               # aidreceived+
                livestock_inputs_any+
                land_irrigated_any+
                
                #------------------
              # Village Level
-               norm_growing_period +
+             norm_growing_period +
                log_min_travel_time +
-               log_pop_dens +
+               # log_pop_dens +
                #------------------
              #County Level
              norm_gdl_country_shdi),
@@ -262,34 +263,33 @@ list(
     tag="weak_prior_fixed",
     data=indicator_data,
     formula=bf(norm_hdds_lean_season ~ 1 +
-
-                 #------------------
-               #Household Level
-               # Demographics
-               log_hh_size +
+                 
+                 #Household Level
+                 # Demographics
+                 log_hh_size +
                  education_cleaned +
-
+                 
                  #Assets
                  log_livestock_tlu +
                  log_land_cultivated +
                  logit_market_orientation+
                  
-
+                 
                  # Practices
                  off_farm_any+
                  till_not_by_hand+
                  external_labour+
-                 pesticide+
+                 # pesticide+
                  debts_have+
-                 aidreceived+
+                 # aidreceived+
                  livestock_inputs_any+
                  land_irrigated_any+
-
+                 
                  #------------------
                # Village Level
                norm_growing_period +
                  log_min_travel_time +
-                 log_pop_dens +
+                 # log_pop_dens +
                  #------------------
                #County Level
                norm_gdl_country_shdi+
@@ -305,32 +305,33 @@ list(
   tag="weak_prior_mixed_country",
   data=indicator_data,
   formula=bf(norm_hdds_lean_season ~ 1 +
+               
                #Household Level
                # Demographics
                log_hh_size +
                education_cleaned +
-
+               
                #Assets
                log_livestock_tlu +
                log_land_cultivated +
                logit_market_orientation+
                
-
+               
                # Practices
                off_farm_any+
                till_not_by_hand+
                external_labour+
-               pesticide+
+               # pesticide+
                debts_have+
-               aidreceived+
+               # aidreceived+
                livestock_inputs_any+
                land_irrigated_any+
-               log_pop_dens +
+               
                #------------------
              # Village Level
              norm_growing_period +
                log_min_travel_time +
-               log_pop_dens +
+               # log_pop_dens +
                #------------------
              #County Level
              norm_gdl_country_shdi+
