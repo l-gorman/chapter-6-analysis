@@ -8,10 +8,15 @@ loadRData <- function(fileName){
 }
 
 
-cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/tva/weak_prior_fixed/projpred_cv_varsel_model_1.rda")
+# cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/tva/weak_prior_fixed/projpred_cv_varsel_model_1.rda")
 cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/projpred_cv_varsel_model_8.rda")
 
-ref_model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/weak_prior_fixed.rda")
+ref_model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
+
+
+
+
+projection <- project(cvvs, solution_terms = "(1|iso_country_code) (1|iso_country_code:village)+pesticide")
 
 
 # Summary -----------------------------------------------------------------
