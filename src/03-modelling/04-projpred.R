@@ -12,6 +12,9 @@ library(optparse)
 library(projpred)
 library(cmdstanr)
 
+
+set_cmdstan_path("/user/home/lg14410/.cmdstan/cmdstan-2.32.2")
+
 # Solution to globals size, found here:
 # https://stackoverflow.com/questions/40536067/how-to-adjust-future-global-maxsize
 options(future.globals.maxSize = 100000 * 1024^2)

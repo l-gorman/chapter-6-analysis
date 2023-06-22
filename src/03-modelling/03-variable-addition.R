@@ -13,6 +13,7 @@ library(cmdstanr)
 
 
 
+set_cmdstan_path("/user/home/lg14410/.cmdstan/cmdstan-2.32.2")
 
 option_list = list(
   make_option(c("-i", "--iter"),  type='integer',
