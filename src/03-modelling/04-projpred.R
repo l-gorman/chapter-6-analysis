@@ -19,7 +19,7 @@ set_cmdstan_path("/user/home/lg14410/.cmdstan/cmdstan-2.32.2")
 # https://stackoverflow.com/questions/40536067/how-to-adjust-future-global-maxsize
 options(future.globals.maxSize = 100000 * 1024^2)
 # options(mc.cores = parallel::detectCores())
-options(mc.cores = 24,  brms.backend = "cmdstanr")
+options(mc.cores = 4,  brms.backend = "cmdstanr")
 
 option_list = list(
   make_option(c("-o", "--output"), type='character',
@@ -157,7 +157,7 @@ varsel_model <- cv_varsel(ref_model,
                           K = 5,
                           verbose = TRUE, 
                           seed = seed,
-                          ndraws_pred=600,
+                          ndraws_pred=800,
                           search_terms=search_terms,
                           nterms_max=max_vars)
 

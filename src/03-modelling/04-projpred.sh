@@ -4,7 +4,7 @@
 #SBATCH -o ./Report/output.projpred.%a.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=24
+#SBATCH --cpus-per-task=4
 #SBATCH --time=5-00:00:00
 #SBATCH --mem=100G
 #SBATCH --account=sscm012844
