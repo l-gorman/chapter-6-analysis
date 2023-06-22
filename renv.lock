@@ -1214,10 +1214,10 @@
     },
     "nnet": {
       "Package": "nnet",
-      "Version": "7.3-17",
+      "Version": "7.3-19",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "cb1d8d9f300a7e536b89c8a88c53f610",
+      "Hash": "2c797b46eea7fb58ede195bc0b1f1138",
       "Requirements": []
     },
     "numDeriv": {
