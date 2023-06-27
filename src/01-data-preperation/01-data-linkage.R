@@ -157,9 +157,14 @@ joined_df_rhomis <- joined_df_rhomis %>% rename(year=year.x)
 rhomis_data <- NULL
 subset_cols <- !grepl("gdl", colnames(gdl_info),ignore.case = T)
 colnames(gdl_info)[subset_cols] <- paste0("gdl_",colnames(gdl_info)[subset_cols])
-joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info, by.x=c("gdlcode","year"), by.y=c("GDLCODE","gdl_year"),all.x=T,all.y=F)
 
-joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_country_code.x","year"), by.y=c("alpha-2","gdl_country_year"),all.x=T,all.y=F)
+joined_df_rhomis$year_temp <- joined_df_rhomis$year
+joined_df_rhomis$year_temp[joined_df_rhomis$year_temp>2021] <- 2021
+
+joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info, by.x=c("gdlcode","year_temp"), by.y=c("GDLCODE","gdl_year"),all.x=T,all.y=F)
+
+joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_country_code.x","year_temp"), by.y=c("alpha-2","gdl_country_year"),all.x=T,all.y=F)
+joined_df_rhomis$year_temp <- NULL
 
 
 #--------------------------------------------------------------------------

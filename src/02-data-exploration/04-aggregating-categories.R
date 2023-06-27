@@ -115,10 +115,10 @@ save_as_image(cleaned_aggregation, "./outputs/02-data-exploration/category_mergi
 # Farming Practices -------------------------------------------------------
 
 
-till_not_by_hand <- grepl("by_animal",indicator_data$tillage_power) |
+assisted_tillage <- grepl("by_animal",indicator_data$tillage_power) |
   grepl("by_machine",indicator_data$tillage_power)
-till_not_by_hand <- as.numeric(till_not_by_hand)
-indicator_data$till_not_by_hand <- till_not_by_hand
+assisted_tillage <- as.numeric(assisted_tillage)
+indicator_data$assisted_tillage <- assisted_tillage
 
 #labour
 hired_labour <- grepl("hire_labour",indicator_data$farm_labour) |
@@ -126,11 +126,16 @@ hired_labour <- grepl("hire_labour",indicator_data$farm_labour) |
 hired_labour <- as.numeric(hired_labour)
 indicator_data$external_labour <- hired_labour
 
-pesticide <- grepl("pest",indicator_data$agric_inputs)
-pesticide <- as.numeric(pesticide)
-indicator_data$pesticide <- pesticide
+# pesticide <- grepl("pest",indicator_data$agric_inputs)
+# pesticide <- as.numeric(pesticide)
+# indicator_data$pesticide <- pesticide
+# 
 
+inputs <- rhomis::split_string_categories_to_dummy(indicator_data$agric_inputs,seperator = " ")
 
+fertilisers <- c("fertilisers","npk","urea","dap","micro_dose_fertilisers","microbial_fert")
+use_fert <- rowSums(inputs[fertilisers], na.rm = T)>0
+indicator_data$use_fert <- as.numeric(use_fert)
 
 
 debts_have <- indicator_data$debts_have
@@ -141,6 +146,12 @@ debts_have <- as.numeric(debts_have)
 indicator_data$debts_have <- debts_have
 indicator_data$debts_have[is.na(indicator_data$debts_have)] <- 0
 
+indicator_data$kitchen_garden <- indicator_data$homegarden
+indicator_data$kitchen_garden[indicator_data$kitchen_garden=="y"] <- TRUE
+indicator_data$kitchen_garden[indicator_data$kitchen_garden=="n"] <- FALSE
+indicator_data$kitchen_garden[indicator_data$kitchen_garden=="no_answer"] <- NA
+
+table(indicator_data$household_type)
 
 aidreceived <- indicator_data$aidreceived
 aidreceived[aidreceived=="dont_know"] <- NA
@@ -317,27 +328,46 @@ indicator_data$min_travel_time <- min_travel_time
 
 # indicator_data <- diversity(indicator_data)
 
-
-# Number of people of Working Age
-
-working_age_members <- c("males11to24",
-  "females11to24",
+# Number Income Sources
   
-  "males25to50",
-  "females25to50",
+  # plain_crop_diversity <- rowSums(!is.na(crop_price_and_value[[1]]))
+  crop_incomes <- map_to_wide_format(indicator_data,
+                                     name_column = "crop_name",
+                                     column_prefixes = c("crop_sold_income"),
+                                     types=c("num"))
   
-  "malesover50",
-  "femalesover50"
-  )
+  number_of_crop_incomes <- rowSums(!is.na(crop_incomes[[1]]))
+
+  
+  livestock_incomes <-  map_to_wide_format(indicator_data,
+                                  name_column = "livestock_name",
+                                  column_prefixes = c(
+                                    "livestock_sale_income",
+                                    "meat_sold_income",
+                                    "milk_sold_income",
+                                    "eggs_sold_income",
+                                    "bees_honey_sold_income"),
+                                  types=c("num","num","num","num","num"))
+  # plain_crop_diversity <- rowSums(!is.na(crop_price_and_value[[1]]))
+  
+  number_livestock_incomes <- lapply(livestock_incomes, function(x){
+    rowSums(!is.na(x))
+  }) %>% bind_cols() %>% rowSums()
+
+  
 
 
-na_vals <- indicator_data$hh_size_members==0
-proportion_of_working_members <- rowSums(indicator_data[working_age_members],na.rm=T)/indicator_data$hh_size_members
-boxplot(proportion_of_working_members)
-proportion_of_working_members[na_vals] <- NA
-indicator_data$proportion_working_age <- proportion_of_working_members
-table(is.na(indicator_data$proportion_working_age))
-boxplot(indicator_data$hh_size_mae, outline=F)
+  off_farm_income <- map_to_wide_format(indicator_data,
+                                        name_column = "offfarm_income_name",
+                                        column_prefixes = c("offfarm_income_name"),
+                                        types=c("chr"))[["offfarm_income_name"]]
+  number_off_farm_incomes <-  rowSums(!is.na(off_farm_income))
+  
+  number_income_sources <- number_of_crop_incomes+number_livestock_incomes+number_off_farm_incomes
+
+  indicator_data$number_income_sources <- number_income_sources
+
+
 
 
 # Improved Breeds
@@ -458,13 +488,13 @@ vars <- c(
   "education_cleaned",
   
   "external_labour",
-  "till_not_by_hand",
+  "assisted_tillage",
   
   
   "livestock_tlu", # centered transform
   "land_cultivated_ha",
   
-  "aidreceived",
+  # "aidreceived",
   "debts_have",
   
   # "proportion_female_control",
@@ -473,12 +503,14 @@ vars <- c(
   # "crop_orientation", #logit transform
   # "off_farm_orientation", #logit transform
   
-  "pesticide",
   "livestock_inputs_any",
   "land_irrigated_any",
+  "use_fert",
+  "homegarden",
   
   "off_farm_any",
   "market_orientation", # logit transform
+  "number_income_sources",
   
   # "weighted_income_diversity", # centred transform
   "tva_per_mae_per_day_ppp", # centered transform
@@ -757,6 +789,11 @@ ihs <- function(x) {
   return(y)
 }
 
+as_sqrt <- function(x){
+  y <- asin(sqrt(x))
+  return(y)
+}
+
 log_add_half_min <- function(x){
   replacement <- min(x[x>0 & !is.na(x)])/2
   x[x==0] <- replacement
@@ -785,8 +822,11 @@ modelling_data_set <- modelling_data_set[modelling_data_set$hh_size_mae>0 & !is.
 
 modelling_data_set <- modelling_data_set[modelling_data_set$tva_per_mae_per_day_ppp>0 & !is.na(modelling_data_set$tva_per_mae_per_day_ppp),]
 
+colSums(is.na(modelling_data_set))
+
 modelling_data_set <- modelling_data_set[complete.cases(modelling_data_set),]
 
+modelling_data_set <- modelling_data_set[modelling_data_set$market_orientation>=0,]
 
 modelling_data_set <- modelling_data_set[
   modelling_data_set$hh_size_mae<30&
@@ -799,21 +839,43 @@ modelling_data_set <- modelling_data_set[
 
 
 
+final_modelling_df <- modelling_data_set[c("id_form",
+                                           "id_unique",
+                                           "iso_country_code",
+                                           "kg_class_name",
+                                           "gdlcode",
+                                           "village",
+                                           "external_labour",
+                                           "assisted_tillage",
+                                           "debts_have",
+                                           "livestock_inputs_any",
+                                           "land_irrigated_any",
+                                           "use_fert",
+                                           "homegarden",
+                                           "off_farm_any"
+                                           
+                                           )]
 
+final_modelling_df$education <-modelling_data_set$education_cleaned
+  
 # HHsize Standardisation (Log)
-
-modelling_data_set$log_hh_size <- log_add_half_min(modelling_data_set$hh_size_mae)
-modelling_data_set$log_hh_size <- normalisation(modelling_data_set$log_hh_size)
+final_modelling_df$hh_size <- log_add_half_min(modelling_data_set$hh_size_mae)
+final_modelling_df$hh_size <- normalisation(final_modelling_df$hh_size)
 
 # Livestock TLU (Log)
-modelling_data_set$log_livestock_tlu <- log_add_half_min(modelling_data_set$livestock_tlu)
-modelling_data_set$log_livestock_tlu <- normalisation(modelling_data_set$log_livestock_tlu)
+final_modelling_df$livestock_tlu <- log_add_half_min(modelling_data_set$livestock_tlu)
+final_modelling_df$livestock_tlu <- normalisation(final_modelling_df$livestock_tlu)
 
 # Land Cultivated (Log)
-modelling_data_set$log_land_cultivated <- log_add_half_min(modelling_data_set$land_cultivated_ha)
-modelling_data_set$log_land_cultivated <- normalisation(modelling_data_set$log_land_cultivated)
+final_modelling_df$land_cultivated <- log_add_half_min(modelling_data_set$land_cultivated_ha)
+final_modelling_df$land_cultivated <- normalisation(final_modelling_df$land_cultivated)
 
 
+# hist(modelling_data_set$land_cultivated_ha)
+# temp <- ihs(modelling_data_set$land_cultivated_ha)
+# hist(temp)
+# temp <- log_add_half_min(modelling_data_set$land_cultivated_ha)
+# hist(temp)
 
 # Livestock Orientation (Logit)
 # modelling_data_set$logit_livestock_orientation <- logit(modelling_data_set$livestock_orientation)
@@ -830,8 +892,10 @@ modelling_data_set$log_land_cultivated <- normalisation(modelling_data_set$log_l
 # modelling_data_set$logit_off_farm_orientation <- normalisation(modelling_data_set$logit_off_farm_orientation)
 
 # Market Orientation (Logit)
-modelling_data_set$logit_market_orientation <- logit(modelling_data_set$market_orientation)
-modelling_data_set$logit_market_orientation <- normalisation(modelling_data_set$logit_market_orientation)
+final_modelling_df$market_orientation <- as_sqrt(modelling_data_set$market_orientation)
+final_modelling_df$market_orientation <- normalisation(final_modelling_df$market_orientation)
+
+
 
 # Income diversity (Log)
 # modelling_data_set$log_income_diversity <- log_add_half_min(modelling_data_set$weighted_income_diversity)
@@ -843,32 +907,36 @@ modelling_data_set$logit_market_orientation <- normalisation(modelling_data_set$
 
 
 # TVA (Log)
-modelling_data_set$log_tva <- log_add_half_min(modelling_data_set$tva_per_mae_per_day_ppp)
-modelling_data_set$log_tva <- normalisation(modelling_data_set$log_tva)
+final_modelling_df$tva <- log_add_half_min(modelling_data_set$tva_per_mae_per_day_ppp)
+final_modelling_df$tva <- normalisation(final_modelling_df$tva)
 
 
-modelling_data_set$norm_hdds_lean_season <- normalisation(modelling_data_set$hdds_lean_season)
+final_modelling_df$hdds <- normalisation(modelling_data_set$hdds_lean_season)
 
 
 # Length Growing Period (Norm)
-modelling_data_set$norm_growing_period <- normalisation(modelling_data_set$adjusted_length_growing_period)
+final_modelling_df$length_growing_period <- normalisation(modelling_data_set$adjusted_length_growing_period)
 
 
 # Minimum travel time (Log)
-modelling_data_set$log_min_travel_time <- log_add_half_min(modelling_data_set$min_travel_time)
-modelling_data_set$log_min_travel_time <- normalisation(modelling_data_set$log_min_travel_time)
+final_modelling_df$min_travel_time <- log_add_half_min(modelling_data_set$min_travel_time)
+final_modelling_df$min_travel_time <- normalisation(final_modelling_df$min_travel_time)
 
 
 # Population density
-modelling_data_set$log_pop_dens <- log_add_half_min(modelling_data_set$population_density)
-modelling_data_set$log_pop_dens <- normalisation(modelling_data_set$log_pop_dens)
+final_modelling_df$pop_dens <- log_add_half_min(modelling_data_set$population_density)
+final_modelling_df$pop_dens <- normalisation(final_modelling_df$pop_dens)
 
 
 # GDL live-exp (Log)
 
-modelling_data_set$norm_gdl_country_shdi <- normalisation(modelling_data_set$gdl_country_shdi)
-modelling_data_set$norm_gdl_county_shdi <- normalisation(modelling_data_set$gdl_shdi)
+final_modelling_df$gdl_country_shdi <- log_add_half_min(modelling_data_set$gdl_country_shdi)
+final_modelling_df$gdl_country_shdi <- normalisation(final_modelling_df$gdl_country_shdi)
 
+
+# Number Income Source
+final_modelling_df$number_income_sources <- log_add_half_min(modelling_data_set$number_income_sources)
+final_modelling_df$number_income_sources <- normalisation(final_modelling_df$number_income_sources)
 
 
 # GDL HDI (Logit)
@@ -886,30 +954,30 @@ vars <- c(
   "village",
   
   # Country Level Variables
-  "norm_gdl_country_shdi",
-  "norm_gdl_county_shdi",
-  
+  "gdl_country_shdi",
+
   # Village Level Variables
-  "norm_growing_period", # centered transform
-  "log_min_travel_time", # centered transform
+  "length_growing_period", # centered transform
+  "min_travel_time", # centered transform
   "kg_class_name",
-  "log_pop_dens",
+  "pop_dens",
   
-  "log_hh_size",
-  "education_cleaned",
-  "log_livestock_tlu", 
-  "log_land_cultivated",
+  "hh_size",
+  "education",
+  "livestock_tlu", 
+  "land_cultivated",
   "off_farm_any",
   
-  "logit_market_orientation",
+  "market_orientation",
   
-  "till_not_by_hand",
+  "assisted_tillage",
   "external_labour",
-  "pesticide",
   "debts_have",
-  "aidreceived",
+  "use_fert",
+  "number_income_sources",
   "livestock_inputs_any",
   "land_irrigated_any",
+  "homegarden",
   
   # "logit_proportion_female_control",
   
@@ -928,13 +996,13 @@ vars <- c(
 
   # "logit_gdl_hdi"
   
-  "log_tva", # centered transform
-  "norm_hdds_lean_season"
+  "tva", # centered transform
+  "hdds"
   
   
 )
 
-modelling_data_set <-modelling_data_set[vars]
+final_modelling_df <-final_modelling_df[vars]
 
 
 write_csv(modelling_data_set,"./data/02-prepared-data/modelling_df.csv")
