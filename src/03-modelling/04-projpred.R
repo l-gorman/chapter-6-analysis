@@ -157,7 +157,7 @@ varsel_model <- cv_varsel(ref_model,
                           K = 5,
                           verbose = TRUE, 
                           seed = seed,
-                          ndraws_pred=400,
+                          ndraws_pred=800,
                           search_terms=search_terms,
                           refit_prj=TRUE,
                           nterms_max=max_vars)
