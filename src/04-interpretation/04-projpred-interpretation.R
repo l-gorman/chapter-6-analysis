@@ -13,14 +13,17 @@ loadRData <- function(fileName){
 
 
 # cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/tva/weak_prior_fixed/projpred_cv_varsel_model_1.rda")
-cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/projpred_cv_varsel_model_8.rda")
+#ref_model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
 
+cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/projpred_cv_varsel_model_2.rda")
 ref_model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
 
 
+plot(cvvs,stats = "mlpd", ranking_nterms_max = NA)
 
 
-projection <- project(cvvs, solution_terms = "(1|iso_country_code) (1|iso_country_code:village)+pesticide")
+
+# projection <- project(cvvs, solution_terms = "(1|iso_country_code) (1|iso_country_code:village)+pesticide")
 
 
 # Summary -----------------------------------------------------------------
@@ -34,7 +37,6 @@ print(smmry, digits = 1)
 
 # Plotting predictor rank -------------------------------------------------
 
-cvvs$y_wobs_test
 
 predictor_plot <- plot(cvvs,stats="mlpd",deltas = TRUE,text_angle=90) 
 
@@ -46,7 +48,7 @@ predictor_plot <- plot(cvvs)#,ranking_abbreviate = T)
 #CV Proportions ----------------------------------------------------------
 
 projpred::solution_terms(cvvs)
-projpred::break_up_matrix_term(cvvs)
+# projpred::break_up_matrix_term(cvvs)
 
 selection_summary <- unclass(summary(cvvs))[["selection"]]
 selection_summary$solution_terms <- gsub("(1 | iso_country_code) + (1 | iso_country_code:village)","location_grouping",selection_summary$solution_terms)
