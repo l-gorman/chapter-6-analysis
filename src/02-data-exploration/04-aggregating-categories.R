@@ -1005,21 +1005,21 @@ vars <- c(
 final_modelling_df <-final_modelling_df[vars]
 
 
-write_csv(modelling_data_set,"./data/02-prepared-data/modelling_df.csv")
+write_csv(final_modelling_df,"./data/02-prepared-data/modelling_df.csv")
 
 
-pair_plot <- modelling_data_set %>% 
-  select_if( is.numeric) %>% 
-  mutate_all(as.numeric) %>% 
-  ggpairs(
-    upper = list(continuous = "cor", combo = "box_no_facet"),
-    lower = list(continuous = "density", combo = "dot_no_facet"),
-    diag = list(continuous = "barDiag", combo = "box_no_facet")
-  )
-
-ggsave("./outputs/02-data-exploration/var_pairplot.png",plot = pair_plot,width = 4000,height=4000,units = "px")
-
-
+# pair_plot <- modelling_data_set %>% 
+#   select_if( is.numeric) %>% 
+#   mutate_all(as.numeric) %>% 
+#   ggpairs(
+#     upper = list(continuous = "cor", combo = "box_no_facet"),
+#     lower = list(continuous = "density", combo = "dot_no_facet"),
+#     diag = list(continuous = "barDiag", combo = "box_no_facet")
+#   )
+# 
+# ggsave("./outputs/02-data-exploration/var_pairplot.png",plot = pair_plot,width = 4000,height=4000,units = "px")
+# 
+# 
 
 
 

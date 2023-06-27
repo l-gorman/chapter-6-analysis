@@ -119,7 +119,7 @@ models <-  list(
                  
                  #------------------
                # Village Level
-               growing_period +
+               length_growing_period +
                  min_travel_time +
                  # log_pop_dens +
                  #------------------
@@ -165,7 +165,7 @@ models <-  list(
                  
                  #------------------
                # Village Level
-               growing_period +
+               length_growing_period +
                  min_travel_time +
                  # log_pop_dens +
                  #------------------
@@ -214,7 +214,7 @@ models <-  list(
                  
                  #------------------
                # Village Level
-               growing_period +
+               length_growing_period +
                  min_travel_time +
                  # log_pop_dens +
                  #------------------
@@ -273,7 +273,7 @@ models <-  list(
                  
                  #------------------
                # Village Level
-               growing_period +
+               length_growing_period +
                  min_travel_time +
                  # log_pop_dens +
                  #------------------
@@ -318,7 +318,7 @@ models <-  list(
                  
                  #------------------
                # Village Level
-               growing_period +
+               length_growing_period +
                  min_travel_time +
                  # log_pop_dens +
                  #------------------
@@ -371,7 +371,7 @@ models <-  list(
                  
                  #------------------
                # Village Level
-               growing_period +
+               length_growing_period +
                  min_travel_time +
                  # log_pop_dens +
                  #------------------
