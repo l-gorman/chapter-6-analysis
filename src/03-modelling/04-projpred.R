@@ -118,7 +118,7 @@ auxilliary_variables <- c(
     "debts_have",
     
     "off_farm_any",
-    "homegarden",
+    "kitchen_garden",
     "number_income_sources",
     "market_orientation",
     

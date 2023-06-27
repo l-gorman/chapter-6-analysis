@@ -100,7 +100,7 @@ models <-  list(
                  debts_have+
                  
                  off_farm_any+
-                 homegarden+
+                 kitchen_garden+
                  number_income_sources+
                  market_orientation+
                  
@@ -146,7 +146,7 @@ models <-  list(
                  debts_have+
                  
                  off_farm_any+
-                 homegarden+
+                 kitchen_garden+
                  number_income_sources+
                  market_orientation+
                  
@@ -195,7 +195,7 @@ models <-  list(
                  debts_have+
                  
                  off_farm_any+
-                 homegarden+
+                 kitchen_garden+
                  number_income_sources+
                  market_orientation+
                  
@@ -259,7 +259,7 @@ models <-  list(
                  debts_have+
                  
                  off_farm_any+
-                 homegarden+
+                 kitchen_garden+
                  number_income_sources+
                  market_orientation+
                  
@@ -299,7 +299,7 @@ models <-  list(
                  debts_have+
                  
                  off_farm_any+
-                 homegarden+
+                 kitchen_garden+
                  number_income_sources+
                  market_orientation+
                  
@@ -352,7 +352,7 @@ models <-  list(
                  debts_have+
                  
                  off_farm_any+
-                 homegarden+
+                 kitchen_garden+
                  number_income_sources+
                  market_orientation+
                  

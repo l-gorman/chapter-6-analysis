@@ -395,11 +395,11 @@ variables <- list(
   "Home Garden"="homegarden",
   "Number of Income Sources"="number_income_sources",
   
-  "Growing Period"="norm_growing_period",
+  "Growing Period"="growing_period",
   "Population Density"="pop_dens",
   "Minimum Travel Time"="min_travel_time",
   
-  "Country HDIS"="gdl_country_shdi"
+  "Country HDI"="gdl_country_shdi"
   
 )
 

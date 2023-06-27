@@ -506,7 +506,7 @@ vars <- c(
   "livestock_inputs_any",
   "land_irrigated_any",
   "use_fert",
-  "homegarden",
+  "kitchen_garden",
   
   "off_farm_any",
   "market_orientation", # logit transform
@@ -851,7 +851,7 @@ final_modelling_df <- modelling_data_set[c("id_form",
                                            "livestock_inputs_any",
                                            "land_irrigated_any",
                                            "use_fert",
-                                           "homegarden",
+                                           "kitchen_garden",
                                            "off_farm_any"
                                            
                                            )]
@@ -977,7 +977,7 @@ vars <- c(
   "number_income_sources",
   "livestock_inputs_any",
   "land_irrigated_any",
-  "homegarden",
+  "kitchen_garden",
   
   # "logit_proportion_female_control",
   
