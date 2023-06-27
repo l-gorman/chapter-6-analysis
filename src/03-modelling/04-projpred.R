@@ -17,7 +17,7 @@ set_cmdstan_path("/user/home/lg14410/.cmdstan/cmdstan-2.32.2")
 
 # Solution to globals size, found here:
 # https://stackoverflow.com/questions/40536067/how-to-adjust-future-global-maxsize
-options(future.globals.maxSize = 100000 * 1024^2)
+options(future.globals.maxSize = 150000 * 1024^2)
 # options(mc.cores = parallel::detectCores())
 options(mc.cores = 4,  brms.backend = "cmdstanr")
 
