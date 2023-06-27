@@ -222,8 +222,8 @@ models <-  list(
                gdl_country_shdi+
                  # Levels
                  (1 +
-                    log_land_cultivated +
-                    log_livestock_tlu +
+                    land_cultivated +
+                    livestock_tlu +
                     off_farm_any | iso_country_code) +
                  (1 | iso_country_code:village)),
     prior="weak"),
@@ -379,8 +379,8 @@ models <-  list(
                gdl_country_shdi+
                  # Levels
                  (1 +
-                    log_land_cultivated +
-                    log_livestock_tlu +
+                    land_cultivated +
+                    livestock_tlu +
                     off_farm_any | iso_country_code) +
                  (1 | iso_country_code:village)),
     prior="weak")

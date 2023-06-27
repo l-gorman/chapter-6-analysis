@@ -94,7 +94,7 @@ get_search_terms <- function(fixed_terms, other_predictors, max_terms) {
   if (max_terms > length(other_predictors)){
     stop("Cannot have max terms more than predictors")
   }
-    
+  
   search_terms <- unlist(lapply(1:max_terms, function(m_predictors) {
     lapply(combn(other_predictors, m = m_predictors, simplify = FALSE),
            function(idxs_predictors) {
@@ -107,41 +107,46 @@ get_search_terms <- function(fixed_terms, other_predictors, max_terms) {
 
 
 auxilliary_variables <- c(
-  "log_hh_size",
-  'education_cleaned',
   
-  #Assets
-  'log_livestock_tlu',
-  'log_land_cultivated',
-  "logit_market_orientation",
+    "hh_size",
+    "education",
     
-  
-  # Practices
-  'off_farm_any',
-  'till_not_by_hand',
-  'external_labour',
-  # 'pesticide',
-  'debts_have',
-  # 'aidreceived',
-  'livestock_inputs_any',
-  'land_irrigated_any',
-  
-  #------------------
-  # Village Level
-  'norm_growing_period',
-  'log_min_travel_time',
-  # 'log_pop_dens',
-    #------------------
-  #County Level
-  'norm_gdl_country_shdi'
-)
+    #Assets
+    "livestock_tlu",
+    "land_cultivated",
+    "market_orientation",
+    "debts_have",
+    
+    "off_farm_any",
+    "homegarden",
+    "number_income_sources",
+    "market_orientation",
+    
+    
+    
+    
+    
+    
+    
+    # Practices
+    "assisted_tillage",
+    "external_labour",
+    "livestock_inputs_any",
+    "land_irrigated_any",
+    "use_fert",
+    
+    # Village level
+    "length_growing_period",
+    "min_travel_time",
+    
+    "gdl_country_shdi")
 
 
 
 group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
 # fixed_effects <- paste0(group_effects, " + ", fixed_effects)
 
-max_vars <- 12
+max_vars <- length(auxilliary_variables)
 
 # Basing this off of discussion on stan forum:
 # https://discourse.mc-stan.org/t/projpred-fixing-group-effects-in-search-terms-and-tips-for-speed/31678/4
@@ -149,8 +154,6 @@ search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=m
 
 
 # Basing from this: https://discourse.mc-stan.org/t/advice-on-using-search-terms-in-projpred/22846/3
-
-
 varsel_model <- cv_varsel(ref_model,
                           method = 'forward', 
                           cv_method = 'kfold', 

@@ -375,27 +375,31 @@ dir.create(paste0("outputs/overall_model_results/variable_addition/"))
 
 variables <- list(
   # "Education (Pre Primary)"="education_cleanedpre_primary",
-  "Household Size"="log_hh_size",
-  "Education (Primary)"="education_cleanedprimary",
-  "Education (Secondary/Higher)"="education_cleanedsecondary_or_higher",
-  "Livestock TLU"="log_livestock_tlu",
-  "Land Cultivated"="log_land_cultivated",
+  "Household Size"="hh_size",
+  "Education (Primary)"="educationprimary",
+  "Education (Secondary/Higher)"="educationsecondary_or_higher",
+  "Livestock TLU"="livestock_tlu",
+  "Land Cultivated"="land_cultivated",
   "Any Off Farm Income"= "off_farm_any",
-  "Till with Machine/Animal"="till_not_by_hand",
+  "Assisted Tillage"="assisted_tillage",
   "External Labour"="external_labour",
-  "Use Pesticide"="pesticide",
+  # "Use Pesticide"="pesticide",
   "Have Debts"="debts_have",
-  "Received Aid"="aidreceived",
+  # "Received Aid"="aidreceived",
   "Use Livestock Inputs"="livestock_inputs_any",
   "Irrigate Land"="land_irrigated_any",
+  "Use Fertiliser"="use_fert",
+
   
-  
+  "Market Orientation"="market_orientation",
+  "Home Garden"="homegarden",
+  "Number of Income Sources"="number_income_sources",
   
   "Growing Period"="norm_growing_period",
-  "Population Density"="log_pop_dens",
-  "Minimum Travel Time"="log_min_travel_time",
+  "Population Density"="pop_dens",
+  "Minimum Travel Time"="min_travel_time",
   
-  "Country HDIS"="norm_gdl_country_shdi"
+  "Country HDIS"="gdl_country_shdi"
   
 )
 
