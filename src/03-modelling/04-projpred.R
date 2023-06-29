@@ -160,10 +160,13 @@ varsel_model <- cv_varsel(ref_model,
                           K = 5,
                           verbose = TRUE, 
                           seed = seed,
-                          ndraws_pred=2000,
-                          search_terms=search_terms,
+                          # ndraws_pred=2000,
+                          # search_terms=search_terms,
+                          search_terms=NULL,
+                          
                           refit_prj=TRUE,
-                          nterms_max=max_vars)
+                          nterms_max=max_vars
+                          )
 
 save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))
 
