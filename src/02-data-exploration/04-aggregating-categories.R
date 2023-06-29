@@ -146,10 +146,16 @@ debts_have <- as.numeric(debts_have)
 indicator_data$debts_have <- debts_have
 indicator_data$debts_have[is.na(indicator_data$debts_have)] <- 0
 
-indicator_data$kitchen_garden <- indicator_data$homegarden
-indicator_data$kitchen_garden[indicator_data$kitchen_garden=="y"] <- TRUE
-indicator_data$kitchen_garden[indicator_data$kitchen_garden=="n"] <- FALSE
-indicator_data$kitchen_garden[indicator_data$kitchen_garden=="no_answer"] <- NA
+kitchen_garden <- indicator_data$homegarden
+kitchen_garden[kitchen_garden=="y"] <- TRUE
+kitchen_garden[kitchen_garden=="n"] <- FALSE
+kitchen_garden[kitchen_garden=="no_answer"] <- NA
+temp_kg <- rep(FALSE,length(kitchen_garden))
+temp_kg[kitchen_garden=="TRUE"] <- TRUE
+temp_kg[kitchen_garden=="FALSE"] <- FALSE
+temp_kg[is.na(kitchen_garden)] <- NA
+
+indicator_data$kitchen_garden <- as.numeric(temp_kg)
 
 table(indicator_data$household_type)
 

@@ -376,8 +376,10 @@ dir.create(paste0("outputs/overall_model_results/variable_addition/"))
 variables <- list(
   # "Education (Pre Primary)"="education_cleanedpre_primary",
   "Household Size"="hh_size",
+  
   "Education (Primary)"="educationprimary",
   "Education (Secondary/Higher)"="educationsecondary_or_higher",
+  
   "Livestock TLU"="livestock_tlu",
   "Land Cultivated"="land_cultivated",
   "Any Off Farm Income"= "off_farm_any",
@@ -392,11 +394,10 @@ variables <- list(
 
   
   "Market Orientation"="market_orientation",
-  "Home Garden"="homegarden",
+  "Home Garden"="kitchen_garden",
   "Number of Income Sources"="number_income_sources",
   
-  "Growing Period"="growing_period",
-  "Population Density"="pop_dens",
+  "Growing Period"="length_growing_period",
   "Minimum Travel Time"="min_travel_time",
   
   "Country HDI"="gdl_country_shdi"
