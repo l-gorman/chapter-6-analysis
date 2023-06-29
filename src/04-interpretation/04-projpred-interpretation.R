@@ -15,10 +15,10 @@ loadRData <- function(fileName){
 cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/tva/weak_prior_fixed/projpred_cv_varsel_model_1.rda")
 ref_model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
 
-selection_summary <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/selection_summary_2.rda")
 
-cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/projpred_cv_varsel_model_2.rda")
+# cvvs <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/projpred_cv_varsel_model_2.rda")
 # ref_model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
+# selection_summary <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/selection_summary_2.rda")
 
 
 plot(cvvs,stats = "mlpd", ranking_nterms_max = NA)
