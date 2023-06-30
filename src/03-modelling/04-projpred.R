@@ -11,7 +11,7 @@ library(magrittr)
 library(optparse)
 library(projpred)
 library(cmdstanr)
-
+library(optimx)
 
 set_cmdstan_path("/user/home/lg14410/.cmdstan/cmdstan-2.32.2")
 
@@ -165,7 +165,6 @@ varsel_model <- cv_varsel(ref_model,
                           search_terms=NULL,
                           
                           refit_prj=TRUE
-                          # nterms_max=max_vars
                           )
 
 save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))

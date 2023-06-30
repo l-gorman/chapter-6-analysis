@@ -20,6 +20,12 @@ ref_model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addit
 # ref_model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
 # selection_summary <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/selection_summary_2.rda")
 
+dir.create("./outputs/overall_model_results/variable_addition/projpred")
+dir.create("./outputs/overall_model_results/variable_addition/projpred/tva/")
+dir.create("./outputs/overall_model_results/variable_addition/projpred/hdds/")
+
+ranking_res <- ranking(cvvs)
+save(ranking_res,file="./outputs/overall_model_results/variable_addition/projpred/tva/ranking.rda")
 
 plot(cvvs,stats = "mlpd", ranking_nterms_max = NA)
 
