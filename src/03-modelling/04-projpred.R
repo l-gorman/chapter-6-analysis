@@ -163,7 +163,7 @@ varsel_model <- cv_varsel(ref_model,
                           # ndraws_pred=2000,
                           # search_terms=search_terms,
                           search_terms=NULL,
-                          nterms_max=length(auxilliary_variables),
+                          # nterms_max=length(auxilliary_variables),
                           refit_prj=TRUE
                           )
 

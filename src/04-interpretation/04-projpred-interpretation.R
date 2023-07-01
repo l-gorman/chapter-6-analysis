@@ -60,12 +60,12 @@ predictor_plot <- plot(cvvs)#,ranking_abbreviate = T)
 projpred::solution_terms(cvvs)
 # projpred::break_up_matrix_term(cvvs)
 
-selection_summary <- unclass(summary(cvvs))[["selection"]]
-selection_summary$solution_terms <- gsub("(1 | iso_country_code) + (1 | iso_country_code:village)","location_grouping",selection_summary$solution_terms)
-ggplot(selection_summary)+
-  geom_point(aes(y=elpd.kfold, x=size))+
-  geom_hline(yintercept=0)
-
+# selection_summary <- unclass(summary(cvvs))[["selection"]]
+# selection_summary$solution_terms <- gsub("(1 | iso_country_code) + (1 | iso_country_code:village)","location_grouping",selection_summary$solution_terms)
+# ggplot(selection_summary)+
+#   geom_point(aes(y=elpd.kfold, x=size))+
+#   geom_hline(yintercept=0)
+# 
 
 
 # rk[["fulldata"]]
