@@ -106,6 +106,7 @@ get_search_terms <- function(fixed_terms, other_predictors, max_terms) {
 }
 
 
+
 auxilliary_variables <- c(
   
     "hh_size",
@@ -146,7 +147,10 @@ auxilliary_variables <- c(
 group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
 # fixed_effects <- paste0(group_effects, " + ", fixed_effects)
 
-max_vars <- length(auxilliary_variables)
+all_args <- c(auxilliary_variables,group_effects)
+max_vars <- length(all_args)-1
+
+
 
 # Basing this off of discussion on stan forum:
 # https://discourse.mc-stan.org/t/projpred-fixing-group-effects-in-search-terms-and-tips-for-speed/31678/4
@@ -163,7 +167,7 @@ varsel_model <- cv_varsel(ref_model,
                           # ndraws_pred=2000,
                           # search_terms=search_terms,
                           search_terms=NULL,
-                          # nterms_max=length(auxilliary_variables),
+                          nterms_max=max_vars,
                           refit_prj=TRUE
                           )
 
