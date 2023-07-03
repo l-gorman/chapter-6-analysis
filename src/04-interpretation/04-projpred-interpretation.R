@@ -83,7 +83,7 @@ predictors_final <- head(rk[["fulldata"]], size_decided)
 # Projecting Final Model --------------------------------------------------
 
 # Interpretation
-predictors_final <- c("(1 | iso_country_code)", "(1 | iso_country_code:village)", predictors_final)
-predictors_final <- predictors_final[predictors_final!="(1 | iso_country_code) + (1 | iso_country_code:village)"]
-prj <- project(ref_model, solution_terms = predictors_final)
+# predictors_final <- c("(1 | iso_country_code)", "(1 | iso_country_code:village)", predictors_final)
+# predictors_final <- predictors_final[predictors_final!="(1 | iso_country_code) + (1 | iso_country_code:village)"]
+# prj <- project(ref_model, solution_terms = predictors_final)
 

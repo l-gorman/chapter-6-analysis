@@ -148,8 +148,9 @@ group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
 # fixed_effects <- paste0(group_effects, " + ", fixed_effects)
 
 all_args <- c(auxilliary_variables,group_effects)
-max_vars <- length(all_args)-1
+# max_vars <- length(all_args)-1
 
+max_vars <- length(auxilliary_variables)
 
 
 # Basing this off of discussion on stan forum:
@@ -166,7 +167,7 @@ varsel_model <- cv_varsel(ref_model,
                           seed = seed,
                           # ndraws_pred=2000,
                           # search_terms=search_terms,
-                          search_terms=NULL,
+                          search_terms=search_terms,
                           nterms_max=max_vars,
                           refit_prj=TRUE
                           )
