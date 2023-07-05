@@ -69,23 +69,47 @@ index <- as.numeric(opt$index)
 dir.create(paste0(opt$output,"/overall_models/"))
 dir.create(paste0(opt$output,"/overall_models/variable_addition_final_fit"))
 
-variable_order <- c("number_income_sources",
+
+tva_variable_order <- c(
+  "number_income_sources",
                     "hh_size",
                     "market_orientation",
-                    "land_cultivated",
                     "use_fert",
+                    "land_cultivated",
                     "land_irrigated_any",
                     "education",
-                    "external_labour",
                     "assisted_tillage",
-                    "min_travel_time",
+                    "external_labour",
                     "length_growing_period",
+                    "min_travel_time",
+                    "debts_have",
+                    "off_farm_any",
                     "gdl_country_shdi",
                     "livestock_tlu",
                     "livestock_inputs_any",
-                    "kitchen_garden",
-                    "off_farm_any",
-                    "debts_have")
+                    "kitchen_garden"
+                    )
+
+
+     
+hdds_variable_order <- c("number_income_sources",
+                        "external_labour",
+                        "min_travel_time",
+                        "use_fert",
+                        "education",
+                        "kitchen_garden",
+                        "land_irrigated_any",
+                        "gdl_country_shdi",
+                        "length_growing_period",
+                        "off_farm_any",
+                        "assisted_tillage",
+                        "debts_have",
+                        "livestock_inputs_any",
+                        "livestock_tlu",
+                        "hh_size",
+                        "market_orientation",
+                        "debts_have",
+                        "land_cultivated")
 
 grouping_vars <- c("(1 | iso_country_code)",
                    "(1 | iso_country_code:village)")
@@ -95,14 +119,18 @@ grouping_vars <- c("(1 | iso_country_code)",
 
 
 
-if (index <=length(variable_order)){
+if (index <=length(tva_variable_order)){
   
-  auxilliary_variables <-variable_order[c(1:index)]
+  if (index==0){
+    formula_end <-  paste0(grouping_vars,collapse = " + ")
+  }else{
+  auxilliary_variables <-tva_variable_order[c(1:index)]
   formula_end <- paste0(
     paste0(grouping_vars,collapse = " + "),
     " + ",
     paste0(auxilliary_variables,collapse = " + ")
   )
+  }
   
   y_var <- "tva"
   model_name <-paste0(y_var,"_",index)
@@ -117,16 +145,25 @@ if (index <=length(variable_order)){
 }
 
 
-if (index >length(variable_order)){
-  auxilliary_variables <-variable_order[c(1:(index-length(variable_order)))]
+if (index >length(hdds_variable_order)){
+  temp_index <- index - length(hdds_variable_order)
+  
+  if (temp_index==0){
+    formula_end <-  paste0(grouping_vars,collapse = " + ")
+  }else{
+    
+  
+  
+  auxilliary_variables <-hdds_variable_order[c(1:(temp_index))]
   formula_end <- paste0(
     paste0(grouping_vars,collapse = " + "),
     " + ",
     paste0(auxilliary_variables,collapse = " + ")
   )
+  }
   
   y_var <- "hdds"
-  model_name <-paste0(y_var,"_",index-length(variable_order))
+  model_name <-paste0(y_var,"_",temp_index)
   forumla_temp <- bf(paste0(y_var, " ~ ", formula_end))
   model_item <-  list(
     tag=model_name,
@@ -193,179 +230,4 @@ loo_model <- NULL
 r2_model <- bayes_R2(model)
 save(r2_model,file=paste0(base_path,"r2_",model_item[["tag"]],".rda"))
 
-
-
-
-
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-# Horse Shoe Model --------------------------------------------------------
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-# 
-#   list(
-#     tag="horseshoe_fixed",
-#     data=indicator_data,
-#     formula=bf(log_tva ~ 1 +
-#                  #Household Level
-#                  # Demographics
-#                  log_hh_size +
-#                  education_cleaned +
-# 
-#                  #Assets
-#                  log_livestock_tlu +
-#                  log_land_cultivated +
-# 
-#                  # Practices
-#                  off_farm_any+
-#                  till_not_by_hand+
-#                  external_labour+
-#                  pesticide+
-#                  debts_have+
-#                  aidreceived+
-#                  livestock_inputs_any+
-#                  land_irrigated_any+
-# 
-#                  #------------------
-#                # Village Level
-#                  norm_growing_period +
-#                  log_min_travel_time +
-#                  log_pop_dens +
-#                  #------------------
-#                #County Level
-#                norm_gdl_country_shdi+
-# 
-#                  # Levels
-#                  (1 | iso_country_code) +
-#                  (1 | iso_country_code:village)),
-#     prior="horseshoe"
-#   ),
-# 
-# 
-#   list(
-#     tag="horseshoe_mixed_country",
-#     data=indicator_data,
-#     formula=bf(log_tva ~ 1 +
-#                  #Household Level
-#                  # Demographics
-#                  log_hh_size +
-#                  education_cleaned +
-# 
-#                  #Assets
-#                  log_livestock_tlu +
-#                  log_land_cultivated +
-# 
-#                  # Practices
-#                  off_farm_any+
-#                  till_not_by_hand+
-#                  external_labour+
-#                  pesticide+
-#                  debts_have+
-#                  aidreceived+
-#                  livestock_inputs_any+
-#                  land_irrigated_any+
-# 
-#                  #------------------
-#                # Village Level
-#                norm_growing_period +
-#                  log_min_travel_time +
-#                  log_pop_dens +
-#                  #------------------
-#                #County Level
-#                norm_gdl_country_shdi+
-# 
-#                  # Levels
-#                  (1 +
-#                     log_land_cultivated +
-#                     log_livestock_tlu +
-#                     off_farm_any | iso_country_code) +
-#                  (1 | iso_country_code:village)),
-#     prior="horseshoe"),
-# 
-
-
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-# Horse Shoe Model --------------------------------------------------------
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-
-# list(
-#   tag="horseshoe_fixed",
-#   data=indicator_data,
-#   formula=bf(norm_hdds_lean_season ~ 1 +
-#                #Household Level
-#                # Demographics
-#                log_hh_size +
-#                education_cleaned +
-# 
-#                #Assets
-#                log_livestock_tlu +
-#                log_land_cultivated +
-# 
-#                # Practices
-#                off_farm_any+
-#                till_not_by_hand+
-#                external_labour+
-#                pesticide+
-#                debts_have+
-#                aidreceived+
-#                livestock_inputs_any+
-#                land_irrigated_any+
-# 
-#                #------------------
-#              # Village Level
-#              norm_growing_period +
-#                log_min_travel_time +
-#                log_pop_dens +
-#                #------------------
-#              #County Level
-#              norm_gdl_country_shdi+
-# 
-#                # Levels
-#                (1 | iso_country_code) +
-#                (1 | iso_country_code:village)),
-#   prior="horseshoe"
-# ),
-
-# 
-#   list(
-#     tag="horseshoe_mixed_country",
-#     data=indicator_data,
-#     formula=bf(norm_hdds_lean_season ~ 1 +
-#                  #Household Level
-#                  # Demographics
-#                  log_hh_size +
-#                  education_cleaned +
-# 
-#                  #Assets
-#                  log_livestock_tlu +
-#                  log_land_cultivated +
-# 
-#                  # Practices
-#                  off_farm_any+
-#                  till_not_by_hand+
-#                  external_labour+
-#                  pesticide+
-#                  debts_have+
-#                  aidreceived+
-#                  livestock_inputs_any+
-#                  land_irrigated_any+
-# 
-#                  #------------------
-#                # Village Level
-#                norm_growing_period +
-#                  log_min_travel_time +
-#                  log_pop_dens +
-#                  #------------------
-#                #County Level
-#                norm_gdl_country_shdi+
-# 
-#                  # Levels
-#                  (1 +
-#                     log_land_cultivated +
-#                     log_livestock_tlu +
-#                     off_farm_any | iso_country_code) +
-#                  (1 | iso_country_code:village)),
-#     prior="horseshoe"),
 
