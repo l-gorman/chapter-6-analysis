@@ -688,6 +688,7 @@ dual_axis_plot <- function(loo_table,
   
   
   max_r2_axis <- max(plot_df$Estimate)
+  min_r2_axis <- min(plot_df$Estimate)
   
   max_elpd_axis <- abs(min(plot_df$elpd_diff))
   
@@ -704,12 +705,12 @@ dual_axis_plot <- function(loo_table,
   
   plot <- ggplot(plot_df)+
     geom_point(aes(x=model, y=elpd_diff,color="red", shape=shape, size=shape))+
-    geom_point(aes(x=model_type, y= max_elpd_axis*Estimate/max_r2_axis-max_elpd_axis,color="blue",shape=shape,size=shape))+
+    geom_point(aes(x=model_type, y=max_elpd_axis*(Estimate-min_r2_axis)/(max_r2_axis-min_r2_axis)-max_elpd_axis,color="blue",shape=shape,size=shape))+
     
-    geom_path(aes(x=model_type, y=max_elpd_axis*Estimate/max_r2_axis-max_elpd_axis, color="blue"),group=1) +
+    geom_path(aes(x=model_type, y=max_elpd_axis*(Estimate-min_r2_axis)/(max_r2_axis-min_r2_axis)-max_elpd_axis, color="blue"),group=1) +
     geom_path(aes(x=model_type, y=elpd_diff,color="red"),group=1) +
     
-    geom_segment(aes(x = model_type,xend=model_type,y=max_elpd_axis*Q2.5/max_r2_axis-max_elpd_axis,yend=max_elpd_axis*Q97.5/max_r2_axis-max_elpd_axis),color="blue")+
+    geom_segment(aes(x = model_type,xend=model_type,y=max_elpd_axis*(Q2.5-min_r2_axis)/(max_r2_axis-min_r2_axis)-max_elpd_axis,yend=max_elpd_axis*(Q97.5-min_r2_axis)/(max_r2_axis-min_r2_axis)-max_elpd_axis),color="blue")+
     geom_segment(aes(x = model,xend=model,y=lower,yend=upper),color="red")+
 
     geom_hline(yintercept = max(plot_df$Estimate),linetype="dashed")+
@@ -726,7 +727,7 @@ dual_axis_plot <- function(loo_table,
       name = "ELPD",
 
       # Add a second axis and specify its features
-      sec.axis = sec_axis(~ ((.+max_elpd_axis)*max_r2_axis)/max_elpd_axis, name=bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'))
+      sec.axis = sec_axis(~ ((.+max_elpd_axis)*(max_r2_axis-min_r2_axis)/max_elpd_axis)+min_r2_axis, name=bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'))
     ) +
     labs(title = title,
          x="Levels Included")+
