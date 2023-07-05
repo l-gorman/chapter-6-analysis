@@ -1011,7 +1011,15 @@ vars <- c(
 final_modelling_df <-final_modelling_df[vars]
 
 
-write_csv(final_modelling_df,"./data/02-prepared-data/modelling_df.csv")
+set.seed(1)
+sample <- sample(c(TRUE, FALSE), nrow(final_modelling_df), replace=TRUE, prob=c(0.8,0.2))
+
+train_df  <- final_modelling_df[sample, ]
+test_df   <- final_modelling_df[!sample, ]
+
+
+write_csv(train_df,"./data/02-prepared-data/modelling_df.csv")
+write_csv(test_df,"./data/02-prepared-data/test_df.csv")
 
 
 # pair_plot <- modelling_data_set %>% 

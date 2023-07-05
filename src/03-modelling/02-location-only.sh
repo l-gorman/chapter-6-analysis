@@ -23,7 +23,8 @@ echo "Keep track of job by entering sacct -j ${SLURM_JOBID}  \n"
 echo "Cancel your job by entering scancel ${SLURM_JOBID}  \n"
 echo "More details on submitting jobs here https://www.acrc.bris.ac.uk/protected/hpc-docs/job_types/ \n"
 
-module add languages/r/4.1.0
+tools/cmake/3.22.2
+module add  lang/r/4.3.0-gcc
 
 out_directory="/user/work/lg14410/chapter-6/outputs/"
 data_directory="/user/work/lg14410/chapter-6/data/"
