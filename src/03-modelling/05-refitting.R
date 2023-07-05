@@ -72,44 +72,44 @@ dir.create(paste0(opt$output,"/overall_models/variable_addition_final_fit"))
 
 tva_variable_order <- c(
   "number_income_sources",
-                    "hh_size",
-                    "market_orientation",
-                    "use_fert",
-                    "land_cultivated",
-                    "land_irrigated_any",
-                    "education",
-                    "assisted_tillage",
-                    "external_labour",
-                    "length_growing_period",
-                    "min_travel_time",
-                    "debts_have",
-                    "off_farm_any",
-                    "gdl_country_shdi",
-                    "livestock_tlu",
-                    "livestock_inputs_any",
-                    "kitchen_garden"
-                    )
+  "hh_size",
+  "market_orientation",
+  "use_fert",
+  "land_cultivated",
+  "land_irrigated_any",
+  "education",
+  "assisted_tillage",
+  "external_labour",
+  "length_growing_period",
+  "min_travel_time",
+  "debts_have",
+  "off_farm_any",
+  "gdl_country_shdi",
+  "livestock_tlu",
+  "livestock_inputs_any",
+  "kitchen_garden"
+)
 
 
-     
+
 hdds_variable_order <- c("number_income_sources",
-                        "external_labour",
-                        "min_travel_time",
-                        "use_fert",
-                        "education",
-                        "kitchen_garden",
-                        "land_irrigated_any",
-                        "gdl_country_shdi",
-                        "length_growing_period",
-                        "off_farm_any",
-                        "assisted_tillage",
-                        "debts_have",
-                        "livestock_inputs_any",
-                        "livestock_tlu",
-                        "hh_size",
-                        "market_orientation",
-                        "debts_have",
-                        "land_cultivated")
+                         "external_labour",
+                         "min_travel_time",
+                         "use_fert",
+                         "education",
+                         "kitchen_garden",
+                         "land_irrigated_any",
+                         "gdl_country_shdi",
+                         "length_growing_period",
+                         "off_farm_any",
+                         "assisted_tillage",
+                         "debts_have",
+                         "livestock_inputs_any",
+                         "livestock_tlu",
+                         "hh_size",
+                         "market_orientation",
+                         "debts_have",
+                         "land_cultivated")
 
 grouping_vars <- c("(1 | iso_country_code)",
                    "(1 | iso_country_code:village)")
@@ -123,13 +123,25 @@ if (index <=length(tva_variable_order)){
   
   if (index==0){
     formula_end <-  paste0(grouping_vars,collapse = " + ")
+    prior_to_use <- c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    )
   }else{
-  auxilliary_variables <-tva_variable_order[c(1:index)]
-  formula_end <- paste0(
-    paste0(grouping_vars,collapse = " + "),
-    " + ",
-    paste0(auxilliary_variables,collapse = " + ")
-  )
+    auxilliary_variables <-tva_variable_order[c(1:index)]
+    formula_end <- paste0(
+      paste0(grouping_vars,collapse = " + "),
+      " + ",
+      paste0(auxilliary_variables,collapse = " + ")
+    )
+    
+    prior_to_use <- c(
+      set_prior('normal(0, 1)', class = 'b'),
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    )
   }
   
   y_var <- "tva"
@@ -150,16 +162,28 @@ if (index >length(hdds_variable_order)){
   
   if (temp_index==0){
     formula_end <-  paste0(grouping_vars,collapse = " + ")
+    prior_to_use <- c(
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    )
   }else{
     
-  
-  
-  auxilliary_variables <-hdds_variable_order[c(1:(temp_index))]
-  formula_end <- paste0(
-    paste0(grouping_vars,collapse = " + "),
-    " + ",
-    paste0(auxilliary_variables,collapse = " + ")
-  )
+    
+    
+    auxilliary_variables <-hdds_variable_order[c(1:(temp_index))]
+    formula_end <- paste0(
+      paste0(grouping_vars,collapse = " + "),
+      " + ",
+      paste0(auxilliary_variables,collapse = " + ")
+    )
+    
+    prior_to_use <- c(
+      set_prior('normal(0, 1)', class = 'b'),
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    )
   }
   
   y_var <- "hdds"
@@ -182,12 +206,7 @@ if (index >length(hdds_variable_order)){
 
 
 
-prior_to_use <- c(
-  set_prior('normal(0, 1)', class = 'b'),
-  set_prior('normal(0, 1)', class = 'sd'),
-  set_prior('normal(0, 1)', class = 'sigma'),
-  set_prior('normal(0, 1)', class = 'Intercept')
-)
+
 
 
 
