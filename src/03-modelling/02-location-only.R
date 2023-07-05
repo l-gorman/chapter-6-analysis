@@ -75,21 +75,21 @@ models <-  list(
   list(
     tag="country_only",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code))
   ),
   
   list(
     tag="country_county_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)))
   ),
   list(
     tag="country_county",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode))
   ),
@@ -97,7 +97,7 @@ models <-  list(
   list(
     tag="country_county_village_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
                  (1 | gr(iso_country_code:gdlcode:village, by=iso_country_code)))
@@ -106,7 +106,7 @@ models <-  list(
   list(
     tag="country_county_village",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:gdlcode:village))
@@ -115,7 +115,7 @@ models <-  list(
   list(
     tag="country_county_village_kg_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
                  (1 | gr(iso_country_code:gdlcode:village, by=iso_country_code))+
@@ -125,7 +125,7 @@ models <-  list(
   list(
     tag="country_county_village_kg",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:gdlcode:village)+
@@ -135,7 +135,7 @@ models <-  list(
   list(
     tag="country_county_village_kg_form_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
                  (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
@@ -146,7 +146,7 @@ models <-  list(
   list(
     tag="country_county_village_kg_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:gdlcode:village)+
@@ -157,7 +157,7 @@ models <-  list(
   list(
     tag="country_county_village_form_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
                  (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
@@ -167,7 +167,7 @@ models <-  list(
   list(
     tag="country_county_village_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:gdlcode:village)+
@@ -177,7 +177,7 @@ models <-  list(
   list(
     tag="country_county_form_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode,by=iso_country_code)) +
                  (1 | gr(iso_country_code:id_form, by=iso_country_code)))
@@ -186,7 +186,7 @@ models <-  list(
   list(
     tag="country_county_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:id_form))
@@ -196,7 +196,7 @@ models <-  list(
   list(
     tag="country_form_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:id_form, by=iso_country_code)))
   ),
@@ -204,7 +204,7 @@ models <-  list(
   list(
     tag="country_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:id_form))
   ),
@@ -212,7 +212,7 @@ models <-  list(
   list(
     tag="country_village_form_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
                  (1 | gr(iso_country_code:id_form,by=iso_country_code)))
@@ -221,7 +221,7 @@ models <-  list(
   list(
     tag="country_village_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode:village)+
                  (1 | iso_country_code:id_form))
@@ -230,7 +230,7 @@ models <-  list(
   list(
     tag="country_village_form_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
                  (1 | gr(iso_country_code:id_form,by=iso_country_code)))
@@ -239,7 +239,7 @@ models <-  list(
   list(
     tag="country_village_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode:village)+
                  (1 | iso_country_code:id_form))
@@ -249,14 +249,14 @@ models <-  list(
   list(
     tag="kg_only",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | kg_class_name))
   ),
   
   list(
     tag="kg_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | kg_class_name)+
                  (1 | id_form))
   ),
@@ -264,7 +264,7 @@ models <-  list(
   list(
     tag="kg_village_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | kg_class_name)+
                  (1 | iso_country_code:gdlcode:village)+
                  (1 | iso_country_code:id_form))
@@ -273,7 +273,7 @@ models <-  list(
   list(
     tag="country_kg_form_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code)+
                  (1 | kg_class_name)+
                  (1 | gr(id_form, by=iso_country_code)))
@@ -281,7 +281,7 @@ models <-  list(
   list(
     tag="country_kg_form",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code)+
                  (1 | kg_class_name)+
                  (1 | id_form))
@@ -290,7 +290,7 @@ models <-  list(
   list(
     tag="country_village_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:village,by=iso_country_code)))
   ),
@@ -298,7 +298,7 @@ models <-  list(
   list(
     tag="country_village",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:village))
   ),
@@ -306,7 +306,7 @@ models <-  list(
   list(
     tag="county_village_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | gdlcode) +
                  (1 | gr(gdlcode:village,by=gdlcode)))
   ),
@@ -314,7 +314,7 @@ models <-  list(
   list(
     tag="county_village",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | gdlcode) +
                  (1 | gdlcode:village))
   ),
@@ -322,7 +322,7 @@ models <-  list(
   list(
     tag="kg_class_village",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | kg_class_name) +
                  (1 | kg_class_name:village))
   ),
@@ -330,7 +330,7 @@ models <-  list(
   list(
     tag="country_kg_village_group",
     data=indicator_data,
-    formula=bf(log_tva ~ 1 +
+    formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | kg_class_name) +
                  (1 | gr(village,by=iso_country_code)))
@@ -347,21 +347,21 @@ models <-  list(
   list(
     tag="country_only",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code))
   ),
   
   list(
     tag="country_county_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)))
   ),
   list(
     tag="country_county",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode))
   ),
@@ -369,7 +369,7 @@ models <-  list(
   list(
     tag="country_county_village_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
                  (1 | gr(iso_country_code:gdlcode:village, by=iso_country_code)))
@@ -378,7 +378,7 @@ models <-  list(
   list(
     tag="country_county_village",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:gdlcode:village))
@@ -387,7 +387,7 @@ models <-  list(
   list(
     tag="country_county_village_kg_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
                  (1 | gr(iso_country_code:gdlcode:village, by=iso_country_code))+
@@ -397,7 +397,7 @@ models <-  list(
   list(
     tag="country_county_village_kg",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:gdlcode:village)+
@@ -407,7 +407,7 @@ models <-  list(
   list(
     tag="country_county_village_kg_form_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
                  (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
@@ -418,7 +418,7 @@ models <-  list(
   list(
     tag="country_county_village_kg_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:gdlcode:village)+
@@ -429,7 +429,7 @@ models <-  list(
   list(
     tag="country_county_village_form_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode, by=iso_country_code)) +
                  (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
@@ -439,7 +439,7 @@ models <-  list(
   list(
     tag="country_county_village_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:gdlcode:village)+
@@ -449,7 +449,7 @@ models <-  list(
   list(
     tag="country_county_form_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode,by=iso_country_code)) +
                  (1 | gr(iso_country_code:id_form, by=iso_country_code)))
@@ -458,7 +458,7 @@ models <-  list(
   list(
     tag="country_county_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode) +
                  (1 | iso_country_code:id_form))
@@ -468,7 +468,7 @@ models <-  list(
   list(
     tag="country_form_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:id_form, by=iso_country_code)))
   ),
@@ -476,7 +476,7 @@ models <-  list(
   list(
     tag="country_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:id_form))
   ),
@@ -484,7 +484,7 @@ models <-  list(
   list(
     tag="country_village_form_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
                  (1 | gr(iso_country_code:id_form,by=iso_country_code)))
@@ -493,7 +493,7 @@ models <-  list(
   list(
     tag="country_village_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode:village)+
                  (1 | iso_country_code:id_form))
@@ -502,7 +502,7 @@ models <-  list(
   list(
     tag="country_village_form_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:gdlcode:village,by=iso_country_code))+
                  (1 | gr(iso_country_code:id_form,by=iso_country_code)))
@@ -511,7 +511,7 @@ models <-  list(
   list(
     tag="country_village_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:gdlcode:village)+
                  (1 | iso_country_code:id_form))
@@ -521,14 +521,14 @@ models <-  list(
   list(
     tag="kg_only",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | kg_class_name))
   ),
   
   list(
     tag="kg_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | kg_class_name)+
                  (1 | id_form))
   ),
@@ -536,7 +536,7 @@ models <-  list(
   list(
     tag="kg_village_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | kg_class_name)+
                  (1 | iso_country_code:gdlcode:village)+
                  (1 | iso_country_code:id_form))
@@ -545,7 +545,7 @@ models <-  list(
   list(
     tag="country_kg_form_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code)+
                  (1 | kg_class_name)+
                  (1 | gr(id_form, by=iso_country_code)))
@@ -553,7 +553,7 @@ models <-  list(
   list(
     tag="country_kg_form",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code)+
                  (1 | kg_class_name)+
                  (1 | id_form))
@@ -562,7 +562,7 @@ models <-  list(
   list(
     tag="country_village_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | gr(iso_country_code:village,by=iso_country_code)))
   ),
@@ -570,7 +570,7 @@ models <-  list(
   list(
     tag="country_village",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | iso_country_code:village))
   ),
@@ -578,7 +578,7 @@ models <-  list(
   list(
     tag="county_village_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | gdlcode) +
                  (1 | gr(gdlcode:village,by=gdlcode)))
   ),
@@ -586,7 +586,7 @@ models <-  list(
   list(
     tag="county_village",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | gdlcode) +
                  (1 | gdlcode:village))
   ),
@@ -594,7 +594,7 @@ models <-  list(
   list(
     tag="kg_class_village",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | kg_class_name) +
                  (1 | kg_class_name:village))
   ),
@@ -602,7 +602,7 @@ models <-  list(
   list(
     tag="country_kg_village_group",
     data=indicator_data,
-    formula=bf(norm_hdds_lean_season ~ 1 +
+    formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | kg_class_name) +
                  (1 | gr(village,by=iso_country_code)))
