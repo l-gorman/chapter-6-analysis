@@ -8,9 +8,11 @@
 #SBATCH --time=0-12:00:00
 #SBATCH --mem=24G
 #SBATCH --account=sscm012844
-#SBATCH --array=56-60
+#SBATCH --array=56-57
 
 cd "${SLURM_SUBMIT_DIR}"
+
+# Real amount is 1-60
 
 echo "Running on host $(hostname) \n"
 echo "Time is $(date) \n"
