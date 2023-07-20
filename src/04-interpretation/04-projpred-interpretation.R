@@ -31,7 +31,7 @@ ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/mlpg_plot
 
 rk <- ranking(cvvs_tva)
 ranking_full <-as_tibble(list("ranking"=rk$fulldata))
-readr::write_csv(ranking_full,"./outputs/overall_model_results/variable_addition/projpred/tva/rankings")
+readr::write_csv(ranking_full,"./outputs/overall_model_results/variable_addition/projpred/tva/rankings.csv")
 
 prop_plotplot(cv_proportions(rk, cumulate = TRUE))
 ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/mlpg_plot.png",mlpd_plot)

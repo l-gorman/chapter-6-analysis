@@ -916,6 +916,8 @@ final_modelling_df$market_orientation <- normalisation(final_modelling_df$market
 final_modelling_df$tva <- log_add_half_min(modelling_data_set$tva_per_mae_per_day_ppp)
 final_modelling_df$tva <- normalisation(final_modelling_df$tva)
 
+income_values_original <-  modelling_data_set["tva_per_mae_per_day_ppp"]
+write_csv(income_values_original,"data/02-prepared-data/income_data_only.csv")
 
 final_modelling_df$hdds <- normalisation(modelling_data_set$hdds_lean_season)
 
