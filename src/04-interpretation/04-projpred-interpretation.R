@@ -26,6 +26,8 @@ ranking_res <- ranking(cvvs_tva)
 save(ranking_res,file="./outputs/overall_model_results/variable_addition/projpred/tva/ranking.rda")
 
 mlpd_plot <- plot(cvvs_tva,stats = "mlpd", ranking_nterms_max = NA)
+# mlpd_plot <- plot(cvvs_tva,stats = "rmse", ranking_nterms_max = NA)
+
 ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/mlpg_plot.png",mlpd_plot)
 # plot(cvvs,stats = "elpd", ranking_nterms_max = NA)
 
@@ -33,8 +35,8 @@ rk <- ranking(cvvs_tva)
 ranking_full <-as_tibble(list("ranking"=rk$fulldata))
 readr::write_csv(ranking_full,"./outputs/overall_model_results/variable_addition/projpred/tva/rankings.csv")
 
-prop_plotplot(cv_proportions(rk, cumulate = TRUE))
-ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/mlpg_plot.png",mlpd_plot)
+prop_plot<-plot(cv_proportions(rk, cumulate = TRUE))
+ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/mlpg_plot.png",prop_plot)
 
 cvvs_tva <- NULL
 
