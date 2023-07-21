@@ -108,8 +108,7 @@ hdds_variable_order <- c("number_income_sources",
                          "gdl_country_shdi",
                          "livestock_tlu",
                          "livestock_inputs_any",
-                         "",
-                         "")
+                         "kitchen_garden")
 
 grouping_vars <- c("(1 | iso_country_code)",
                    "(1 | iso_country_code:village)")
