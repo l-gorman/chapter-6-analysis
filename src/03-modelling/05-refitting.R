@@ -155,8 +155,8 @@ if (index <=length(tva_variable_order)){
 }
 
 
-if (index >length(hdds_variable_order)){
-  temp_index <- index - length(hdds_variable_order)
+if (index > length(hdds_variable_order)){
+  temp_index <- index - (length(hdds_variable_order)+1)
   
   if (temp_index==0){
     formula_end <-  paste0(grouping_vars,collapse = " + ")
