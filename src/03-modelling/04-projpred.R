@@ -151,7 +151,7 @@ auxilliary_variables <- c(
 
 
 
-group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
+group_effects <-"(1 | iso_country_code) + (1 | iso_country_code_village)"
 # fixed_effects <- paste0(group_effects, " + ", fixed_effects)
 
 # all_args <- c(auxilliary_variables,group_effects)

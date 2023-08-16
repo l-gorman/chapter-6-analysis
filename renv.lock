@@ -1430,8 +1430,8 @@
       "RemoteRepo": "projpred",
       "RemoteUsername": "stan-dev",
       "RemoteRef": "HEAD",
-      "RemoteSha": "176733ed3ece3bd3bc3d13a4e1a7e7b624c2a9b9",
-      "Hash": "e2af984b282591f0dc4a389d55f81b06",
+      "RemoteSha": "aa736c0d27dfb4860d010e1473c6de934ce3da0a",
+      "Hash": "6c9ee97d8155d3f96ff5a0090d9a4fb8",
       "Requirements": [
         "MASS",
         "Rcpp",

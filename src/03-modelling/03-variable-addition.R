@@ -174,7 +174,7 @@ models <-  list(
                  
                  # Levels
                  (1 | iso_country_code) +
-                 (1 | iso_country_code:village)),
+                 (1 | iso_country_code_village)),
     prior="weak"
   ),
   
@@ -225,7 +225,7 @@ models <-  list(
                     land_cultivated +
                     livestock_tlu +
                     off_farm_any | iso_country_code) +
-                 (1 | iso_country_code:village)),
+                 (1 | iso_country_code_village)),
     prior="weak"),
   
   
@@ -327,7 +327,7 @@ models <-  list(
                  
                  # Levels
                  (1 | iso_country_code) +
-                 (1 | iso_country_code:village)),
+                 (1 | iso_country_code_village)),
     prior="weak"
   ),
   
@@ -382,7 +382,7 @@ models <-  list(
                     land_cultivated +
                     livestock_tlu +
                     off_farm_any | iso_country_code) +
-                 (1 | iso_country_code:village)),
+                 (1 | iso_country_code_village)),
     prior="weak")
   
   
