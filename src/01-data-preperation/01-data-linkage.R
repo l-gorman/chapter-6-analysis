@@ -105,12 +105,12 @@ convert_aez_classes <- function(aez_df,
 #--------------------------------------------------------------------------
 
 # Reading in RHoMIS survey data, and rhomis indicator data
-rhomis_data <- readr::read_csv("data/01-raw-data/rhomis-data/rhomis/processed_data.csv", na=c("-999","NA", "n/a"))
-indicator_data <- readr::read_csv("data/01-raw-data/rhomis-data/rhomis/indicator_data.csv", na=c("-999","NA", "n/a"))
+rhomis_data <- readr::read_csv("data/02-prepared-data/filtered_rhomis_data.csv", na=c("-999","NA", "n/a"))
+# indicator_data <- readr::read_csv("data/01-raw-data/rhomis-data/rhomis/indicator_data.csv", na=c("-999","NA", "n/a"))
 
-rhomis_data <- indicator_data %>% merge(rhomis_data,by="id_unique")
+# rhomis_data <- indicator_data %>% merge(rhomis_data,by="id_unique")
 
-indicator_data <- NULL
+# indicator_data <- NULL
 
 # Removing any data with missing GPS coordinates
 rhomis_data <- rhomis_data[!is.na(rhomis_data$gps_lat) & !is.na(rhomis_data$gps_lon),]
@@ -143,7 +143,7 @@ gdl_info_country <- gdl_info_country %>% merge(country_codes,
                                                               by.y="alpha-3")
 
 
-three_letter_codes <- country_codes[country_codes[["alpha-2"]]%in% rhomis_data$iso_country_code.x  ,][["alpha-3"]]
+three_letter_codes <- country_codes[country_codes[["alpha-2"]]%in% rhomis_data$iso_country_code  ,][["alpha-3"]]
 
 gdl_shp <- gdl_shp[gdl_shp$iso_code %in%three_letter_codes,]
 gdl_code <- gdl_code[gdl_code$ISO_Code %in%three_letter_codes,]
@@ -153,7 +153,7 @@ joined_df_rhomis <- st_join(x=rhomis_data,
                             y=gdl_shp,
                             left=T)
 
-joined_df_rhomis <- joined_df_rhomis %>% rename(year=year.x)
+# joined_df_rhomis <- joined_df_rhomis %>% rename(year=year.x)
 rhomis_data <- NULL
 subset_cols <- !grepl("gdl", colnames(gdl_info),ignore.case = T)
 colnames(gdl_info)[subset_cols] <- paste0("gdl_",colnames(gdl_info)[subset_cols])
@@ -163,7 +163,7 @@ joined_df_rhomis$year_temp[joined_df_rhomis$year_temp>2021] <- 2021
 
 joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info, by.x=c("gdlcode","year_temp"), by.y=c("GDLCODE","gdl_year"),all.x=T,all.y=F)
 
-joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_country_code.x","year_temp"), by.y=c("alpha-2","gdl_country_year"),all.x=T,all.y=F)
+joined_df_rhomis <- joined_df_rhomis %>% merge(gdl_info_country, by.x=c("iso_country_code","year_temp"), by.y=c("alpha-2","gdl_country_year"),all.x=T,all.y=F)
 joined_df_rhomis$year_temp <- NULL
 
 
@@ -290,13 +290,23 @@ rasValue_rhomis <- rasValue_rhomis[order(rasValue_rhomis$index),]
 # 
 
 
+
+
 joined_df_rhomis <- cbind(joined_df_rhomis,rasValue_rhomis)
+
+
 
 
 cols_to_remove <- grep("\\.y",colnames(joined_df_rhomis), value=T)
 joined_df_rhomis <- joined_df_rhomis[colnames(joined_df_rhomis) %in% cols_to_remove==F]
 colnames(joined_df_rhomis) <- gsub("\\.x","",colnames(joined_df_rhomis))
 
+
+travel_time_cols <- grep("travel_time", colnames(joined_df_rhomis), value=T)
+travel_time_cols <- as_tibble(joined_df_rhomis[travel_time_cols])
+travel_time_cols$geometry <- NULL
+min_travel_time <-  apply(travel_time_cols, 1, min)
+joined_df_rhomis$min_travel_time <- min_travel_time
 
 
 

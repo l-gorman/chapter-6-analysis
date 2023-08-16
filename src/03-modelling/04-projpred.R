@@ -12,6 +12,7 @@ library(optparse)
 library(projpred)
 library(cmdstanr)
 library(optimx)
+library(lme4)
 
 set_cmdstan_path("/user/home/lg14410/.cmdstan/cmdstan-2.32.2")
 
@@ -89,21 +90,27 @@ ref_model <- get_refmodel(ref_model)
 
 # Adapted from Frank Weber's Solution
 # https://github.com/stan-dev/projpred/issues/346
-get_search_terms <- function(fixed_terms, other_predictors, max_terms) {
-  
-  if (max_terms > length(other_predictors)){
-    stop("Cannot have max terms more than predictors")
-  }
-  
-  search_terms <- unlist(lapply(1:max_terms, function(m_predictors) {
-    lapply(combn(other_predictors, m = m_predictors, simplify = FALSE),
-           function(idxs_predictors) {
-             paste0(idxs_predictors, collapse = " + ")
-           })
-  }))
-  search_terms <- c(fixed_terms, paste(fixed_terms, "+", search_terms))
-  return(search_terms)
+
+force_search_terms <- function(forced_terms, optional_terms) {
+  forced_terms <- paste(forced_terms, collapse = " + ")
+  return(c(forced_terms, paste0(forced_terms, " + ", optional_terms)))
 }
+
+# get_search_terms <- function(fixed_terms, other_predictors, max_terms) {
+#   
+#   if (max_terms > length(other_predictors)){
+#     stop("Cannot have max terms more than predictors")
+#   }
+#   
+#   search_terms <- unlist(lapply(1:max_terms, function(m_predictors) {
+#     lapply(combn(other_predictors, m = m_predictors, simplify = FALSE),
+#            function(idxs_predictors) {
+#              paste0(idxs_predictors, collapse = " + ")
+#            })
+#   }))
+#   search_terms <- c(fixed_terms, paste(fixed_terms, "+", search_terms))
+#   return(search_terms)
+# }
 
 
 
@@ -147,15 +154,16 @@ auxilliary_variables <- c(
 group_effects <-"(1 | iso_country_code) + (1 | iso_country_code:village)"
 # fixed_effects <- paste0(group_effects, " + ", fixed_effects)
 
-all_args <- c(auxilliary_variables,group_effects)
+# all_args <- c(auxilliary_variables,group_effects)
 # max_vars <- length(all_args)-1
 
-max_vars <- length(auxilliary_variables)
+# max_vars <- length(auxilliary_variables)
 
 
 # Basing this off of discussion on stan forum:
 # https://discourse.mc-stan.org/t/projpred-fixing-group-effects-in-search-terms-and-tips-for-speed/31678/4
-search_terms <- get_search_terms(group_effects,auxilliary_variables, max_terms=max_vars)
+search_terms <- force_search_terms(forced_terms=group_effects,
+                                 optional_terms=auxilliary_variables)
 
 
 # Basing from this: https://discourse.mc-stan.org/t/advice-on-using-search-terms-in-projpred/22846/3
@@ -168,8 +176,9 @@ varsel_model <- cv_varsel(ref_model,
                           # ndraws_pred=2000,
                           # search_terms=search_terms,
                           search_terms=search_terms,
-                          nterms_max=max_vars,
-                          refit_prj=TRUE
+                          # nterms_max=max_vars,
+                          refit_prj=TRUE,
+                          control=lme4::lmerControl(optimizer = "Nelder_Mead")
                           )
 
 save(varsel_model,file=paste0(output_dir,"/projpred_cv_varsel_model_",seed,".rda"))
