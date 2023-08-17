@@ -173,11 +173,12 @@ varsel_model <- cv_varsel(ref_model,
                           K = 5,
                           verbose = TRUE, 
                           seed = seed,
+                          nclusters=3,
                           # ndraws_pred=2000,
                           # search_terms=search_terms,
                           search_terms=search_terms,
                           # nterms_max=max_vars,
-                          refit_prj=TRUE,
+                          # refit_prj=TRUE,
                           control=lme4::lmerControl(optimizer = "Nelder_Mead")
                           )
 
