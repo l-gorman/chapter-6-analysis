@@ -535,6 +535,8 @@ loo_comparison_plot <- function(base_input_path,
   return(loo_order)}
 
 
+n_obs <- 
+
 hdds_loo_table <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/",
                                      base_output_path = "./outputs/overall_model_results/variable_addition/hdds/",
                                      return_data = T

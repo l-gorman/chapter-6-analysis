@@ -36,7 +36,7 @@ ranking_full <-as_tibble(list("ranking"=rk$fulldata))
 readr::write_csv(ranking_full,"./outputs/overall_model_results/variable_addition/projpred/tva/rankings.csv")
 
 prop_plot<-plot(cv_proportions(rk, cumulate = TRUE))
-ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/mlpg_plot.png",prop_plot)
+ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/prop_plot.png",prop_plot)
 
 cvvs_tva <- NULL
 
@@ -56,8 +56,8 @@ rk <- ranking(cvvs_hdds)
 ranking_full <-as_tibble(list("ranking"=rk$fulldata))
 readr::write_csv(ranking_full,"./outputs/overall_model_results/variable_addition/projpred/hdds/rankings")
 
-prop_plotplot(cv_proportions(rk, cumulate = TRUE))
-ggsave("./outputs/overall_model_results/variable_addition/projpred/hdds/mlpg_plot.png",mlpd_plot)
+prop_plot <- plot(cv_proportions(rk, cumulate = TRUE))
+ggsave("./outputs/overall_model_results/variable_addition/projpred/hdds/prop_plot.png",mlpd_plot)
 
 cvvs_hdds <- NULL
 

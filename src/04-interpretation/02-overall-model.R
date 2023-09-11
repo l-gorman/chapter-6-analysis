@@ -519,6 +519,12 @@ loo_comparison_plot <- function(base_input_path,
     
   },simplify=F)
   
+  
+  n_obs_all <- sapply(loo_all, function(x){
+    nrow(x$pointwise)
+    
+  },simplify=F)
+  
   loo_compare <- loo_compare(loo_all) %>% as_tibble()
   
   

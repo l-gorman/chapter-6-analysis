@@ -427,7 +427,7 @@ hh_size_summary <-variable_summary(
   criteria=list(
     function(x){is.na(x)},
     function(x){x==0},
-    function(x){x>30}),
+    function(x){x>100}),
   
   criteria_description=c("Null Value", "Zero Value","Above 30 MAE"),
   actions=c("Exclude", "Exclude", "Exclude"),
