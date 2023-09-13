@@ -750,7 +750,7 @@ dual_axis_plot <- function(loo_table,
       name = "ELPD",
 
       # Add a second axis and specify its features
-      sec.axis = sec_axis(~ ((.+max_elpd_axis)*(max_r2_axis-min_r2_axis)/max_elpd_axis)+min_r2_axis, name=bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'))
+      sec.axis = sec_axis(~ ((.+max_elpd_axis)*(max_r2_axis-min_r2_axis)/max_elpd_axis)+min_r2_axis, name=bquote(~'Bayesian '~R^2 ))
     ) +
     labs(title = title,
          x="Levels Included")+
