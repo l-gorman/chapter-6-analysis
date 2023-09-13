@@ -41,7 +41,7 @@ opt = parse_args(opt_parser);
 #   data="./data/",
 #   output="./outputs/test_overall_model_proj",
 #   ncores=4,
-#   index='1'
+#   index='4'
 # )
 
 
@@ -58,7 +58,7 @@ dir.create(opt$output)
 writeLines("test_file_output",paste0(opt$output,"/test_file.txt"))
 indicator_data <- readr::read_csv(paste0(opt$data,"/02-prepared-data/modelling_df.csv"))
 
-
+# indicator_data <- indicator_data[1:300,]
 
 
 

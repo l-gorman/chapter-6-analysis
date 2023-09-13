@@ -30,16 +30,18 @@ library(fpc)
 # Loading Data ------------------------------------------------------------
 
 
-indicator_data <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
-indicator_data <- indicator_data[!is.na(indicator_data$x_gps_latitude) & !is.na(indicator_data$x_gps_longitude),]
-indicator_data <- indicator_data[!is.na(indicator_data$village),]
-indicator_data <- indicator_data[!is.na(indicator_data$iso_country_code),]
-indicator_data <- indicator_data[indicator_data$iso_country_code!="EC",]
+# indicator_data <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
+indicator_data <- readr::read_csv("./data/02-prepared-data/modelling_df.csv")
+
+# indicator_data <- indicator_data[!is.na(indicator_data$x_gps_latitude) & !is.na(indicator_data$x_gps_longitude),]
+# indicator_data <- indicator_data[!is.na(indicator_data$village),]
+# indicator_data <- indicator_data[!is.na(indicator_data$iso_country_code),]
+# indicator_data <- indicator_data[indicator_data$iso_country_code!="EC",]
 
 # indicator_data <- indicator_data[!is.na(indicator_data$hfias_status),]
 
-indicator_data_geo <- st_as_sf(indicator_data, coords = c( "x_gps_longitude","x_gps_latitude"), 
-                               crs = 4326, agr = "constant", remove = F)
+# indicator_data_geo <- st_as_sf(indicator_data, coords = c( "x_gps_longitude","x_gps_latitude"), 
+#                                crs = 4326, agr = "constant", remove = F)
 
 country_conversions <- readr::read_csv("./data/01-raw-data/external-data/country_conversions.csv")
 # FAO administrative data
