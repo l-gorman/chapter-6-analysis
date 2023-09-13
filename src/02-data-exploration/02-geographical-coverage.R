@@ -33,15 +33,20 @@ library(fpc)
 # indicator_data <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
 indicator_data <- readr::read_csv("./data/02-prepared-data/modelling_df.csv")
 
-# indicator_data <- indicator_data[!is.na(indicator_data$x_gps_latitude) & !is.na(indicator_data$x_gps_longitude),]
-# indicator_data <- indicator_data[!is.na(indicator_data$village),]
-# indicator_data <- indicator_data[!is.na(indicator_data$iso_country_code),]
-# indicator_data <- indicator_data[indicator_data$iso_country_code!="EC",]
+gps_coord <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
+
+indicator_data <- merge(indicator_data,gps_coord[c("id_unique","x_gps_latitude","x_gps_longitude")], by="id_unique")
+gps_coord <- NULL
+
+indicator_data <- indicator_data[!is.na(indicator_data$x_gps_latitude) & !is.na(indicator_data$x_gps_longitude),]
+indicator_data <- indicator_data[!is.na(indicator_data$village),]
+indicator_data <- indicator_data[!is.na(indicator_data$iso_country_code),]
+indicator_data <- indicator_data[indicator_data$iso_country_code!="EC",]
 
 # indicator_data <- indicator_data[!is.na(indicator_data$hfias_status),]
 
-# indicator_data_geo <- st_as_sf(indicator_data, coords = c( "x_gps_longitude","x_gps_latitude"), 
-#                                crs = 4326, agr = "constant", remove = F)
+indicator_data_geo <- st_as_sf(indicator_data, coords = c( "x_gps_longitude","x_gps_latitude"),
+                               crs = 4326, agr = "constant", remove = F)
 
 country_conversions <- readr::read_csv("./data/01-raw-data/external-data/country_conversions.csv")
 # FAO administrative data
@@ -102,9 +107,9 @@ world_plot <- ggplot() +
   # geom_sf(data=st_jitter(indicator_data_geo),size=0.1)+
   ylim(-40,40)+
   xlim(-85,110)+
-  labs(title="RHoMIS Surveys 2015-2022", caption="Points with no GPS coordinates excluded")+
-  scale_size(name = "Number of Surveys", range = c(0,10),breaks=c(100,500,1000,2000,4000),
-             labels=c(100,500,1000,2000,4000))+
+  labs(title="RHoMIS Surveys 2015-2023")+
+  scale_size(name = "Number of Surveys", range = c(0,20),breaks=c(100,200,400,1000,2000,4000),
+             labels=c(100,200,400,1000,2000,4000))+
   theme(axis.text = element_blank(),
         axis.title = element_blank(),
         axis.ticks = element_blank(),
@@ -268,6 +273,7 @@ per_country_summary <- per_country_summary[order(per_country_summary$Region),]
 
  
 
+readr::write_csv(per_country_summary,"./outputs/02-data-exploration/data-coverage/geographical_counts/per_country_per_region_summary.csv")
 
 
 

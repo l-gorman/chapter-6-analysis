@@ -18,14 +18,14 @@ loadRData <- function(fileName){
 }
 
 
-hdds_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/hdds/") %>% grep("^loo",x=., value=T)
-tva_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/tva/") %>% grep("^loo",x=., value=T)
-
-
-for (i in hdds_loo_files){
-N_obs <- loadRData(paste0("outputs/31_05_2023/outputs/overall_models/location_only/hdds/",i))
-print(nrow(N_obs$pointwise))
-}
+# hdds_loo_files <- list.files("outputs/11_09_2023/outputs/overall_models/location_only/hdds/") %>% grep("^loo",x=., value=T)
+# tva_loo_files <- list.files("outputs/11_09_2023/outputs/overall_models/location_only/ ") %>% grep("^loo",x=., value=T)
+# 
+# 
+# for (i in tva_loo_files){
+# N_obs <- loadRData(paste0("outputs/11_09_2023/outputs/overall_models/location_only/tva/",i))
+# print(nrow(N_obs$pointwise))
+# }
 
 
 

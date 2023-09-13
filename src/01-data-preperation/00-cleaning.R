@@ -25,6 +25,7 @@ colnames(indicator_data) <- gsub("\\.x","",colnames(indicator_data))
 
 indicator_data$index <- c(1:nrow(indicator_data))
 
+
 #--------------------------------------------------------------------------
 #--------------------------------------------------------------------------
 # Extra Indicators --------------------------------------------------------
@@ -543,6 +544,9 @@ save_as_image(cleaned_aggregation, "./outputs/02-data-exploration/numeric_variab
 projects_to_exclude <- c(
   "GT_S4N_2015",
   "HN_S4N_2015",
+  "KM_DHA_2019",
+  "PE_MKP_2018",
+  "IN_CM3_2016",
   "SV_S4N_2015",
   "TZ_GLV_2017",
   "BF_CIR_2018",

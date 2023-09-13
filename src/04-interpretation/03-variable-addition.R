@@ -11,23 +11,23 @@ library(hexbin)
 library(flextable)
 
 
-file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/tva/country_village.rda",
-          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/")
+file.copy(from="./outputs/11_09_2023/outputs/overall_models/location_only/tva/country_village.rda",
+          to = "./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/")
 
-file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/tva/loo_country_village.rda",
-          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/")
+file.copy(from="./outputs/11_09_2023/outputs/overall_models/location_only/tva/loo_country_village.rda",
+          to = "./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/")
 
-file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/tva/r2_country_village.rda",
-          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/")
+file.copy(from="./outputs/11_09_2023/outputs/overall_models/location_only/tva/r2_country_village.rda",
+          to = "./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/")
 
-file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/hdds/country_village.rda",
-          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/")
+file.copy(from="./outputs/11_09_2023/outputs/overall_models/location_only/hdds/country_village.rda",
+          to = "./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/")
 
-file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/hdds/loo_country_village.rda",
-          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/")
+file.copy(from="./outputs/11_09_2023/outputs/overall_models/location_only/hdds/loo_country_village.rda",
+          to = "./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/")
 
-file.copy(from="./outputs/31_05_2023/outputs/overall_models/location_only/hdds/r2_country_village.rda",
-          to = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/")
+file.copy(from="./outputs/11_09_2023/outputs/overall_models/location_only/hdds/r2_country_village.rda",
+          to = "./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/")
 loadRData <- function(fileName){
   #loads an RData file, and returns it
   load(fileName)
@@ -412,14 +412,14 @@ levels_variables <- list(
 )
 
 
-model_files <- list.files("outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/") 
-model_files <- c(model_files, list.files("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/"))
+model_files <- list.files("outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/") 
+model_files <- c(model_files, list.files("outputs/11_09_2023/outputs/overall_models/variable_addition/tva/"))
 model_files <- unique(model_files) 
 
 model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
 
 
-# model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
+# model <- loadRData("outputs/11_09_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
 dir.create("outputs/overall_model_results/variable_addition/hdds/")
 dir.create("outputs/overall_model_results/variable_addition/tva/")
 for (model_file in model_files){
@@ -428,7 +428,7 @@ for (model_file in model_files){
   
   model_name <- gsub(".rda","",model_file,fixed=T)
   
-  tva_path <- paste0("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/",model_file)
+  tva_path <- paste0("outputs/11_09_2023/outputs/overall_models/variable_addition/tva/",model_file)
   if (file.exists(tva_path)){
   tva_model <- loadRData(tva_path)
   
@@ -443,7 +443,7 @@ for (model_file in model_files){
   }
   
   
-  hdds_path <- paste0("outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/",model_file)
+  hdds_path <- paste0("outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/",model_file)
   if (file.exists(hdds_path)){
     hdds_model <- loadRData(hdds_path)
     
@@ -535,14 +535,14 @@ loo_comparison_plot <- function(base_input_path,
   return(loo_order)}
 
 
-n_obs <- 
+# n_obs <- 
 
-hdds_loo_table <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/",
+hdds_loo_table <- loo_comparison_plot(base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/",
                                      base_output_path = "./outputs/overall_model_results/variable_addition/hdds/",
                                      return_data = T
 )
 
-tva_loo_table <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/",
+tva_loo_table <- loo_comparison_plot(base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/",
                                      base_output_path = "./outputs/overall_model_results/variable_addition/tva/",
                                      return_data = T
                                      
@@ -611,11 +611,11 @@ r2_comparison <- function(loo_order,
 
 
 hdds_r2_table <-r2_comparison(loo_order = hdds_loo_table$model,
-              base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/hdds/",
+              base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/",
               base_output_path = "./outputs/overall_model_results/variable_addition/hdds/")
 
 tva_r2_table <-r2_comparison(tva_loo_table$model,
-              base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition/tva/",
+              base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/",
               base_output_path = "./outputs/overall_model_results/variable_addition/tva/")
 
 
