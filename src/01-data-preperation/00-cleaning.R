@@ -64,12 +64,16 @@ education_conversion <- tribble(
   
   "coranic",   "primary",
   "islamic_school","primary",
+  "some_primary","primary",
   "koranic_school","primary",
   "religious_school","primary",
   "literate","primary",
   
   
   "secondary","secondary_or_higher",
+  "some_secondary", "secondary_or_higher",
+  "secondary_completed","secondary_or_higher",
+  "some_highschool","secondary_or_higher",
   "highschool_completed","secondary_or_higher",
   "secondary_1","secondary_or_higher",
   "secondary_2","secondary_or_higher",

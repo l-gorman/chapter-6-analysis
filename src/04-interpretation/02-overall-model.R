@@ -18,6 +18,21 @@ loadRData <- function(fileName){
 }
 
 
+hdds_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/hdds/") %>% grep("^loo",x=., value=T)
+tva_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/tva/") %>% grep("^loo",x=., value=T)
+
+
+for (i in hdds_loo_files){
+N_obs <- loadRData(paste0("outputs/31_05_2023/outputs/overall_models/location_only/hdds/",i))
+print(nrow(N_obs$pointwise))
+}
+
+
+
+
+
+
+
 vpc <- function(model, params){
   
   draws_df <-  as_draws_df(model)[params]
@@ -584,6 +599,8 @@ loo_comparison_plot <- function(base_input_path,
 
 
 # Loo Comparison
+
+
 
 hdds_loo_table<- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/hdds/",
                     base_output_path = "./outputs/overall_model_results/location_only_hdds/",

@@ -333,7 +333,7 @@ models <-  list(
     formula=bf(tva ~ 1 +
                  (1 | iso_country_code) +
                  (1 | kg_class_name) +
-                 (1 | gr(village,by=iso_country_code)))
+                 (1 | gr(iso_country_code_village,by=iso_country_code)))
   ),
   
   
@@ -605,7 +605,7 @@ models <-  list(
     formula=bf(hdds ~ 1 +
                  (1 | iso_country_code) +
                  (1 | kg_class_name) +
-                 (1 | gr(village,by=iso_country_code)))
+                 (1 | gr(iso_country_code_village,by=iso_country_code)))
   )
   
 )

@@ -245,7 +245,6 @@ final_modelling_df$kg_class_name_village <- paste(final_modelling_df$kg_class_na
 write_csv(final_modelling_df,"./data/02-prepared-data/modelling_df.csv")
 
 
-
 #-------------------------------------------------------------------------
 # variable_summary -------------------------------------------------------
 #-------------------------------------------------------------------------
