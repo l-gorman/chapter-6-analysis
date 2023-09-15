@@ -545,6 +545,8 @@ projects_to_exclude <- c(
   "GT_S4N_2015",
   "HN_S4N_2015",
   "KM_DHA_2019",
+  "MA_GDI_2019",
+  "PS_FAO_2018",
   "PE_MKP_2018",
   "IN_CM3_2016",
   "SV_S4N_2015",
@@ -651,7 +653,7 @@ vars <- c("hh_size_mae",
 
 table(complete.cases(indicator_data[vars]))
 
-colSums(is.na(indicator_data[vars]))
+colSums(is.na(indicator_data[crit_3==F & crit_2==F & crit_1==F, vars]))
 
 crit_4 <- complete.cases(indicator_data[vars])==F
 
@@ -690,9 +692,19 @@ crit_5 <- modelling_df$land_cultivated_ha>200 |
   modelling_df$tva_per_mae_per_day_ppp>10000 |
   modelling_df$tva_per_mae_per_day_ppp<0
 
+table(modelling_df$land_cultivated_ha>200)
+table(modelling_df$hh_size_mae>50)
+table(modelling_df$livestock_tlu>1000)
+table(modelling_df$tva_per_mae_per_day_ppp>10000)
+table(modelling_df$tva_per_mae_per_day_ppp<0)
 
 crit_5_n <- sum( crit_5==T & crit_4 == F & crit_3==F & crit_2==F & crit_1==F)
 
+# modelling_df$outliers <- modelling_df$tva_per_mae_per_day_ppp>10000
+# 
+# temp <- modelling_df %>% group_by(id_form) %>% 
+# summarise(outliers = 100*sum(outliers,na.rm=T)/n())
+# table()
 
 
 
@@ -707,6 +719,11 @@ final_modelling_df <- indicator_data[
 
 readr::write_csv(final_modelling_df, "data/02-prepared-data/filtered_rhomis_data.csv")
 
+
+table(modelling_df$tva_per_mae_per_day_ppp[crit_1==F&
+                                                   crit_2==F&
+                                                   crit_3==F&
+                                                   crit_4==F]>10000)
 
 total <- nrow(indicator_data)
 crit_1_n

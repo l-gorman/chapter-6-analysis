@@ -19,7 +19,7 @@ loadRData <- function(fileName){
 
 
 # hdds_loo_files <- list.files("outputs/11_09_2023/outputs/overall_models/location_only/hdds/") %>% grep("^loo",x=., value=T)
-# tva_loo_files <- list.files("outputs/11_09_2023/outputs/overall_models/location_only/ ") %>% grep("^loo",x=., value=T)
+# tva_loo_files <- list.files("outputs/11_09_2023/outputs/overall_models/location_only/tva/") %>% grep("^loo",x=., value=T)
 # 
 # 
 # for (i in tva_loo_files){
@@ -81,6 +81,7 @@ summarise_estimates <- function(draws_df, param_list){
 }
 
 
+
 estimates_plot <- function(draws_df,
                            param_list,
                            title,
@@ -112,6 +113,8 @@ estimates_plot <- function(draws_df,
                                     override.aes = list(shape = c(NA), linetype = c("solid", "solid"))),
            shape=guide_legend(title="")) +
     theme(plot.title = element_text(hjust=0.5))
+  
+
   
   return(plot)
   
@@ -192,16 +195,23 @@ plot_levels_correlations <- function(
   
   
   if (facet==F){
-    plot_random_cors <- ggplot(all_data_to_plot,aes(x=upper_group,y=lower_group))+
-      geom_hex()
+    if ("lower_group" %in% colnames(all_data_to_plot)){
+      plot_random_cors <- ggplot(all_data_to_plot,aes(x=upper_group,y=lower_group))+
+        geom_hex()
+    }
     return(plot_random_cors)
   }
   
-  plot_random_cors <- ggplot(all_data_to_plot,aes(x=upper_group,y=lower_group))+
-    geom_hex()+
-    facet_wrap(~upper_level)
-  
-  return(plot_random_cors)
+  if ("lower_group" %in% colnames(all_data_to_plot)){
+    
+    plot_random_cors <- ggplot(all_data_to_plot,aes(x=upper_group,y=lower_group))+
+      geom_hex()+
+      facet_wrap(~upper_level)
+    
+    
+    return(plot_random_cors)
+  }
+  return()
   
   
 }
@@ -252,95 +262,57 @@ all_plots <- function(model,
   
   dir.create(paste0(base_dir,model_name,"/random_cors/"))
   
-  
-  if (any(grepl("r_iso_country_code\\[",all_vars)) & any(grepl("r_iso_country_code:id_form\\[",all_vars))){
+  pairs <-list(
+    "country_form"=c("r_iso_country_code","r_iso_country_code_id_form"),
+    "country_form"=c("r_iso_country_code","r_id_form"),
     
-    temp <- plot_levels_correlations(
-      model=model ,
-      level_1 = "r_iso_country_code",
-      level_2="r_iso_country_code:id_form"
-      
-    )
-    ggsave(filename = paste0(base_dir,model_name,"/random_cors/country_form.png"),
-           plot = temp,width = 1800,height=1200,units = "px")
+    "country_village"=c("r_iso_country_code","r_village"),
+    "country_village"=c("r_iso_country_code","r_iso_country_code_village"),
+    "country_village"=c("r_iso_country_code","r_iso_country_code_gdlcode_village"),
+    "country_village"=c("r_iso_country_code","r_gdlcode_village"),
+    "country_village"=c("r_iso_country_code","kg_class_name_village"),
+    
+    
+    
+    "country_county"=c("r_iso_country_code","r_gdlcode"),
+    "country_county"=c("r_iso_country_code","r_iso_country_code_gdlcode"),
+    
+    "county_village"=c("r_gdlcode","r_iso_country_code_village"),
+    "county_village"=c("r_gdlcode","r_village"),
+    "county_village"=c("r_gdlcode","r_gdlcode_village"),
+    "county_village"=c("r_gdlcode","r_iso_country_code_gdlcode_village"),
+    "county_village"=c("r_gdlcode","kg_class_name_village"),
+    "county_village"=c("r_iso_country_code_gdlcode","r_iso_country_code_village"),
+    "county_village"=c("r_iso_country_code_gdlcode","r_village"),
+    "county_village"=c("r_iso_country_code_gdlcode","r_gdlcode_village"),
+    "county_village"=c("r_iso_country_code_gdlcode","r_iso_country_code_gdlcode_village"),
+    "county_village"=c("r_iso_country_code_gdlcode","kg_class_name_village")
+    
+    
+    
+    
+    
+  )
+  
+  for(i in 1:length(pairs)){
+    
+    name <- names(pairs)[i]
+    item_1 <- pairs[[i]][1]
+    item_2 <- pairs[[i]][2]
+    
+    if (any(grepl(paste0(item_1,"\\["),all_vars)) & any(grepl(paste0(item_2,"\\["),all_vars)) ){
+      temp <- plot_levels_correlations(
+        model=model ,
+        level_1 = item_1,
+        level_2=item_2
+        
+      )
+      ggsave(filename = paste0(base_dir,model_name,"/random_cors/",name,".png"),
+             plot = temp,width = 1800,height=1200,units = "px")
+    }
+    
   }
   
-  if (any(grepl("r_iso_country_code\\[",all_vars)) & any(grepl("r_iso_country_code:village\\[",all_vars))){
-    
-    temp <- plot_levels_correlations(
-      model=model ,
-      level_1 = "r_iso_country_code",
-      level_2="r_iso_country_code:village"
-      
-    )
-    ggsave(filename = paste0(base_dir,model_name,"/random_cors/country_village.png"),
-           plot = temp,width = 1800,height=1200,units = "px")
-  }
-  
-  if (any(grepl("r_iso_country_code\\[",all_vars)) & any(grepl("r_iso_country_code:gdlcode\\[",all_vars))){
-    
-    temp <- plot_levels_correlations(
-      model=model ,
-      level_1 = "r_iso_country_code",
-      level_2="r_iso_country_code:gdlcode"
-      
-    )
-    ggsave(filename = paste0(base_dir,model_name,"/random_cors/country_county.png"),
-           plot = temp,width = 1800,height=1200,units = "px")
-  }
-  
-  if (any(grepl("r_iso_country_code:gdlcode\\[",all_vars)) & any(grepl("r_iso_country_code:gdlcode:village\\[",all_vars))){
-    
-    temp <- plot_levels_correlations(
-      model=model ,
-      level_1 = "r_iso_country_code:gdlcode",
-      level_2="r_iso_country_code:gdlcode:village",
-      facet=F
-      
-    )
-    ggsave(filename = paste0(base_dir,model_name,"/random_cors/county_village.png"),
-           plot = temp,width = 4000,height=3000,units = "px")
-  }
-  
-  
-  if (any(grepl("r_gdlcode\\[",all_vars)) & any(grepl("r_gdlcode:village\\[",all_vars))){
-    
-    temp <- plot_levels_correlations(
-      model=model ,
-      level_1 = "r_gdlcode",
-      level_2="r_gdlcode:village",
-      facet=F
-      
-    )
-    ggsave(filename = paste0(base_dir,model_name,"/random_cors/county_village.png"),
-           plot = temp,width = 4000,height=3000,units = "px")
-  }
-  
-  if (any(grepl("r_gdlcode\\[",all_vars)) & any(grepl("r_iso_country_code:village\\[",all_vars))){
-    
-    temp <- plot_levels_correlations(
-      model=model ,
-      level_1 = "r_gdlcode",
-      level_2="r_gdlcode:village",
-      facet=F
-      
-    )
-    ggsave(filename = paste0(base_dir,model_name,"/random_cors/country_village.png"),
-           plot = temp,width = 1800,height=1200,units = "px")
-  }
-  
-  if (any(grepl("r_kg_class\\[",all_vars)) & any(grepl("r_kg_class:village\\[",all_vars))){
-    
-    temp <- plot_levels_correlations(
-      model=model ,
-      level_1 = "r_kg_class",
-      level_2="r_kg_class:village",
-      facet=F
-      
-    )
-    ggsave(filename = paste0(base_dir,model_name,"/random_cors/kg_class_village.png"),
-           plot = temp,width = 1800,height=1200,units = "px")
-  }
   
   
   
@@ -438,17 +410,17 @@ varied_group_effects_plots <- function(model,
 params_list <- list(
   "Between Countries (sd)"="sd_iso_country_code__Intercept",
   
-  "Between Counties (sd)"="sd_iso_country_code:gdlcode__Intercept",
+  "Between Counties (sd)"="sd_iso_country_code_gdlcode__Intercept",
   "Between Counties (sd)"="sd_gdlcode__Intercept",
   
-  "Between Villages (sd)"="sd_iso_country_code:gdlcode:village__Intercept",
-  "Between Villages (sd)"="sd_iso_country_code:village__Intercept",
-  "Between Villages (sd)"="sd_gdlcode:village__Intercept",
-  "Between Villages (sd)"="sd_kg_class:village__Intercept",
+  "Between Villages (sd)"="sd_iso_country_code_gdlcode_village__Intercept",
+  "Between Villages (sd)"="sd_iso_country_code_village__Intercept",
+  "Between Villages (sd)"="sd_gdlcode_village__Intercept",
+  "Between Villages (sd)"="sd_kg_class_village__Intercept",
   
   
   "Between Projects (sd)"="sd_id_form__Intercept",
-  "Between Projects (sd)"="sd_iso_country_code:id_form__Intercept",
+  "Between Projects (sd)"="sd_iso_country_code_id_form__Intercept",
   
   "Between KG Class (sd)"="sd_kg_class_name__Intercept",
   "Unexplained"="sigma"
@@ -466,6 +438,9 @@ dir.create(paste0("outputs/overall_model_results/location_only_tva/"))
 dir.create(paste0("outputs/overall_model_results/location_only_hdds/"))
 
 
+
+# model_files <- model_files[which(model_files=="country_kg_form_group.rda"):length(which(model_files=="country_kg_form_group.rda"))]
+
 for (model_file in model_files){
   model_name <- gsub(".rda","",model_file,fixed=T)
   dir.create(paste0("outputs/overall_model_results/location_only_tva/",model_name))
@@ -477,7 +452,10 @@ for (model_file in model_files){
     
     all_variables <- get_variables(tva_model)
     param_list_temp <-params_list[as.character(params_list) %in% all_variables]
-    all_plots(tva_model,model_name,param_list_temp,base_dir = "outputs/overall_model_results/location_only_tva/")
+    all_plots(model=tva_model,
+              model_name=model_name,
+              param_list=param_list_temp,
+              base_dir = "outputs/overall_model_results/location_only_tva/")
     
     varied_group_effects_plots(model=tva_model,
                                model_name = model_name,
@@ -512,8 +490,82 @@ for (model_file in model_files){
   
 }
 
-hdds_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/hdds/") %>% grep("^loo",x=., value=T)
-tva_loo_files <- list.files("outputs/31_05_2023/outputs/overall_models/location_only/tva/") %>% grep("^loo",x=., value=T)
+
+
+# Replotting Final VPCs
+
+tva_model <- loadRData("./outputs/11_09_2023/outputs/overall_models/location_only/tva/country_village.rda")
+
+all_variables <- get_variables(tva_model)
+param_list_temp <-params_list[as.character(params_list) %in% all_variables]
+draws_df_temp <- as_draws_df(tva_model)[as.character(param_list_temp)]
+
+estimates <- estimates_plot(draws_df=draws_df_temp,
+               param_list=param_list_temp,
+               title="Group Effects for Country Village TVA Model",
+               sort=F
+)
+
+# estimates <- estimates + xlim(0,1)
+summarise_estimates(draws_df_temp, param_list_temp)
+
+
+ggsave(filename = "outputs/overall_model_results/location_only_tva/country_village/location_estimates.png",
+       plot = estimates,width = 1800,height=700,units = "px")
+
+
+vpcs <- vpc(tva_model,as.character(param_list_temp))
+summarise_estimates(vpcs, param_list_temp)
+
+vpc_estimates <- estimates_plot(draws_df = vpcs,param_list = param_list,
+                                title="VPCs for Country Village TVA Model"
+)
+vpc_estimates <- vpc_estimates + xlim(0,1)
+
+ggsave(filename = "outputs/overall_model_results/location_only_tva/country_village/location_vpcs.png",
+       plot = vpc_estimates,width = 1800,height=700,units = "px")
+
+# HDDS
+hdds_model <- loadRData("./outputs/11_09_2023/outputs/overall_models/location_only/hdds/country_village.rda")
+
+all_variables <- get_variables(hdds_model)
+param_list_temp <-params_list[as.character(params_list) %in% all_variables]
+draws_df_temp <- as_draws_df(hdds_model)[as.character(param_list_temp)]
+
+
+summarise_estimates(draws_df_temp, param_list_temp)
+
+estimates <- estimates_plot(draws_df=draws_df_temp,
+                            param_list=param_list_temp,
+                            title="Group Effects for Country Village HDDS Model",
+                            sort=F
+)
+
+# estimates <- estimates + xlim(0,1)
+
+ggsave(filename = "outputs/overall_model_results/location_only_hdds/country_village/location_estimates.png",
+       plot = estimates,width = 1800,height=700,units = "px")
+
+
+vpcs <- vpc(hdds_model,as.character(param_list_temp))
+vpc_estimates <- estimates_plot(draws_df = vpcs,param_list = param_list,
+                                title="VPCs for Country Village HDDS Model"
+)
+vpc_estimates <- vpc_estimates + xlim(0,1)
+
+
+ggsave(filename = "outputs/overall_model_results/location_only_hdds/country_village/location_vpcs.png",
+       plot = vpc_estimates,width = 1800,height=700,units = "px")
+summarise_estimates(vpcs, param_list_temp)
+
+
+
+
+# Comparisons -------------------------------------------------------------
+
+
+hdds_loo_files <- list.files("outputs/11_09_2023/outputs/overall_models/location_only/hdds/") %>% grep("^loo",x=., value=T)
+tva_loo_files <- list.files("outputs/11_09_2023/outputs/overall_models/location_only/tva/") %>% grep("^loo",x=., value=T)
 
 
 loo_comparison_plot <- function(base_input_path,
@@ -602,15 +654,15 @@ loo_comparison_plot <- function(base_input_path,
 
 
 
-hdds_loo_table<- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/hdds/",
-                    base_output_path = "./outputs/overall_model_results/location_only_hdds/",
-                    return_data = T
-                    )
+hdds_loo_table<- loo_comparison_plot(base_input_path = "./outputs/11_09_2023/outputs/overall_models/location_only/hdds/",
+                                     base_output_path = "./outputs/overall_model_results/location_only_hdds/",
+                                     return_data = T
+)
 
-tva_loo_table <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/tva/",
-                    base_output_path = "./outputs/overall_model_results/location_only_tva/",
-                    return_data = T
-                    
+tva_loo_table <- loo_comparison_plot(base_input_path = "./outputs/11_09_2023/outputs/overall_models/location_only/tva/",
+                                     base_output_path = "./outputs/overall_model_results/location_only_tva/",
+                                     return_data = T
+                                     
 )
 
 
@@ -685,12 +737,12 @@ r2_comparison <- function(loo_order,
 
 
 hdds_r2_table <- r2_comparison(loo_order = hdds_loo_table$model,
-              base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/hdds/",
-              base_output_path = "./outputs/overall_model_results/location_only_hdds/")
+                               base_input_path = "./outputs/11_09_2023/outputs/overall_models/location_only/hdds/",
+                               base_output_path = "./outputs/overall_model_results/location_only_hdds/")
 
 tva_r2_table <- r2_comparison(tva_loo_table$model,
-              base_input_path = "./outputs/31_05_2023/outputs/overall_models/location_only/tva/",
-              base_output_path = "./outputs/overall_model_results/location_only_tva/")
+                              base_input_path = "./outputs/11_09_2023/outputs/overall_models/location_only/tva/",
+                              base_output_path = "./outputs/overall_model_results/location_only_tva/")
 
 
 
@@ -720,7 +772,7 @@ dual_axis_plot <- function(loo_table,
   
   plot_df$embolden_ticks <- ifelse(plot_df$model %in% candidate_models,"bold","plain")
   plot_df$shape <- ifelse(plot_df$model %in% candidate_models,'Candidate Model','Other Model')
-
+  
   
   plot_df$ticks_colour <- ifelse(grepl("group",plot_df$model),"darkgreen","black")
   
@@ -735,20 +787,20 @@ dual_axis_plot <- function(loo_table,
     
     geom_segment(aes(x = model_type,xend=model_type,y=max_elpd_axis*(Q2.5-min_r2_axis)/(max_r2_axis-min_r2_axis)-max_elpd_axis,yend=max_elpd_axis*(Q97.5-min_r2_axis)/(max_r2_axis-min_r2_axis)-max_elpd_axis),color="blue")+
     geom_segment(aes(x = model,xend=model,y=lower,yend=upper),color="red")+
-
+    
     geom_hline(yintercept = max(plot_df$Estimate),linetype="dashed")+
     scale_colour_manual(name = 'Measure', 
                         values =c('blue'='blue','red'='red'), labels = c(bquote(~R^2),'ELPD'),guide='legend')+
     scale_shape_manual(name = 'Candidate Models', 
-                        values =c('Candidate Model'=4,'Other Model'=16), labels = c("Potential to be selected","Excluded"))+
+                       values =c('Candidate Model'=4,'Other Model'=16), labels = c("Potential to be selected","Excluded"))+
     scale_size_manual(values =c('Candidate Model'=3,'Other Model'=1.5),guide = 'none')+
     
     
     scale_y_continuous(
-
+      
       # Features of the first axis
       name = "ELPD",
-
+      
       # Add a second axis and specify its features
       sec.axis = sec_axis(~ ((.+max_elpd_axis)*(max_r2_axis-min_r2_axis)/max_elpd_axis)+min_r2_axis, name=bquote(~'Bayesian '~R^2 ))
     ) +
@@ -763,8 +815,8 @@ dual_axis_plot <- function(loo_table,
       panel.background  = element_blank(),
       panel.border = element_rect(fill=NA, colour = "black"))
   plot
-    
-
+  
+  
   
   ggsave(paste0(base_output_path,"r2_loo_comparison.png"),plot, width=3000,height=2000,units="px")
   return(plot)
@@ -772,8 +824,8 @@ dual_axis_plot <- function(loo_table,
 }
 
 dual_axis_plot(loo_table=tva_loo_table,
-                           r2_table=tva_r2_table,
-                           title=bquote(~'ELPD and Bayesian '~R^2 ~'for Intercept Only Models (TVA)'),
+               r2_table=tva_r2_table,
+               title=bquote(~'ELPD and Bayesian '~R^2 ~'for Intercept Only Models (TVA)'),
                base_output_path = "./outputs/overall_model_results/location_only_tva/",
                candidate_models=c( "kg_class_village",
                                    "country_village",

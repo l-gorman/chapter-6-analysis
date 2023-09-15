@@ -68,7 +68,42 @@ indicator_data <- readr::read_csv(paste0(opt$data,"/02-prepared-data/modelling_d
 dir.create(paste0(opt$output,"/overall_models/"))
 dir.create(paste0(opt$output,"/overall_models/variable_addition"))
 
-
+temp <- indicator_data[c("tva","hdds",
+                 "hh_size" ,
+                 "education" ,
+                 
+                 #Assets
+                 "livestock_tlu" ,
+                 "land_cultivated" ,
+                 "market_orientation",
+                 "debts_have",
+                 
+                 "off_farm_any",
+                 "kitchen_garden",
+                 "number_income_sources",
+                 "market_orientation",
+                 
+                 
+                 
+                 
+                 
+                 
+                 
+                 # Practices
+                 "assisted_tillage",
+                 "external_labour",
+                 "livestock_inputs_any",
+                 "land_irrigated_any",
+                 "use_fert",
+                 
+                 #------------------
+                 # Village Level
+                 "length_growing_period",
+                 "min_travel_time",
+                 # log_pop_dens ,
+                 #------------------
+                 #County Level
+                 "gdl_country_shdi")]
 
 models <-  list(
   
@@ -263,7 +298,7 @@ models <-  list(
                  number_income_sources+
                  market_orientation+
                  
-
+                 
                  # Practices
                  assisted_tillage+
                  external_labour+

@@ -236,6 +236,8 @@ dir.create("./outputs/02-data-exploration/data-coverage/geographical_counts",sho
 per_country_summary <- indicator_data %>% 
   group_by(iso_country_code) %>% summarise(
     projects = n_distinct(id_form),
+    climate_class = n_distinct(kg_class_name),
+    
     subnational_areas = n_distinct(gdlcode),
     villages = n_distinct(village),
     households = n()
@@ -314,6 +316,14 @@ per_country_ft <- per_country_summary %>%
 
 save_as_image(per_country_ft, "./outputs/02-data-exploration/data-coverage/geographical_counts/per_country_summary.png")
 
+# table(indicator_data$id_form[is.na(indicator_data$kg_class_name)])
+
+# temp <- indicator_data %>% 
+#   group_by(iso_country_code_gdlcode_village) %>% 
+#   summarise(households=n())
+# mean(temp$households)
+# sd(temp$households)
+
 
 # Areas_per_country -------------------------------------------------------
 per_country_summary_plot_df <- per_country_summary[per_country_summary$iso_country_code!="Total",]
@@ -372,6 +382,8 @@ ggsave("./outputs/02-data-exploration/data-coverage/geographical_counts/villages
 
 
 # people_per_county -------------------------------------------------------
+
+
 
 
 hhs_per_county <- indicator_data %>% 

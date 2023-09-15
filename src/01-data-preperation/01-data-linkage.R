@@ -113,10 +113,10 @@ rhomis_data <- readr::read_csv("data/02-prepared-data/filtered_rhomis_data.csv",
 # indicator_data <- NULL
 
 # Removing any data with missing GPS coordinates
-rhomis_data <- rhomis_data[!is.na(rhomis_data$gps_lat) & !is.na(rhomis_data$gps_lon),]
+rhomis_data <- rhomis_data[!is.na(rhomis_data$x_gps_latitude) & !is.na(rhomis_data$x_gps_longitude),]
 
 # Converting the dataset to a "spatial dataframe" to allow linkage 
-rhomis_data <- st_as_sf(rhomis_data, coords = c("gps_lon", "gps_lat"), 
+rhomis_data <- st_as_sf(rhomis_data, coords = c("x_gps_longitude","x_gps_latitude"), 
                            crs = 4326, agr = "constant", remove = F)
 
 # Adding an index to ensure consistent row order before and after merging (see below)
@@ -269,7 +269,8 @@ names(r_stack) <- c("koppen_geiger_classification",
                     "travel_time_5M_to_50M",
                     "population_density")     
 
-rasValue_rhomis=raster::extract(r_stack, joined_df_rhomis[c("gps_lon","gps_lat")]) %>% tibble::as_tibble()
+
+rasValue_rhomis=raster::extract(r_stack, joined_df_rhomis[c("x_gps_longitude","x_gps_latitude")]) %>% tibble::as_tibble()
 
 rasValue_rhomis$koppen_geiger_classification <- as.integer(rasValue_rhomis$koppen_geiger_classification)
 rasValue_rhomis$index <- c(1:nrow(rasValue_rhomis))

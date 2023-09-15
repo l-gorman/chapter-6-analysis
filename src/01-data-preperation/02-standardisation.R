@@ -5,7 +5,7 @@ library(tibble)
 
 modelling_data_set <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-merged.csv")
 
-modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$gps_lat) & !is.na(modelling_data_set$gps_lon),]
+modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$x_gps_latitude) & !is.na(modelling_data_set$x_gps_longitude),]
 modelling_data_set <- modelling_data_set[!is.na(modelling_data_set$village),]
 
 modelling_data_set$iso_country_code[is.na(modelling_data_set$iso_country_code)] <- "ML"
@@ -123,6 +123,7 @@ vars <- c(
 final_modelling_df <-modelling_data_set[vars]
 
 
+
 final_modelling_df$education <-modelling_data_set$education_cleaned
 
 # HHsize Standardisation (Log)
@@ -159,7 +160,7 @@ final_modelling_df$land_cultivated <- normalisation(final_modelling_df$land_cult
 # modelling_data_set$logit_off_farm_orientation <- normalisation(modelling_data_set$logit_off_farm_orientation)
 
 # Market Orientation (Logit)
-final_modelling_df$market_orientation <- as_sqrt(modelling_data_set$market_orientation)
+final_modelling_df$market_orientation <- logit(modelling_data_set$market_orientation)
 final_modelling_df$market_orientation <- normalisation(final_modelling_df$market_orientation)
 
 

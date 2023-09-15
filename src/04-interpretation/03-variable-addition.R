@@ -151,6 +151,71 @@ get_random_effects <- function(model,
 }
 
 
+
+fixed_effects_plot <- function(model,
+                   title,
+                   variables,
+                   base_path){
+  
+  
+  dir.create(base_path)
+  
+  all_vars <- get_variables(model)[as.character(variables)]
+  
+  draws_df <- as_draws_df(model)
+  
+  draws.66 <- draws_df %>% 
+    gather() %>% 
+    group_by(key) %>% 
+    summarise(
+      Estimate=mean(value),
+      min=quantile(value,probs=c(0.17)),
+      max=quantile(value,probs=c(0.83)),
+      level="0.66 Level",
+    )
+  
+  draws.95 <-draws_df %>% 
+    gather() %>% 
+    group_by(key) %>% 
+    summarise(
+      Estimate=mean(value),
+      min=quantile(value,probs=c(0.025)),
+      max=quantile(value,probs=c(0.975)),
+      level="0.95 Level",
+    )
+  
+  draw_summary <- rbind(draws.66,draws.95)
+  
+  fixed_effects <- c(paste0("b_",variables))
+  fixed_effects <- setNames(fixed_effects,variables) %>% as.list()
+  
+  
+  
+  fixed_effects_summary <- draw_summary %>% filter(key %in% as.character(fixed_effects))
+  
+  
+  clean_names <- names(fixed_effects)[match(fixed_effects_summary$key,as.character(fixed_effects))]
+  fixed_effects_summary$key <- clean_names
+  
+  clean_names <- names(variables)[match(fixed_effects_summary$key,as.character(variables))]
+  fixed_effects_summary$key <- clean_names
+  
+  fixed_effects_summary$key <- factor(fixed_effects_summary$key,
+                                      levels=names(variables),
+                                      ordered = T)
+  
+  
+  fixed_plots <- quick_estimates_plot(fixed_effects_summary, title=paste0("Fixed Effects for Model ", model_name), sort=T)
+  
+  
+  ggsave(filename = paste0(base_path,"/fixed_effects_plots.png"),
+         plot = fixed_plots,width = 2500,height=3000,units = "px")
+  
+  return(fixed_plots)
+  
+  
+}
+
 all_plots <- function(model,
                       model_name,
                       variables,
@@ -391,7 +456,7 @@ variables <- list(
   "Use Livestock Inputs"="livestock_inputs_any",
   "Irrigate Land"="land_irrigated_any",
   "Use Fertiliser"="use_fert",
-
+  
   
   "Market Orientation"="market_orientation",
   "Home Garden"="kitchen_garden",
@@ -424,22 +489,22 @@ dir.create("outputs/overall_model_results/variable_addition/hdds/")
 dir.create("outputs/overall_model_results/variable_addition/tva/")
 for (model_file in model_files){
   
-
+  
   
   model_name <- gsub(".rda","",model_file,fixed=T)
   
   tva_path <- paste0("outputs/11_09_2023/outputs/overall_models/variable_addition/tva/",model_file)
   if (file.exists(tva_path)){
-  tva_model <- loadRData(tva_path)
-  
-  
-  all_plots(model=tva_model,
-            model_name = model_name,
-            variables = variables,
-            levels_variables = levels_variables,
-            base_path=paste0("outputs/overall_model_results/variable_addition/tva/",model_name)
-  )
-  
+    tva_model <- loadRData(tva_path)
+    
+    
+    all_plots(model=tva_model,
+              model_name = model_name,
+              variables = variables,
+              levels_variables = levels_variables,
+              base_path=paste0("outputs/overall_model_results/variable_addition/tva/",model_name)
+    )
+    
   }
   
   
@@ -458,6 +523,27 @@ for (model_file in model_files){
   }
 }
 
+
+
+tva_model <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
+plot <- fixed_effects_plot(model = tva_model,
+                   title="TVA",
+                   variables=variables,
+                   base_path="outputs/overall_model_results/variable_addition/tva/weak_prior_fixed")
+plot <- plot + 
+  xlim(-0.35,0.35)+
+  labs(title = "Effects for TVA Random Intercept Model", x="Estimate", y="Explanatory Variable")
+ggsave("outputs/overall_model_results/variable_addition/tva/weak_prior_fixed/fixed_effects_plot.png", plot,width=2000, height=1800, units = "px")
+
+hdds_model <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/weak_prior_fixed.rda")
+plot <- fixed_effects_plot(model = hdds_model,
+                           title="HDDS",
+                           variables=variables,
+                           base_path="outputs/overall_model_results/variable_addition/tva/weak_prior_fixed")
+plot <- plot + 
+  xlim(-0.35,0.35)+
+  labs(title = "Effects for HDDS Random Intercept Model", x="Estimate", y="Explanatory Variable")
+ggsave("outputs/overall_model_results/variable_addition/hdds/weak_prior_fixed/fixed_effects_plot.png", plot,width=2000, height=1800, units = "px")
 
 
 
@@ -535,11 +621,12 @@ loo_comparison_plot <- function(base_input_path,
   return(loo_order)}
 
 
+
 # n_obs <- 
 
 hdds_loo_table <- loo_comparison_plot(base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/",
-                                     base_output_path = "./outputs/overall_model_results/variable_addition/hdds/",
-                                     return_data = T
+                                      base_output_path = "./outputs/overall_model_results/variable_addition/hdds/",
+                                      return_data = T
 )
 
 tva_loo_table <- loo_comparison_plot(base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/",
@@ -596,7 +683,7 @@ r2_comparison <- function(loo_order,
     
     # ylim(c(0.25,1))+
     
-    labs(title = bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'),
+    labs(title = bquote(~'Bayesian '~R^2 ),
          x="Levels Included", 
          y=bquote('Bayesian '~R^2))+
     theme(
@@ -611,12 +698,12 @@ r2_comparison <- function(loo_order,
 
 
 hdds_r2_table <-r2_comparison(loo_order = hdds_loo_table$model,
-              base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/",
-              base_output_path = "./outputs/overall_model_results/variable_addition/hdds/")
+                              base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/",
+                              base_output_path = "./outputs/overall_model_results/variable_addition/hdds/")
 
 tva_r2_table <-r2_comparison(tva_loo_table$model,
-              base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/",
-              base_output_path = "./outputs/overall_model_results/variable_addition/tva/")
+                             base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/",
+                             base_output_path = "./outputs/overall_model_results/variable_addition/tva/")
 
 
 
@@ -643,7 +730,7 @@ dual_axis_plot <- function(loo_table,
   # rescaled_value <- max_elpd_axis*(x/(max-min)) - min/(max-min)-max_elpd_axis
   
   
- 
+  
   
   plot <- ggplot(plot_df)+
     geom_point(aes(x=model, y=elpd_diff,color="red"))+
@@ -658,7 +745,7 @@ dual_axis_plot <- function(loo_table,
     geom_hline(yintercept = max(plot_df$Estimate),linetype="dashed")+
     scale_colour_manual(name = 'Measure', 
                         values =c('blue'='blue','red'='red'), labels = c(bquote(~R^2),'ELPD'),guide='legend')+
-   
+    
     
     scale_y_continuous(
       
@@ -666,7 +753,7 @@ dual_axis_plot <- function(loo_table,
       name = "ELPD",
       
       # Add a second axis and specify its features
-      sec.axis = sec_axis(~ ((.+max_elpd_axis)*(max_r2_axis-min_r2_axis)/max_elpd_axis)+min_r2_axis, name=bquote(~'Bayesian '~R^2 ~'for Intercept Only Models'))
+      sec.axis = sec_axis(~ ((.+max_elpd_axis)*(max_r2_axis-min_r2_axis)/max_elpd_axis)+min_r2_axis, name=bquote(~'Bayesian '~R^2))
     ) +
     labs(title = title,
          x="Levels Included")+
@@ -682,30 +769,59 @@ dual_axis_plot <- function(loo_table,
   
   
   
-  ggsave(paste0(base_output_path,"r2_loo_comparison.png"),plot, width=3000,height=2000,units="px")
+  ggsave(paste0(base_output_path,"r2_loo_comparison.png"),plot, width=1500,height=1000,units="px")
   return(plot)
   
 }
 
 
+
+
+
+
+
+tva_loo_table$model <- gsub("country_village","Variance Components",tva_loo_table$model)
+tva_loo_table$model <- gsub("weak_fixed_only","Fixed Effects",tva_loo_table$model)
+tva_loo_table$model <- gsub("weak_prior_fixed","Random Intercept",tva_loo_table$model)
+tva_loo_table$model <- gsub("weak_prior_mixed_country","Random Intercept\nRandom Slope",tva_loo_table$model)
+
+tva_loo_table$model <- factor(tva_loo_table$model, ordered=T, levels= tva_loo_table$model[order(tva_loo_table$elpd_diff)])
+
+
+tva_r2_table$model_type <- gsub("country_village","Variance Components",tva_r2_table$model_type)
+tva_r2_table$model_type <- gsub("weak_fixed_only","Fixed Effects",tva_r2_table$model_type)
+tva_r2_table$model_type <- gsub("weak_prior_fixed","Random Intercept",tva_r2_table$model_type)
+tva_r2_table$model_type <- gsub("weak_prior_mixed_country","Random Intercept\nRandom Slope",tva_r2_table$model_type)
+tva_r2_table$model_type <- factor(tva_r2_table$model_type, ordered=T, levels= tva_loo_table$model[order(tva_loo_table$elpd_diff)])
+
+
 dual_axis_plot(loo_table=tva_loo_table,
                r2_table=tva_r2_table,
-               title=bquote(~'ELPD and Bayesian '~R^2 ~'for Intercept Only Models (TVA)'),
+               title=bquote(~'TVA Model Comparison for Variable Addition'),
                base_output_path = "./outputs/overall_model_results/variable_addition/tva/",
-               candidate_models=c( "kg_class_village",
-                                   "country_village",
-                                   "county_village",
-                                   "county_village_group")
+               candidate_models=c()
 )
+
+hdds_loo_table$model <- gsub("country_village","Variance Components",hdds_loo_table$model)
+hdds_loo_table$model <- gsub("weak_fixed_only","Fixed Effects",hdds_loo_table$model)
+hdds_loo_table$model <- gsub("weak_prior_fixed","Random Intercept",hdds_loo_table$model)
+hdds_loo_table$model <- gsub("weak_prior_mixed_country","Random Intercept\nRandom Slope",hdds_loo_table$model)
+
+hdds_loo_table$model <- factor(hdds_loo_table$model, ordered=T, levels= hdds_loo_table$model[order(hdds_loo_table$elpd_diff)])
+
+
+hdds_r2_table$model_type <- gsub("country_village","Variance Components",hdds_r2_table$model_type)
+hdds_r2_table$model_type <- gsub("weak_fixed_only","Fixed Effects",hdds_r2_table$model_type)
+hdds_r2_table$model_type <- gsub("weak_prior_fixed","Random Intercept",hdds_r2_table$model_type)
+hdds_r2_table$model_type <- gsub("weak_prior_mixed_country","Random Intercept\nRandom Slope",hdds_r2_table$model_type)
+hdds_r2_table$model_type <- factor(hdds_r2_table$model_type, ordered=T, levels= hdds_loo_table$model[order(hdds_loo_table$elpd_diff)])
+
 
 dual_axis_plot(loo_table=hdds_loo_table,
                r2_table=hdds_r2_table,
-               title=bquote(~'ELPD and Bayesian '~R^2 ~'for Intercept Only Models (HDDS)'),
+               title=bquote(~'HDDS Model Comparison for Variable Addition'),
                base_output_path = "./outputs/overall_model_results/variable_addition/hdds/",
-               candidate_models=c( "kg_class_village",
-                                   "country_village",
-                                   "county_village",
-                                   "county_village_group")
+               candidate_models=c()
 )
 
 # 
