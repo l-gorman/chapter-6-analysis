@@ -561,6 +561,21 @@ summarise_estimates(vpcs, param_list_temp)
 
 
 
+# Percentage over ---------------------------------------------------------
+
+hdds_model <- loadRData("./outputs/11_09_2023/outputs/overall_models/location_only/hdds/country_village.rda")
+tva_model <- loadRData("./outputs/11_09_2023/outputs/overall_models/location_only/tva/country_village.rda")
+
+hdds_vpcs <-  vpc(hdds_model,as.character(param_list_temp))
+tva_vpcs <-  vpc(tva_model,as.character(param_list_temp))
+
+sum(tva_vpcs$sd_iso_country_code__Intercept>tva_vpcs$sd_iso_country_code_village__Intercept)/nrow(tva_vpcs)
+sum(tva_vpcs$sd_iso_country_code_village__Intercept>tva_vpcs$sigma)/nrow(tva_vpcs)
+sum(tva_vpcs$sd_iso_country_code__Intercept>tva_vpcs$sigma)/nrow(tva_vpcs)
+
+sum(hdds_vpcs$sd_iso_country_code__Intercept>hdds_vpcs$sd_iso_country_code_village__Intercept)/nrow(hdds_vpcs)
+
+
 # Comparisons -------------------------------------------------------------
 
 

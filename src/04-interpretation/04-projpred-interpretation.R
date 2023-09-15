@@ -45,6 +45,8 @@ cvvs_tva <- NULL
 
 cvvs_hdds <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/proj_pred/hdds/weak_prior_fixed/projpred_cv_varsel_model_2.rda")
 
+projpred::suggest_size(cvvs_hdds)
+
 ranking_res <- ranking(cvvs_hdds)
 save(ranking_res,file="./outputs/overall_model_results/variable_addition/projpred/hdds/ranking.rda")
 
@@ -54,10 +56,17 @@ ggsave("./outputs/overall_model_results/variable_addition/projpred/hdds/mlpg_plo
 
 rk <- ranking(cvvs_hdds)
 ranking_full <-as_tibble(list("ranking"=rk$fulldata))
+cat(paste0('"',ranking_full$ranking,'"', collapse=",\n"))
 readr::write_csv(ranking_full,"./outputs/overall_model_results/variable_addition/projpred/hdds/rankings")
 
 prop_plot <- plot(cv_proportions(rk, cumulate = TRUE))
-ggsave("./outputs/overall_model_results/variable_addition/projpred/hdds/prop_plot.png",mlpd_plot)
+prop_plot <- prop_plot + 
+  labs(title="Search Path Results for HDDS Model")+
+  theme(plot.title = element_text(size=20, hjust=0.5),
+    axis.text.x = element_text(size=15, angle=45, hjust=1),
+                               axis.text.y = element_text(size=15))
+
+ggsave("./outputs/overall_model_results/variable_addition/projpred/hdds/prop_plot.png",prop_plot, width = 4000, height=2000, units="px")
 
 cvvs_hdds <- NULL
 

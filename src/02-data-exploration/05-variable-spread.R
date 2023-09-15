@@ -212,18 +212,29 @@ modelling_data_set <- readr::read_csv("./data/02-prepared-data/modelling_df.csv"
 
 
 modelling_data_set$region <- NA
-modelling_data_set$region <- modelling_data_set$iso_country_code()
+modelling_data_set$region <- modelling_data_set$iso_country_code
 
 
-modelling_data_set$education_primary <- 
+modelling_data_set$ed_primary <- 0
+modelling_data_set$ed_primary[modelling_data_set$education_cleaned=="primary"] <- 1
+
+modelling_data_set$ed_preprimary <- 0
+modelling_data_set$ed_preprimary[modelling_data_set$education_cleaned=="pre_primary"] <- 1
+
+modelling_data_set$ed_sec <- 0
+modelling_data_set$ed_sec[modelling_data_set$education_cleaned=="secondary_or_higher"] <- 1
+
 
 vars <- c("tva","hdds",
           "hh_size" ,
 
           #Assets
+          "ed_preprimary",
+          "ed_primary",
+          "ed_sec",
+    
           "livestock_tlu" ,
           "land_cultivated" ,
-          "market_orientation",
           "debts_have",
           
           "off_farm_any",
@@ -247,49 +258,53 @@ vars <- c("tva","hdds",
           #County Level
           "gdl_country_shdi")
 
-modelling_data_set[num_vars]
-scaled_df <- scale(modelling_data_set[num_vars]) %>% as_tibble(scaled_df)
+# modelling_data_set[num_vars]
+# temp <- scale(modelling_data_set[num_vars])
+scaled_df <- scale(modelling_data_set[vars]) %>% as.data.frame(scaled_df)
 scaled_df$Country <- modelling_data_set$iso_country_code
 scaled_df$Region <- NA 
-scaled_df$Region[scaled_df$Country%in%c("BF","GH","ML","NE","NG")] <- "West Africa"
-scaled_df$Region[scaled_df$Country%in%c("ET","KE","UG","TZ","MW","ZM")]<- "East Africa"
-scaled_df$Region[scaled_df$Country%in%c("BI","CD","RW")]<- "Central Africa"
-scaled_df$Region[scaled_df$Country%in%c("KH","VN")] <- "South-East Asia"
+scaled_df$Region[scaled_df$Country%in%c("BF","GH","ML","NE","NG")] <- "W-Africa"
+scaled_df$Region[scaled_df$Country%in%c("ET","KE","UG","TZ","MW","ZM")]<- "E-Africa"
+scaled_df$Region[scaled_df$Country%in%c("BI","CD","RW")]<- "C-Africa"
+scaled_df$Region[scaled_df$Country%in%c("KH","VN")] <- "SE-Asia"
+
 
 
 variables_switch <- list(
   # "Education (Pre Primary)"="education_cleanedpre_primary",
-  "Household Size"="hh_size",
   
-  "Education (Primary)"="educationprimary",
-  "Education (Secondary/Higher)"="educationsecondary_or_higher",
+  "Growing Period"="length_growing_period",
+  "Minimum Travel Time"="min_travel_time",
+  "Country HDI"="gdl_country_shdi",
   
-  "Livestock TLU"="livestock_tlu",
-  "Land Cultivated"="land_cultivated",
-  "Any Off Farm Income"= "off_farm_any",
+  
+  "Household Size (MAE)"="hh_size",
+  "Educ (PrePrim)"="ed_preprimary",
+  "Educ (Prim)"="ed_primary",
+  "Educ (Sec)"="ed_sec",
+  
   "Assisted Tillage"="assisted_tillage",
   "External Labour"="external_labour",
-  # "Use Pesticide"="pesticide",
+  
+  "Livestock (TLU)"="livestock_tlu",
+  "Land Cultivated"="land_cultivated",
+  
   "Have Debts"="debts_have",
-  # "Received Aid"="aidreceived",
+
+  
   "Use Livestock Inputs"="livestock_inputs_any",
   "Irrigate Land"="land_irrigated_any",
   "Use Fertiliser"="use_fert",
   
-  
+  "Any Off Farm Income"= "off_farm_any",
   "Market Orientation"="market_orientation",
   "Home Garden"="kitchen_garden",
   "Number of Income Sources"="number_income_sources",
   
-  "Growing Period"="length_growing_period",
-  "Minimum Travel Time"="min_travel_time",
   
-  "Country HDI"="gdl_country_shdi",
-  
-  "tva"="TVA",
-  "hdds"="HDDS"
+  "TVA"="tva",
+  "HDDS"="hdds"
 )
-
 
 
 
@@ -304,29 +319,58 @@ summary_all <- summary_all %>% melt(id.vars = c("Region","Country"))
 #                                                                    "ET","KE","UG","TZ","MW","ZM",
 #                                                                    "KH","VN"))
 
-summary_all$Region <- factor(summary_all$Region, ordered=T, levels=c("West Africa",
-                                                                 "Central Africa",
-                                                                 "East Africa",
-                                                                "South-East Asia"))
+summary_all$Region <- factor(summary_all$Region, ordered=T, levels=c("W-Africa",
+                                                                 "C-Africa",
+                                                                 "E-Africa",
+                                                                "SE-Asia"))
 
 summary_all$variable <- as.character(summary_all$variable)
 for (i in 1:length(variables_switch)){
   
-  new_name <- as.character(variables_switch)[i]
-var_name <- names(variables_switch)[i]
+  var_name <- as.character(variables_switch)[i]
+  new_name <- names(variables_switch)[i]
   
   
   summary_all$variable[summary_all$variable==var_name] <- new_name
   
 }
 
+summary_all$Variable_type <- NA 
+summary_all$Variable_type[summary_all$variable%in%c("Growing Period","Minimum Travel Time","Country HDI")] <- "Where You Live"
+summary_all$Variable_type[summary_all$variable%in%c("Household Size (MAE)","Educ (PrePrim)","Educ (Prim)","Educ (Sec)",
+                                                    "Assisted Tillage","External Labour",
+                                                    "Livestock (TLU)","Land Cultivated",
+                                                    "Have Debts")] <- "What You Have"
+summary_all$Variable_type[summary_all$variable%in%c("Use Livestock Inputs","Irrigate Land","Use Fertiliser",
+                                                    "Any Off Farm Income","Market Orientation","Home Garden","Number of Income Sources")] <- "What You Do"
+
+summary_all$Variable_type[summary_all$variable%in%c("TVA","HDDS")] <- "Performance"
+
+
+summary_all$Variable_type <- factor(summary_all$Variable_type,
+                                    ordered=T,
+                                    levels=c("Where You Live",
+                                             "What You Have",
+                                             "What You Do",
+                                             "Performance"))
+
+
+
+
+
+
 
 heatmap <- ggplot(summary_all, aes(y=variable, x=Country, fill=value,label = Country))+
   geom_tile()+
   scale_fill_viridis_c() +
-  labs(title="Distribution of Numeric Indicators")+
-  facet_grid(~Region, scale="free_x",space="free_x")
+  labs(title="Distribution of Explanatory Variables")+
+  facet_grid(rows=vars(Variable_type),cols=vars(Region), scale="free",space="free")+
+  theme(plot.title = element_text(hjust = 0.5, size=20),
+    strip.text.x = element_text(size=15),
+        strip.text.y = element_text(angle=0, size=15),
+    axis.text.y = element_text(size = 15),
+    axis.text.x = element_text(size=15, angle=45, hjust=1))
 
-ggsave("./outputs/02-data-exploration/distributions/per_country_heatmap.png",width=2000,height=1500,units="px")
+ggsave("./outputs/02-data-exploration/distributions/per_country_heatmap.png",heatmap,width=3500,height=3000,units="px")
 
 

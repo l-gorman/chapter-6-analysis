@@ -92,25 +92,25 @@ tva_variable_order <- c(
 
 
 hdds_variable_order <- c("number_income_sources",
-                         "external_labour",
-                         "min_travel_time",
-                         "use_fert",
                          "education",
+                         "land_cultivated",
+                         "external_labour",
+                         "use_fert",
                          "kitchen_garden",
+                         "min_travel_time",
                          "land_irrigated_any",
-                         "gdl_country_shdi",
-                         "length_growing_period",
-                         "off_farm_any",
                          "assisted_tillage",
-                         "debts_have",
+                         "off_farm_any",
+                         "hh_size",
                          "livestock_inputs_any",
                          "livestock_tlu",
-                         "hh_size",
+                         "debts_have",
                          "market_orientation",
-                         "land_cultivated")
+                         "length_growing_period",
+                         "gdl_country_shdi")
 
 grouping_vars <- c("(1 | iso_country_code)",
-                   "(1 | iso_country_code:village)")
+                   "(1 | iso_country_code_village)")
 
 # for (var in c(1:(2*length(variable_order)))){
 
