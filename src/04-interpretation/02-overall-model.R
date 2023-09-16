@@ -571,9 +571,10 @@ tva_vpcs <-  vpc(tva_model,as.character(param_list_temp))
 
 sum(tva_vpcs$sd_iso_country_code__Intercept>tva_vpcs$sd_iso_country_code_village__Intercept)/nrow(tva_vpcs)
 sum(tva_vpcs$sd_iso_country_code_village__Intercept>tva_vpcs$sigma)/nrow(tva_vpcs)
-sum(tva_vpcs$sd_iso_country_code__Intercept>tva_vpcs$sigma)/nrow(tva_vpcs)
+sum(tva_vpcs$sigma>tva_vpcs$sd_iso_country_code__Intercept)/nrow(tva_vpcs)
 
 sum(hdds_vpcs$sd_iso_country_code__Intercept>hdds_vpcs$sd_iso_country_code_village__Intercept)/nrow(hdds_vpcs)
+sum(hdds_vpcs$sigma>hdds_vpcs$sd_iso_country_code_village__Intercept)/nrow(hdds_vpcs)
 
 
 # Comparisons -------------------------------------------------------------

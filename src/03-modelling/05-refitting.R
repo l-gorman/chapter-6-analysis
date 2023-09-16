@@ -74,40 +74,42 @@ tva_variable_order <- c(
   "number_income_sources",
   "hh_size",
   "market_orientation",
-  "use_fert",
   "land_cultivated",
-  "land_irrigated_any",
+  "use_fert",
+  "external_labour",
   "education",
   "assisted_tillage",
-  "external_labour",
-  "length_growing_period",
-  "min_travel_time",
+  "kitchen_garden",
+  "land_irrigated_any",
+  "livestock_inputs_any",
   "debts_have",
   "off_farm_any",
-  "gdl_country_shdi",
   "livestock_tlu",
-  "livestock_inputs_any",
-  "kitchen_garden"
+  "length_growing_period",
+  "min_travel_time",
+  "gdl_country_shdi"
 )
 
 
 hdds_variable_order <- c("number_income_sources",
-                         "education",
                          "land_cultivated",
-                         "external_labour",
+                         "education",
                          "use_fert",
+                         "external_labour",
                          "kitchen_garden",
-                         "min_travel_time",
                          "land_irrigated_any",
+                         "min_travel_time",
                          "assisted_tillage",
                          "off_farm_any",
-                         "hh_size",
-                         "livestock_inputs_any",
-                         "livestock_tlu",
-                         "debts_have",
                          "market_orientation",
                          "length_growing_period",
+                         "hh_size",
+                         "debts_have",
+                         "livestock_tlu",
+                         "livestock_inputs_any",
                          "gdl_country_shdi")
+
+
 
 grouping_vars <- c("(1 | iso_country_code)",
                    "(1 | iso_country_code_village)")

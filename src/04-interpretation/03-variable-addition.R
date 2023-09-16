@@ -205,7 +205,7 @@ fixed_effects_plot <- function(model,
                                       ordered = T)
   
   
-  fixed_plots <- quick_estimates_plot(fixed_effects_summary, title=paste0("Fixed Effects for Model ", model_name), sort=T)
+  fixed_plots <- quick_estimates_plot(fixed_effects_summary, title=paste0("Fixed Effects for Model ", model_name), sort=F)
   
   
   ggsave(filename = paste0(base_path,"/fixed_effects_plots.png"),
