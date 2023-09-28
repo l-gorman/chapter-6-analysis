@@ -395,11 +395,11 @@ levels_variables <- list(
 )
 
 
-model_files <- list.files("outputs/31_05_2023/outputs/overall_models/variable_addition_final_fit/ /") 
-model_files <- c(model_files, list.files("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/"))
-model_files <- unique(model_files) 
-
-model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
+# hdds_model_files <- list.files("outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/hdds/") 
+# # tva_model_files <- c(model_files, list.files("outputs/11_09_2023/outputs/overall_models/variable_addition/tva/"))
+# hdds_model_files <- unique(hdds_model_files) 
+# 
+# model_files <- model_files[grepl("^r2",x=model_files)==F & grepl("^loo",x=model_files)==F]
 
 
 # model <- loadRData("outputs/31_05_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
@@ -522,12 +522,12 @@ loo_comparison_plot <- function(base_input_path,
 
 # Loo Comparison
 
-hdds_loo_table<- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition_final_fit/hdds/",
+hdds_loo_table<- loo_comparison_plot(base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/hdds/",
                                      base_output_path = "./outputs/overall_model_results/variable_addition_final_fit/hdds/",
                                      return_data = T
 )
 
-tva_loo_table <- loo_comparison_plot(base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition_final_fit/tva/",
+tva_loo_table <- loo_comparison_plot(base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/tva/",
                                      base_output_path = "./outputs/overall_model_results/variable_addition_final_fit/tva/",
                                      return_data = T
                                      
@@ -605,11 +605,11 @@ r2_comparison <- function(loo_order,
 
 
 hdds_r2_table <- r2_comparison(loo_order = hdds_loo_table$model,
-                               base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition_final_fit/hdds/",
+                               base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/hdds/",
                                base_output_path = "./outputs/overall_model_results/variable_addition_final_fit/hdds/")
 
 tva_r2_table <- r2_comparison(tva_loo_table$model,
-                              base_input_path = "./outputs/31_05_2023/outputs/overall_models/variable_addition_final_fit/tva/",
+                              base_input_path = "./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/tva/",
                               base_output_path = "./outputs/overall_model_results/variable_addition_final_fit/tva/")
 
 
@@ -700,22 +700,24 @@ dual_axis_plot <- function(loo_table,
 tva_loo_table$number_of_variables <- as.numeric(gsub("tva_","",tva_loo_table$model))
 # tva_r2_table$number_of_variables <- as.numeric(gsub("tva_","",tva_r2_table$model_type))
 
-dual_axis_plot(loo_table=tva_loo_table,
+tva_plot <- dual_axis_plot(loo_table=tva_loo_table,
                r2_table=tva_r2_table,
                title=bquote(~'ELPD and Bayesian '~R^2 ~'\nvs Number of Explanatory Variables (TVA)'),
                base_output_path = "./outputs/overall_model_results/variable_addition_final_fit/tva/"
 )
+ggsave("./outputs/overall_model_results/variable_addition_final_fit/tva/r2_loo_comparison.png", tva_plot, width=2000, height=1500, units="px")
+
 
 
 hdds_loo_table$number_of_variables <- as.numeric(gsub("hdds_","",hdds_loo_table$model))
 
-dual_axis_plot(loo_table=hdds_loo_table,
+hdds_plot <- dual_axis_plot(loo_table=hdds_loo_table,
                r2_table=hdds_r2_table,
                title=bquote(~'ELPD and Bayesian '~R^2 ~'\nvs Number of Explanatory Variables (HDDS)'),
                base_output_path = "./outputs/overall_model_results/variable_addition_final_fit/hdds/"
 )
 
-
+ggsave("./outputs/overall_model_results/variable_addition_final_fit/hdds/r2_loo_comparison.png", hdds_plot, width=2000, height=1500, units="px")
 
 # Fixed Effects Plots -----------------------------------------------------
 
@@ -776,28 +778,136 @@ fixed_effect_plot <- function(model,
   ggsave(filename = paste0(base_path,"/fixed_effects_plots.png"),
          plot = fixed_plots,width = 2500,height=3000,units = "px")
   
+  return(fixed_plots)
+  
 }
 
 #TVA
 
-# Variable Number: 6
-
-
-model_tva <- loadRData("./outputs/31_05_2023/outputs/overall_models/variable_addition_final_fit/tva/tva_6.rda")
+# Variable Number: 11
 
 variables <- list(
-  "Number of Income Sources"="number_income_sources",
-  "Household Size"= "hh_size",
-  "Market Orientation"="market_orientation",
-  "Use of Fertiliser"="use_fert",
+  # "Education (Pre Primary)"="education_cleanedpre_primary",
+  "Household Size"="hh_size",
+  
+  "Education (Primary)"="educationprimary",
+  "Education (Secondary/Higher)"="educationsecondary_or_higher",
+  
+  "Livestock TLU"="livestock_tlu",
   "Land Cultivated"="land_cultivated",
-  "Land Irrigation"="land_irrigated_any"
+  "Any Off Farm Income"= "off_farm_any",
+  "Assisted Tillage"="assisted_tillage",
+  "External Labour"="external_labour",
+  # "Use Pesticide"="pesticide",
+  "Have Debts"="debts_have",
+  # "Received Aid"="aidreceived",
+  "Use Livestock Inputs"="livestock_inputs_any",
+  "Irrigate Land"="land_irrigated_any",
+  "Use Fertiliser"="use_fert",
+  
+  
+  "Market Orientation"="market_orientation",
+  "Home Garden"="kitchen_garden",
+  "Number of Income Sources"="number_income_sources",
+  
+  "Growing Period"="length_growing_period",
+  "Minimum Travel Time"="min_travel_time",
+  
+  "Country HDI"="gdl_country_shdi"
+  
+)
+
+levels_variables <- list(
+  "Country"="sd_iso_country_code__Intercept",
+  "Village"="sd_iso_country_code_village__Intercept",
+  "Project"="sd_id_form__Intercept",
+  "Unexplained"="sigma"
 )
 
 
-fixed_effect_plot(model=model_tva,
+
+model_tva <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/tva/tva_10.rda")
+
+tva_plot <- fixed_effect_plot(model=model_tva,
                   model_name="TVA",
                   variables=variables,
                   base_path="./outputs/overall_model_results/variable_addition_final_fit/tva/")
+tva_plot <- tva_plot + 
+  labs(title="Regression Coeffecients\n for Random Intercept TVA Model\nAfter Variable Selection")+
+  xlim(-0.35,0.35)
+ggsave("outputs/overall_model_results/variable_addition_final_fit/tva/random_intercept.png",tva_plot, width=1800, height=1500, units="px")
+
+model_hdds <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/hdds/hdds_12.rda")
+hdds_plot <- fixed_effect_plot(model=model_hdds,
+                              model_name="HDDS",
+                              variables=variables,
+                              base_path="./outputs/overall_model_results/variable_addition_final_fit/hdds/")
+
+
+hdds_plot <- hdds_plot + 
+  labs(title="Regression Coeffecients\n for Random Intercept HDDS Model\nAfter Variable Selection")+
+  xlim(-0.35,0.35)
+ggsave("outputs/overall_model_results/variable_addition_final_fit/hdds/random_intercept.png",hdds_plot, width=1800, height=1500, units="px")
+
+
+
+vars_all <- paste0("b_",as.character(variables))
+vars_all <- c(vars_all, as.character(levels_variables))
+
+draws_summary_tva <- as_draws_df(model_tva) %>% as_tibble()
+draws_summary_tva <- draws_summary_tva[vars_all[vars_all %in% colnames(draws_summary_tva)]]
+draws_summary_tva$draws <- c(1:nrow(draws_summary_tva))
+draws_summary_tva <- draws_summary_tva %>% tidyr::pivot_longer(!draws)
+
+
+
+draws_summary_tva <- draws_summary_tva %>%  
+  group_by(name) %>% 
+  summarise(
+  Estimate = mean(value, na.rm=T),
+  L95 = quantile(value, probs=c(0.025),na.rm = T),
+  U95 = quantile(value, probs=c(0.975),na.rm = T)
+)
+
+draws_summary_tva <- draws_summary_tva %>% rename(c("Estimate_TVA"="Estimate",
+                                                      "L95_TVA"="L95",
+                                                      "U95_TVA"="U95"))
+
+
+
+draws_summary_hdds <- as_draws_df(model_hdds) %>% as_tibble()
+draws_summary_hdds <- draws_summary_hdds[vars_all[vars_all %in% colnames(draws_summary_hdds)]]
+draws_summary_hdds$draws <- c(1:nrow(draws_summary_hdds))
+draws_summary_hdds <- draws_summary_hdds %>% tidyr::pivot_longer(!draws)
+
+draws_summary_hdds <- draws_summary_hdds %>%  
+  group_by(name) %>% 
+  summarise(
+    Estimate = mean(value, na.rm=T),
+    L95 = quantile(value, probs=c(0.025),na.rm = T),
+    U95 = quantile(value, probs=c(0.975),na.rm = T)
+  )
+
+draws_summary_hdds <- draws_summary_hdds %>% rename(c("Estimate_HDDS"="Estimate",
+                                "L95_HDDS"="L95",
+                                "U95_HDDS"="U95"))
+
+draws_summary_all <- merge(draws_summary_tva, draws_summary_hdds, by = "name", all.x = T,all.y = T)
+
+draws_summary_all[c("Estimate_TVA",
+                    "L95_TVA",
+                    "U95_TVA",
+                    "Estimate_HDDS",
+                    "L95_HDDS",
+                    "U95_HDDS")] <- round(draws_summary_all[c("Estimate_TVA",
+                                                              "L95_TVA",
+                                                              "U95_TVA",
+                                                              "Estimate_HDDS",
+                                                              "L95_HDDS",
+                                                              "U95_HDDS")],2)
+
+
+write_csv(draws_summary_all,"./outputs/overall_model_results/variable_addition_final_fit/all_param_summary.csv")
+
 
 

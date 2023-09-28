@@ -167,7 +167,7 @@ plot_levels_correlations <- function(
 # Evaluation
 
 # Model 1, Many Countries, Individual projects
-model_1 <- loadRData("./outputs/12_05_2023/simulation/simulation/simulation_1/model.rda")
+model_1 <- loadRData("./outputs/11_09_2023/simulation/simulation_1/model.rda")
 
 levels <- list(
   "Between Country"="sd_country__Intercept",
@@ -178,14 +178,18 @@ levels <- list(
 
 draws <- as_draws_df(model_1,variable = as.character(levels))
 
-estimates_plot(draws_df = draws,params_list = levels, title = "")
+estimate_plot <- estimates_plot(draws_df = draws,params_list = levels, title = "Simulation 1\n Group Effect Estimates")
+estimate_plot <- estimate_plot + xlim(c(0,6))
 
 plot_levels_correlations(model = model_1,level_1 = "r_country",level_2 = "r_country:project")
-
+vpcs <- vpc(model = model_1,params = as.character(levels))
+vpc_estimates <- estimates_plot(draws_df = vpcs,params_list  = levels,
+                                title=paste0("Simulation 1 VPCs")
+)
 
 # Model 2, Many Projects, All in 1 country
 
-model_2 <- loadRData("./outputs/12_05_2023/simulation/simulation/simulation_2/model.rda")
+model_2 <- loadRData("./outputs/11_09_2023/simulation/simulation_2/model.rda")
 
 levels <- list(
   "Between Country"="sd_country__Intercept",
@@ -195,14 +199,19 @@ levels <- list(
 )
 
 draws <- as_draws_df(model_2,variable = as.character(levels))
+draws$
 
-estimates_plot(draws_df = draws,params_list = levels, title = "")
+estimate_plot <- estimates_plot(draws_df = draws,params_list = levels, title = "Simulation 2\n Group Effect Estimates")
+estimate_plot <- estimate_plot + xlim(c(0,6))
 vpcs <- vpc(model = model_2,params = as.character(levels))
 vpc_estimates <- estimates_plot(draws_df = vpcs,params_list  = levels,
-                                title=paste0("")
+                                title=paste0("Simulation 2\n 1 Country, 20 Projects per Country")
 )
 
 plot_levels_correlations(model = model_2,level_1 = "r_country",level_2 = "r_country:project",facet = T)
+
+
+plot_levels_correlations(model = model_2,level_1 = "r_country",level_2 = "r_country:project")
 
 mcmc_pairs(model_2,regex_pars = "r_country")
 
@@ -211,7 +220,7 @@ mcmc_pairs(model_2,regex_pars = "r_country")
 
 # Model 3 Many Villages
 
-model_3 <- loadRData("./outputs/12_05_2023/simulation/simulation/simulation_3/model.rda")
+model_3 <- loadRData("./outputs/11_09_2023/simulation/simulation_3/model.rda")
 
 levels <- list(
   "Between Country"="sd_country__Intercept",
@@ -222,7 +231,9 @@ levels <- list(
 
 draws <- as_draws_df(model_3,variable = as.character(levels))
 
-estimates_plot(draws_df = draws,params_list = levels, title = "")
+estimate_plot <- estimates_plot(draws_df = draws,params_list = levels, title = "Simulation 3\n Group Effect Estimates")
+estimate_plot <- estimate_plot + xlim(c(0,6))
+
 vpcs <- vpc(model = model_3,params = as.character(levels))
 estimates_plot(draws_df = vpcs,params_list = levels, title = "")
 

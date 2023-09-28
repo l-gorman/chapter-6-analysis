@@ -42,12 +42,12 @@ readr::write_csv(ranking_full,"./outputs/overall_model_results/variable_addition
 
 prop_plot<-plot(cv_proportions(rk, cumulate = TRUE))
 prop_plot <- prop_plot + 
-  labs(title="Search Path Results for HDDS Model")+
+  labs(title="Search Path Results for TVA Model")+
   theme(plot.title = element_text(size=20, hjust=0.5),
         axis.text.x = element_text(size=15, angle=45, hjust=1),
         axis.text.y = element_text(size=15))
 
-ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/prop_plot.png",prop_plot)
+ggsave("./outputs/overall_model_results/variable_addition/projpred/tva/prop_plot.png",prop_plot,width = 4000, height=2000, units="px")
 
 cvvs_tva <- NULL
 

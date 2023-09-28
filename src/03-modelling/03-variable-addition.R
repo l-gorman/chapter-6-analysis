@@ -257,9 +257,24 @@ models <-  list(
                gdl_country_shdi+
                  # Levels
                  (1 +
+                    hh_size+
+                    education+
                     land_cultivated +
                     livestock_tlu +
-                    off_farm_any | iso_country_code) +
+                    off_farm_any+
+                    market_orientation +
+                    debts_have+
+                    off_farm_any+
+                    kitchen_garden+
+                    number_income_sources+
+                    market_orientation+
+                    assisted_tillage+
+                    external_labour+
+                    livestock_inputs_any+
+                    land_irrigated_any+
+                    use_fert+
+                    length_growing_period+
+                    min_travel_time | iso_country_code) +
                  (1 | iso_country_code_village)),
     prior="weak"),
   
@@ -414,9 +429,25 @@ models <-  list(
                gdl_country_shdi+
                  # Levels
                  (1 +
+                    hh_size+
+                    education+
                     land_cultivated +
                     livestock_tlu +
-                    off_farm_any | iso_country_code) +
+                    off_farm_any+
+                    market_orientation +
+                    debts_have+
+                    off_farm_any+
+                    kitchen_garden+
+                    number_income_sources+
+                    market_orientation+
+                    assisted_tillage+
+                    external_labour+
+                    livestock_inputs_any+
+                    land_irrigated_any+
+                    use_fert+
+                    length_growing_period+
+                    min_travel_time
+                    | iso_country_code) +
                  (1 | iso_country_code_village)),
     prior="weak")
   
