@@ -497,6 +497,7 @@ tva_summary <-variable_summary(
 
 
 
+readr::write_csv(indicator_data,"./data/02-prepared-data/indicator_data_full.csv")
 
 
 

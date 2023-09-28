@@ -67,7 +67,8 @@ seed <- as.numeric(opt$index)
 
 
 if (seed==1){
-  ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_fixed.rda"))
+  # ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_fixed.rda"))
+  ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_mixed_country"))
   
   dir.create(paste0(opt$output,"/proj_pred/"))
   dir.create(paste0(opt$output,"/proj_pred/tva"))
@@ -77,7 +78,8 @@ if (seed==1){
 }
 
 if (seed==2){
-  ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_fixed.rda"))
+  # ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_fixed.rda"))
+  ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_mixed_country"))
   
   dir.create(paste0(opt$output,"/proj_pred/"))
   dir.create(paste0(opt$output,"/proj_pred/hdds"))
@@ -117,18 +119,37 @@ force_search_terms <- function(forced_terms, optional_terms) {
 auxilliary_variables <- c(
   
     "hh_size",
+    "(1 + hh_size | iso_country_code)",
     "education",
+    "(1 + education | iso_country_code)",
+    
     
     #Assets
     "livestock_tlu",
+    "(1 + livestock_tlu | iso_country_code)",
+    
     "land_cultivated",
+    "(1 + land_cultivated | iso_country_code)",
+    
     "market_orientation",
+    "(1 + market_orientation | iso_country_code)",
+    
     "debts_have",
+    "(1 + debts_have | iso_country_code)",
+    
     
     "off_farm_any",
+    "(1 + off_farm_any | iso_country_code)",
+    
     "kitchen_garden",
+    "(1 + kitchen_garden | iso_country_code)",
+    
     "number_income_sources",
+    "(1 + number_income_sources | iso_country_code)",
+    
     "market_orientation",
+    "(1 + market_orientation | iso_country_code)",
+    
     
     
     
@@ -138,14 +159,28 @@ auxilliary_variables <- c(
     
     # Practices
     "assisted_tillage",
+    "(1 + assisted_tillage | iso_country_code)",
+    
     "external_labour",
+    "(1 + external_labour | iso_country_code)",
+    
     "livestock_inputs_any",
+    "(1 + livestock_inputs_any | iso_country_code)",
+    
     "land_irrigated_any",
+    "(1 + land_irrigated_any | iso_country_code)",
+    
     "use_fert",
+    "(1 + use_fert | iso_country_code)",
+    
     
     # Village level
     "length_growing_period",
+    "(1 + length_growing_period | iso_country_code)",
+    
     "min_travel_time",
+    "(1 + min_travel_time | iso_country_code)",
+    
     
     "gdl_country_shdi")
 
