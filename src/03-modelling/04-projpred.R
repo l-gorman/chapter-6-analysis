@@ -120,77 +120,75 @@ force_search_terms <- function(forced_terms, optional_terms) {
 
 
 
-auxilliary_variables <- c(
+search_terms <- c(
   
-    "hh_size",
-    "(1 + hh_size | iso_country_code)",
-    "education",
-    "(1 + education | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + hh_size",
+    "(1 + hh_size | iso_country_code) + (1 | iso_country_code_village) + hh_size",
+    
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + education",
+    "(1 + education | iso_country_code) + (1 | iso_country_code_village) + education",
     
     
     #Assets
-    "livestock_tlu",
-    "(1 + livestock_tlu | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + livestock_tlu",
+    "(1 + livestock_tlu | iso_country_code) + (1 | iso_country_code_village) + livestock_tlu",
     
-    "land_cultivated",
-    "(1 + land_cultivated | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + land_cultivated",
+    "(1 + land_cultivated | iso_country_code) + (1 | iso_country_code_village) + land_cultivated",
     
-    "market_orientation",
-    "(1 + market_orientation | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + market_orientation",
+    "(1 + market_orientation | iso_country_code) + (1 | iso_country_code_village) + market_orientation",
     
-    "debts_have",
-    "(1 + debts_have | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + debts_have",
+    "(1 + debts_have | iso_country_code) + (1 | iso_country_code_village) + debts_have",
     
+
     
-    "off_farm_any",
-    "(1 + off_farm_any | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + off_farm_any",
+    "(1 + off_farm_any | iso_country_code) + (1 | iso_country_code_village) + off_farm_any",
     
-    "kitchen_garden",
-    "(1 + kitchen_garden | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + kitchen_garden",
+    "(1 + kitchen_garden | iso_country_code) + (1 | iso_country_code_village) + kitchen_garden",
     
-    "number_income_sources",
-    "(1 + number_income_sources | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + number_income_sources",
+    "(1 + number_income_sources | iso_country_code) + (1 | iso_country_code_village) + number_income_sources",
     
-    "market_orientation",
-    "(1 + market_orientation | iso_country_code)",
-    
-    
-    
-    
-    
-    
-    
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + market_orientation",
+    "(1 + market_orientation | iso_country_code) + (1 | iso_country_code_village) + market_orientation",
     
     # Practices
-    "assisted_tillage",
-    "(1 + assisted_tillage | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + assisted_tillage",
+    "(1 + assisted_tillage | iso_country_code) + (1 | iso_country_code_village) + assisted_tillage",
     
-    "external_labour",
-    "(1 + external_labour | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + external_labour",
+    "(1 + external_labour | iso_country_code) + (1 | iso_country_code_village) + external_labour",
     
-    "livestock_inputs_any",
-    "(1 + livestock_inputs_any | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + livestock_inputs_any",
+    "(1 + livestock_inputs_any | iso_country_code) + (1 | iso_country_code_village) + livestock_inputs_any",
     
-    "land_irrigated_any",
-    "(1 + land_irrigated_any | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + land_irrigated_any",
+    "(1 + land_irrigated_any | iso_country_code) + (1 | iso_country_code_village) + land_irrigated_any",
     
-    "use_fert",
-    "(1 + use_fert | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + use_fert",
+    "(1 + use_fert | iso_country_code) + (1 | iso_country_code_village) + use_fert",
+    
     
     
     # Village level
-    "length_growing_period",
-    "(1 + length_growing_period | iso_country_code)",
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + length_growing_period",
+    "(1 + length_growing_period | iso_country_code) + (1 | iso_country_code_village) + length_growing_period",
     
-    "min_travel_time",
-    "(1 + min_travel_time | iso_country_code)",
+
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + min_travel_time",
+    "(1 + min_travel_time | iso_country_code) + (1 | iso_country_code_village) + min_travel_time",
     
+
     
-    "gdl_country_shdi")
+    "(1 | iso_country_code) + (1 | iso_country_code_village) + gdl_country_shdi")
 
 
 
-group_effects <-"(1 | iso_country_code) + (1 | iso_country_code_village)"
+# group_effects <-"(1 | iso_country_code) + (1 | iso_country_code_village)"
 # fixed_effects <- paste0(group_effects, " + ", fixed_effects)
 
 # all_args <- c(auxilliary_variables,group_effects)
@@ -201,8 +199,8 @@ group_effects <-"(1 | iso_country_code) + (1 | iso_country_code_village)"
 
 # Basing this off of discussion on stan forum:
 # https://discourse.mc-stan.org/t/projpred-fixing-group-effects-in-search-terms-and-tips-for-speed/31678/4
-search_terms <- force_search_terms(forced_terms=group_effects,
-                                 optional_terms=auxilliary_variables)
+# search_terms <- force_search_terms(forced_terms=group_effects,
+#                                  optional_terms=auxilliary_variables)
 
 
 # Basing from this: https://discourse.mc-stan.org/t/advice-on-using-search-terms-in-projpred/22846/3
