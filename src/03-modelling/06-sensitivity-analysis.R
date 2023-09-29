@@ -110,6 +110,30 @@ if (opt$index >=100  &
   
   indicator_to_check <- "hdds"
   model_type <- "mixed_effects"
+  
+  
+  formula <- bf(hdds ~ 1 +
+
+               number_income_sources+
+               land_cultivated+
+               education+
+               use_fert+
+               external_labour+
+               kitchen_garden+
+               land_irrigated_any+
+               min_travel_time+
+               assisted_tillage+
+               off_farm_any+
+               market_orientation+
+               length_growing_period+
+               hh_size+
+               
+               
+               
+               # Levels
+               (1 | iso_country_code) +
+               (1 | iso_country_code_village))
+  
 
 }
 
@@ -119,6 +143,24 @@ if (opt$index >=150  &
   
   indicator_to_check <- "tva"
   model_type <- "mixed_effects"
+  
+  formula <- bf(tva ~ 1 +
+               
+               number_income_sources +
+               hh_size +
+               market_orientation +
+               land_cultivated + 
+               use_fert +
+               external_labour +
+               education +
+               assisted_tillage +
+               kitchen_garden +
+               land_irrigated_any +
+               livestock_inputs_any +
+               
+               # Levels
+               (1 | iso_country_code) +
+               (1 | iso_country_code_village))
 }
 
 
@@ -163,7 +205,26 @@ if (model_type=="variance_component"){
 
 
 if (model_type=="mixed_effects"){
-  print("vpc model")
+  
+  model <- brm(
+    
+    formula=formula,
+    data=data_subset,
+    prior = c(
+      set_prior('normal(0, 1)', class = 'b'),
+      set_prior('normal(0, 1)', class = 'sd'),
+      set_prior('normal(0, 1)', class = 'sigma'),
+      set_prior('normal(0, 1)', class = 'Intercept')
+    ),
+    cores = opt$ncores,
+    backend = "cmdstanr",
+    iter = opt$iter,
+    warmup = opt$warmup,
+    
+    
+    family=gaussian() 
+  )
+  
 }
 
 base_path <- paste0(opt$output,"/overall_models/sensitivity_analysis/",model_type,"/",indicator_to_check,"/")
@@ -178,21 +239,4 @@ loo_model <- NULL
 
 r2_model <- bayes_R2(model)
 save(r2_model,file=paste0(base_path,"r2_",index,".rda"))
-
-
-
-
-
-
-
-
-
-
-
-# indicator_data <- indicator_data[1:300,]
-
-
-
-
-
 
