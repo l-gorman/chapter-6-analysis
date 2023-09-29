@@ -1,14 +1,14 @@
 #!/bin/bash
 
 #SBATCH --job-name=overall_models
-#SBATCH -o ./Report/output.mixed_effects.%a.out
+#SBATCH -o ./Report/output.sensitivity_analysis.%a.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=0-6:00:00
+#SBATCH --time=0-4:00:00
 #SBATCH --mem=72G
 #SBATCH --account=sscm012844
-#SBATCH --array=1-6
+#SBATCH --array=0-99
 
 
 cd "${SLURM_SUBMIT_DIR}"
@@ -33,7 +33,7 @@ iterations=2000
 warmup=1000
 cores=4
 
-Rscript "./src/03-modelling/03-variable-addition.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
+Rscript "./src/03-modelling/06-sensitivity-analysis.R" -i $iterations -w $warmup -d $data_directory -o $out_directory -c $cores -j ${SLURM_ARRAY_TASK_ID}
 
 unset out_directory
 unset data_directory
