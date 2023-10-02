@@ -122,64 +122,64 @@ force_search_terms <- function(forced_terms, optional_terms) {
 
 auxilliary_variables <- c(
     "hh_size",
-    "hh_size + (hh_size | iso_country_code)",
+    # "hh_size + (hh_size | iso_country_code)",
     
     "education",
-    "education + (education | iso_country_code)",
+    # "education + (education | iso_country_code)",
     
     
     #Assets
     "livestock_tlu",
-    "livestock_tlu + (livestock_tlu | iso_country_code)",
+    # "livestock_tlu + (livestock_tlu | iso_country_code)",
     
     "land_cultivated",
-    "land_cultivated + (land_cultivated | iso_country_code)",
+    # "land_cultivated + (land_cultivated | iso_country_code)",
     
     "market_orientation",
-    "market_orientation + (market_orientation | iso_country_code)",
+    # "market_orientation + (market_orientation | iso_country_code)",
     
     "debts_have",
-    "debts_have + (debts_have | iso_country_code)",
+    # "debts_have + (debts_have | iso_country_code)",
     
 
     
     "off_farm_any",
-    "off_farm_any + (off_farm_any | iso_country_code)",
+    # "off_farm_any + (off_farm_any | iso_country_code)",
     
     "kitchen_garden",
-    "kitchen_garden + (kitchen_garden | iso_country_code)",
+    # "kitchen_garden + (kitchen_garden | iso_country_code)",
     
     "number_income_sources",
-    "number_income_sources + (number_income_sources | iso_country_code)",
+    # "number_income_sources + (number_income_sources | iso_country_code)",
     
     "market_orientation",
-    "market_orientation + (market_orientation | iso_country_code)",
+    # "market_orientation + (market_orientation | iso_country_code)",
     
     # Practices
     "assisted_tillage",
-    "assisted_tillage + (assisted_tillage | iso_country_code)",
+    # "assisted_tillage + (assisted_tillage | iso_country_code)",
     
     "external_labour",
-    "external_labour + (external_labour | iso_country_code)",
+    # "external_labour + (external_labour | iso_country_code)",
     
     "livestock_inputs_any",
-    "livestock_inputs_any + (livestock_inputs_any | iso_country_code)",
+    # "livestock_inputs_any + (livestock_inputs_any | iso_country_code)",
     
     "land_irrigated_any",
-    "land_irrigated_any + (land_irrigated_any | iso_country_code)",
+    # "land_irrigated_any + (land_irrigated_any | iso_country_code)",
     
     "use_fert",
-    "use_fert + (use_fert | iso_country_code)",
+    # "use_fert + (use_fert | iso_country_code)",
     
     
     
     # Village level
     "length_growing_period",
-    "length_growing_period + (length_growing_period | iso_country_code)",
+    # "length_growing_period + (length_growing_period | iso_country_code)",
     
 
     "min_travel_time",
-    "min_travel_time + (min_travel_time | iso_country_code)",
+    # "min_travel_time + (min_travel_time | iso_country_code)",
     
 
     
