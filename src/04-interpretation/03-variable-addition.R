@@ -153,9 +153,9 @@ get_random_effects <- function(model,
 
 
 fixed_effects_plot <- function(model,
-                   title,
-                   variables,
-                   base_path){
+                               title,
+                               variables,
+                               base_path){
   
   
   dir.create(base_path)
@@ -527,9 +527,9 @@ for (model_file in model_files){
 
 tva_model <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/weak_prior_fixed.rda")
 plot <- fixed_effects_plot(model = tva_model,
-                   title="TVA",
-                   variables=variables,
-                   base_path="outputs/overall_model_results/variable_addition/tva/weak_prior_fixed")
+                           title="TVA",
+                           variables=variables,
+                           base_path="outputs/overall_model_results/variable_addition/tva/weak_prior_fixed")
 plot <- plot + 
   xlim(-0.35,0.35)+
   labs(title = "Effects for TVA Random Intercept Model", x="Estimate", y="Explanatory Variable")
@@ -824,7 +824,162 @@ dual_axis_plot(loo_table=hdds_loo_table,
                candidate_models=c()
 )
 
-# 
+
+
+
+# Mixed Effects only ------------------------------------------------------
+
+mixed_effects_only <- function(model,
+                               variables,
+                               title
+){
+  all_vars <- get_variables(model)
+  
+  draws_df <- as_draws_df(model)
+  
+  draws.66 <- draws_df %>% 
+    gather() %>% 
+    group_by(key) %>% 
+    summarise(
+      Estimate=mean(value),
+      min=quantile(value,probs=c(0.17)),
+      max=quantile(value,probs=c(0.83)),
+      level="0.66 Level",
+    )
+  
+  draws.95 <-draws_df %>% 
+    gather() %>% 
+    group_by(key) %>% 
+    summarise(
+      Estimate=mean(value),
+      min=quantile(value,probs=c(0.025)),
+      max=quantile(value,probs=c(0.975)),
+      level="0.95 Level",
+    )
+  
+  draw_summary <- rbind(draws.66,draws.95)
+  
+  
+  variables_in <- lapply(variables,function(x){
+    grepl(as.character(x),draw_summary$key)
+  }) %>% bind_cols()
+  
+  variables_in <- rowSums(variables_in)
+  
+  
+  # levels_in <-lapply(levels_variables,function(x){
+  #   grepl(as.character(x),draw_summary$key)
+  # }) %>% bind_cols()
+  # 
+  # levels_in <- rowSums(levels_in)
+  # 
+  
+  sd_in <- as.numeric(grepl("sd_",draw_summary$key))
+  
+  subset <- sd_in>0 & variables_in > 0    
+  
+  if (any(subset)){
+    
+    
+    mixed_effects <- draw_summary$key[subset]
+    names <- gsub(".*__","",mixed_effects)
+    mixed_effects <- setNames(mixed_effects,names) %>% as.list()
+    
+    
+    
+    mixed_effects_summary <- draw_summary %>% filter(key %in% as.character(mixed_effects))
+    clean_names <- names(mixed_effects)[match(mixed_effects_summary$key,as.character(mixed_effects))]
+    mixed_effects_summary$key <- clean_names
+    
+    clean_names <- names(variables)[match(mixed_effects_summary$key,as.character(variables))]
+    mixed_effects_summary$key <- clean_names
+    
+    mixed_effects_summary$key <- factor(mixed_effects_summary$key,
+                                        levels=names(variables),
+                                        ordered = T)
+    
+    
+    mixed_plots <- quick_estimates_plot(mixed_effects_summary, title=title, sort=F)
+    
+    return(mixed_plots)
+    
+    
+  }
+  
+  
+  
+  # # Plotting Levels Estimates
+  # 
+  # levels_summary <- draw_summary %>% filter(key %in% as.character(levels_variables))
+  # clean_names <- names(levels_variables)[match(levels_summary$key,as.character(levels_variables))]
+  # levels_summary$key <- clean_names
+  # 
+  # levels_summary$key <- factor(levels_summary$key,
+  #                              levels=names(levels_variables),
+  #                              ordered = T)
+}
+
+variables <- list(
+  # "Education (Pre Primary)"="education_cleanedpre_primary",
+  "Household Size"="hh_size",
+  
+  "Education (Primary)"="educationprimary",
+  "Education (Secondary/Higher)"="educationsecondary_or_higher",
+  
+  "Livestock TLU"="livestock_tlu",
+  "Land Cultivated"="land_cultivated",
+  "Any Off Farm Income"= "off_farm_any",
+  "Assisted Tillage"="assisted_tillage",
+  "External Labour"="external_labour",
+  # "Use Pesticide"="pesticide",
+  "Have Debts"="debts_have",
+  # "Received Aid"="aidreceived",
+  "Use Livestock Inputs"="livestock_inputs_any",
+  "Irrigate Land"="land_irrigated_any",
+  "Use Fertiliser"="use_fert",
+  
+  
+  "Market Orientation"="market_orientation",
+  "Home Garden"="kitchen_garden",
+  "Number of Income Sources"="number_income_sources",
+  
+  "Growing Period"="length_growing_period",
+  "Minimum Travel Time"="min_travel_time",
+  
+  "Country HDI"="gdl_country_shdi"
+  
+)
+
+
+
+model_hdds <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition/hdds/weak_prior_mixed_country.rda")
+
+mixed_effects_hdds_plot <- mixed_effects_only(model_hdds,
+                        variables,
+                        title="HDDS Model\nStandard Deviation in Random Slopes"
+)
+mixed_effects_hdds_plot <- mixed_effects_hdds_plot + xlim(0,1.2)
+
+dir.create("outputs/overall_model_results/variable_addition/random_slopes")
+ggsave(filename = paste0("outputs/overall_model_results/variable_addition/random_slopes/hdds.png"),
+       plot = mixed_effects_hdds_plot,width = 1800,height=1000,units = "px")
+
+
+model_tva <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition/tva/weak_prior_mixed_country.rda")
+
+mixed_effects_tva_plot <- mixed_effects_only(model_tva,
+                                              variables,
+                                              title="TVA Model\nStandard Deviation in Random Slopes"
+)
+mixed_effects_tva_plot <- mixed_effects_tva_plot + xlim(0,1.2)
+
+
+ggsave(filename = paste0("outputs/overall_model_results/variable_addition/random_slopes/tva.png"),
+       plot = mixed_effects_tva_plot,width = 1800,height=1000,units = "px")
+
+
+
+ 
 # dir.create("outputs/overall_model_results/tva_random_effects/")
 # 
 # 

@@ -13,16 +13,49 @@ modelling_data_set <- readr::read_csv("./data/02-prepared-data/rhomis-spatial-me
 
 numeric_summary <- function(col){
   
+  med <- median(col)
+  q1 <- as.numeric(quantile(col,probs=c(0.25)))
+  q2 <- as.numeric(quantile(col,probs=c(0.75)))
+  
   if (median(col)<1){
-    return(paste0(format(round(median(col),2),big.mark = ",")," (",format(round(IQR(col),2),big.mark = ",") ,")"))
+    return(
+      paste0(format(round(med,2),big.mark = ","),
+                  " (",
+             format(round(q1,2),big.mark = ", "), 
+             ", ",
+             format(round(q2,2),big.mark = ",")
+             ,")"
+                  
+                  )
+      )
   }
   
   if (median(col)<10){
-    return(paste0(format(round(median(col),1),big.mark = ",")," (",format(round(IQR(col),1),big.mark = ",") ,")"))
+    
+    return(
+      paste0(format(round(med,1),big.mark = ","),
+             " (",
+             format(round(q1,1),big.mark = ", "), 
+             ", ",
+             format(round(q2,1),big.mark = ",")
+             ,")"
+             
+      )
+    )
+    
   }
   
   if (median(col)>10){
-    return(paste0(format(round(median(col)),big.mark = ",")," (",format(round(IQR(col)),big.mark = ",") ,")"))
+    return(
+      paste0(format(round(med),big.mark = ","),
+             " (",
+             format(round(q1),big.mark = ", "), 
+             ", ",
+             format(round(q2),big.mark = ",")
+             ,")"
+             
+      )
+    )
   }
   
 }

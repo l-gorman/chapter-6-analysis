@@ -67,26 +67,26 @@ seed <- as.numeric(opt$index)
 
 
 if (seed==1){
-  # ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_fixed.rda"))
-  ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_mixed_country.rda"))
+  ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_fixed.rda"))
+  # ref_model <- loadRData(paste0(opt$output,"/tva/weak_prior_mixed_country.rda"))
   
   dir.create(paste0(opt$output,"/proj_pred/"))
   dir.create(paste0(opt$output,"/proj_pred/tva"))
-  # output_dir <- paste0(opt$output,"/proj_pred/tva/weak_prior_fixed")
-  output_dir <- paste0(opt$output,"/proj_pred/tva/weak_prior_mixed_country")
+  output_dir <- paste0(opt$output,"/proj_pred/tva/weak_prior_fixed")
+  # output_dir <- paste0(opt$output,"/proj_pred/tva/weak_prior_mixed_country")
   
   dir.create(output_dir)
   
 }
 
 if (seed==2){
-  # ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_fixed.rda"))
-  ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_mixed_country.rda"))
+  ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_fixed.rda"))
+  # ref_model <- loadRData(paste0(opt$output,"/hdds/weak_prior_mixed_country.rda"))
   
   dir.create(paste0(opt$output,"/proj_pred/"))
   dir.create(paste0(opt$output,"/proj_pred/hdds"))
-  # output_dir <- paste0(opt$output,"/proj_pred/hdds/weak_prior_fixed")
-  output_dir <- paste0(opt$output,"/proj_pred/hdds/weak_prior_mixed_country")
+  output_dir <- paste0(opt$output,"/proj_pred/hdds/weak_prior_fixed")
+  # output_dir <- paste0(opt$output,"/proj_pred/hdds/weak_prior_mixed_country")
   
   dir.create(output_dir)
   
