@@ -117,8 +117,9 @@ if (opt$index >=100  &
                number_income_sources+
                land_cultivated+
                education+
-               use_fert+
                external_labour+
+                 
+               use_fert+
                kitchen_garden+
                land_irrigated_any+
                min_travel_time+
@@ -126,7 +127,7 @@ if (opt$index >=100  &
                off_farm_any+
                market_orientation+
                length_growing_period+
-               hh_size+
+               livestock_tlu+
                
                
                
