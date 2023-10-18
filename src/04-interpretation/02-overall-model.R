@@ -517,7 +517,7 @@ ggsave(filename = "outputs/overall_model_results/location_only_tva/country_villa
 vpcs <- vpc(tva_model,as.character(param_list_temp))
 summarise_estimates(vpcs, param_list_temp)
 
-vpc_estimates <- estimates_plot(draws_df = vpcs,param_list = param_list,
+vpc_estimates <- estimates_plot(draws_df = vpcs,param_list = param_list_temp,
                                 title="VPCs for Country Village TVA Model"
 )
 vpc_estimates <- vpc_estimates + xlim(0,1)
@@ -548,7 +548,7 @@ ggsave(filename = "outputs/overall_model_results/location_only_hdds/country_vill
 
 
 vpcs <- vpc(hdds_model,as.character(param_list_temp))
-vpc_estimates <- estimates_plot(draws_df = vpcs,param_list = param_list,
+vpc_estimates <- estimates_plot(draws_df = vpcs,param_list = param_list_temp,
                                 title="VPCs for Country Village HDDS Model"
 )
 vpc_estimates <- vpc_estimates + xlim(0,1)
