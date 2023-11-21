@@ -250,7 +250,9 @@ variable_names <- list(
   "Off Farm Income"="b_off_farm_any",
   "Market Orientation"="b_market_orientation",
   "Length of Growing Period"="b_length_growing_period",
-  "Household Size"="b_hh_size"
+  "Livestock TLU"="b_livestock_tlu"
+  
+  # "Household Size"="b_hh_size"
 )
 
 model_summary_all <- all_fold_summary(base_path=base_input_path,

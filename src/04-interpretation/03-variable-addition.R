@@ -531,7 +531,7 @@ plot <- fixed_effects_plot(model = tva_model,
                            variables=variables,
                            base_path="outputs/overall_model_results/variable_addition/tva/weak_prior_fixed")
 plot <- plot + 
-  xlim(-0.35,0.35)+
+  xlim(-0.6,0.5)+
   labs(title = "Effects for TVA Random Intercept Model", x="Estimate", y="Explanatory Variable")
 ggsave("outputs/overall_model_results/variable_addition/tva/weak_prior_fixed/fixed_effects_plot.png", plot,width=2000, height=1800, units = "px")
 
@@ -541,7 +541,7 @@ plot <- fixed_effects_plot(model = hdds_model,
                            variables=variables,
                            base_path="outputs/overall_model_results/variable_addition/tva/weak_prior_fixed")
 plot <- plot + 
-  xlim(-0.35,0.35)+
+  xlim(-0.6,0.5)+
   labs(title = "Effects for HDDS Random Intercept Model", x="Estimate", y="Explanatory Variable")
 ggsave("outputs/overall_model_results/variable_addition/hdds/weak_prior_fixed/fixed_effects_plot.png", plot,width=2000, height=1800, units = "px")
 
@@ -958,7 +958,7 @@ mixed_effects_hdds_plot <- mixed_effects_only(model_hdds,
                         variables,
                         title="HDDS Model\nStandard Deviation in Random Slopes"
 )
-mixed_effects_hdds_plot <- mixed_effects_hdds_plot + xlim(0,1.2)
+mixed_effects_hdds_plot <- mixed_effects_hdds_plot + xlim(0,2)
 
 dir.create("outputs/overall_model_results/variable_addition/random_slopes")
 ggsave(filename = paste0("outputs/overall_model_results/variable_addition/random_slopes/hdds.png"),
@@ -971,7 +971,7 @@ mixed_effects_tva_plot <- mixed_effects_only(model_tva,
                                               variables,
                                               title="TVA Model\nStandard Deviation in Random Slopes"
 )
-mixed_effects_tva_plot <- mixed_effects_tva_plot + xlim(0,1.2)
+mixed_effects_tva_plot <- mixed_effects_tva_plot + xlim(0,2)
 
 
 ggsave(filename = paste0("outputs/overall_model_results/variable_addition/random_slopes/tva.png"),

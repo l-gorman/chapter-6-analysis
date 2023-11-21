@@ -826,7 +826,7 @@ levels_variables <- list(
 
 
 
-model_tva <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/tva/tva_10.rda")
+model_tva <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/tva/tva_11.rda")
 
 tva_plot <- fixed_effect_plot(model=model_tva,
                   model_name="TVA",
@@ -834,10 +834,10 @@ tva_plot <- fixed_effect_plot(model=model_tva,
                   base_path="./outputs/overall_model_results/variable_addition_final_fit/tva/")
 tva_plot <- tva_plot + 
   labs(title="Regression Coeffecients\n for Random Intercept TVA Model\nAfter Variable Selection")+
-  xlim(-0.35,0.35)
+  xlim(-0.6,0.35)
 ggsave("outputs/overall_model_results/variable_addition_final_fit/tva/random_intercept.png",tva_plot, width=1800, height=1500, units="px")
 
-model_hdds <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/hdds/hdds_12.rda")
+model_hdds <- loadRData("./outputs/11_09_2023/outputs/overall_models/variable_addition_final_fit/hdds/hdds_13.rda")
 hdds_plot <- fixed_effect_plot(model=model_hdds,
                               model_name="HDDS",
                               variables=variables,
@@ -846,7 +846,7 @@ hdds_plot <- fixed_effect_plot(model=model_hdds,
 
 hdds_plot <- hdds_plot + 
   labs(title="Regression Coeffecients\n for Random Intercept HDDS Model\nAfter Variable Selection")+
-  xlim(-0.35,0.35)
+  xlim(-0.6,0.35)
 ggsave("outputs/overall_model_results/variable_addition_final_fit/hdds/random_intercept.png",hdds_plot, width=1800, height=1500, units="px")
 
 

@@ -17,6 +17,28 @@ dir.create("outputs/02-data-exploration/distributions/correlation_plot")
 
 indicator_data <- readr::read_csv("./data/02-prepared-data/modelling_df.csv")
 
+
+hist(indicator_data$adjusted_length_growing_period[indicator_data$id_form=="rw_oaf_2018"])
+hist(indicator_data$adjusted_length_growing_period)
+
+median(indicator_data$adjusted_length_growing_period[indicator_data$id_form=="rw_oaf_2018" ])
+median(indicator_data$adjusted_length_growing_period)
+
+
+hist(indicator_data$land_cultivated_ha[indicator_data$id_form=="cd_lgs_2019" & indicator_data$land_cultivated_ha<1])
+hist(indicator_data$land_cultivated_ha)
+indicator_data$land_cultivated_ha[indicator_data$id_form=="cd_lgs_2019" & indicator_data$land_cultivated_ha>100]
+indicator_data$land_cultivated_ha[indicator_data$id_form=="cd_lgs_2019" ]
+median(indicator_data$land_cultivated_ha[indicator_data$id_form=="cd_lgs_2019" ])
+median(indicator_data$land_cultivated_ha)
+
+length(indicator_data$land_cultivated_ha[indicator_data$id_form=="cd_lgs_2019" ])
+
+indicator_data$adjusted_length_growing_period
+
+
+
+
 variables <- list(
   "Household Size"="hh_size",
   

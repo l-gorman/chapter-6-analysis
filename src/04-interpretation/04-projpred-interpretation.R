@@ -59,6 +59,7 @@ cvvs_hdds <- loadRData("outputs/11_09_2023/outputs/overall_models/variable_addit
 projpred::suggest_size(cvvs_hdds)
 
 ranking_res <- ranking(cvvs_hdds)
+ranking_res$fulldata[1:projpred::suggest_size(cvvs_hdds)]
 save(ranking_res,file="./outputs/overall_model_results/variable_addition/projpred/hdds/ranking.rda")
 
 mlpd_plot <- plot(cvvs_hdds,stats = "mlpd", ranking_nterms_max = NA)
